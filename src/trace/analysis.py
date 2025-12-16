@@ -96,8 +96,7 @@ def run_inference(
         jax.random.PRNGKey(rng_seed),
         events_by_day=np.array(events_by_day),
         event_day_index=np.array(event_day_index),
-        event_coords=np.array(
-            event_coords) if event_coords is not None else np.zeros((0, 2)),
+        event_coords=np.array(event_coords) if event_coords is not None else np.zeros((0, 2)),
         hospital_coords=np.array(hospital_coords),
         injuries_obs=np.array(injuries_obs),
         deaths_obs=np.array(deaths_obs),
@@ -157,15 +156,13 @@ def posterior_predictive(
     """
     # Don't pass observations - let model sample them
     # NumPyro's Predictive will automatically sample from the likelihood when obs=None
-    predictive = Predictive(casualty_model, samples, return_sites=[
-                            "obs_injuries", "obs_deaths"])
+    predictive = Predictive(casualty_model, samples, return_sites=["obs_injuries", "obs_deaths"])
 
     preds = predictive(
         jax.random.PRNGKey(rng_seed),
         events_by_day=np.array(events_by_day),
         event_day_index=np.array(event_day_index),
-        event_coords=np.array(
-            event_coords) if event_coords is not None else np.zeros((0, 2)),
+        event_coords=np.array(event_coords) if event_coords is not None else np.zeros((0, 2)),
         hospital_coords=np.array(hospital_coords),
         injuries_obs=None,  # None triggers sampling
         deaths_obs=None,  # None triggers sampling
@@ -245,8 +242,7 @@ def forecast(
             if injuries_t > 0:
                 late_deaths_t = np.random.binomial(injuries_t, p_late)
                 if late_deaths_t > 0:
-                    delays_draw = np.random.multinomial(
-                        late_deaths_t, delay_probs)
+                    delays_draw = np.random.multinomial(late_deaths_t, delay_probs)
                     for j in range(delay_len):
                         if j < len(death_queue):
                             death_queue[j] += delays_draw[j]
@@ -306,8 +302,7 @@ def plot_fit(
     fig, axes = plt.subplots(2, 1, figsize=figsize, sharex=True)
 
     # Plot deaths
-    axes[0].plot(dates, deaths_obs, "o-", label="Observed deaths",
-                 color="darkred", alpha=0.7)
+    axes[0].plot(dates, deaths_obs, "o-", label="Observed deaths", color="darkred", alpha=0.7)
 
     if preds is not None and "obs_deaths" in preds:
         pred_deaths = np.array(preds["obs_deaths"])
@@ -318,20 +313,16 @@ def plot_fit(
         axes[0].fill_between(
             dates, low_pred, high_pred, color="red", alpha=0.2, label="95% credible interval"
         )
-        axes[0].plot(dates, median_pred, "-", color="red",
-                     label="Posterior median", linewidth=2)
+        axes[0].plot(dates, median_pred, "-", color="red", label="Posterior median", linewidth=2)
 
     axes[0].set_ylabel("Daily Deaths", fontsize=12)
     axes[0].legend(loc="best")
-    axes[0].set_title("National Deaths: Observed vs Model Fit",
-                      fontsize=14, fontweight="bold")
+    axes[0].set_title("National Deaths: Observed vs Model Fit", fontsize=14, fontweight="bold")
     axes[0].grid(True, alpha=0.3)
 
     # Plot total injuries
     total_inj_obs = np.nansum(injuries_obs, axis=1)
-    axes[1].plot(
-        dates, total_inj_obs, "o-", label="Observed injured", color="darkblue", alpha=0.7
-    )
+    axes[1].plot(dates, total_inj_obs, "o-", label="Observed injured", color="darkblue", alpha=0.7)
 
     if preds is not None and "obs_injuries" in preds:
         pred_inj = np.array(preds["obs_injuries"])
@@ -343,15 +334,12 @@ def plot_fit(
         axes[1].fill_between(
             dates, low_inj, high_inj, color="blue", alpha=0.2, label="95% credible interval"
         )
-        axes[1].plot(dates, median_inj, "-", color="blue",
-                     label="Posterior median", linewidth=2)
+        axes[1].plot(dates, median_inj, "-", color="blue", label="Posterior median", linewidth=2)
 
     axes[1].set_ylabel("Daily Injured (Total)", fontsize=12)
     axes[1].set_xlabel("Date", fontsize=12)
     axes[1].legend(loc="best")
-    axes[1].set_title(
-        "Hospital Injuries: Observed vs Model Fit", fontsize=14, fontweight="bold"
-    )
+    axes[1].set_title("Hospital Injuries: Observed vs Model Fit", fontsize=14, fontweight="bold")
     axes[1].grid(True, alpha=0.3)
 
     plt.tight_layout()
@@ -405,8 +393,7 @@ def plot_forecast(
         label="95% forecast interval",
     )
     axes[0].set_ylabel("Daily Deaths", fontsize=12)
-    axes[0].set_title("Forecast - Daily Deaths",
-                      fontsize=14, fontweight="bold")
+    axes[0].set_title("Forecast - Daily Deaths", fontsize=14, fontweight="bold")
     axes[0].legend(loc="best")
     axes[0].grid(True, alpha=0.3)
 
@@ -424,8 +411,7 @@ def plot_forecast(
     )
     axes[1].set_ylabel("Daily Injured", fontsize=12)
     axes[1].set_xlabel("Date", fontsize=12)
-    axes[1].set_title("Forecast - Daily Hospital Injuries",
-                      fontsize=14, fontweight="bold")
+    axes[1].set_title("Forecast - Daily Hospital Injuries", fontsize=14, fontweight="bold")
     axes[1].legend(loc="best")
     axes[1].grid(True, alpha=0.3)
 

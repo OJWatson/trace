@@ -109,8 +109,7 @@ def simulate_conflict_data(
     4. Schedules delayed deaths according to delay distribution
     5. Tracks population changes over time
     """
-    rng = np.random.RandomState(
-        seed) if seed is not None else np.random.RandomState()
+    rng = np.random.RandomState(seed) if seed is not None else np.random.RandomState()
 
     # ========== Set up spatial layout ==========
 
@@ -143,8 +142,7 @@ def simulate_conflict_data(
     # Compute p_immediate if not provided
     if p_immediate_true is None:
         total_mean_casualties = mu_i_true + mu_w_true
-        p_immediate_true = mu_i_true / \
-            total_mean_casualties if total_mean_casualties > 0 else 0.0
+        p_immediate_true = mu_i_true / total_mean_casualties if total_mean_casualties > 0 else 0.0
 
     # ========== Initialize output arrays ==========
 
@@ -195,8 +193,7 @@ def simulate_conflict_data(
 
             # Allocate injured to hospitals via spatial kernel
             if injured > 0:
-                dists = np.linalg.norm(
-                    hospital_coords - np.array([ex, ey]), axis=1)
+                dists = np.linalg.norm(hospital_coords - np.array([ex, ey]), axis=1)
                 weights = np.exp(-dists / ell_true)
 
                 if weights.sum() == 0:
@@ -240,8 +237,7 @@ def simulate_conflict_data(
 
         # Update populations
         if n_regions > 0:
-            region_populations = region_populations * \
-                (1 + birth_rate + migration_rate)
+            region_populations = region_populations * (1 + birth_rate + migration_rate)
 
             # Subtract immediate deaths from regions
             for event in [ev for ev in events if ev["date"] == day]:

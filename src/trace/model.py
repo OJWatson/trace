@@ -55,8 +55,7 @@ def spatial_kernel_weights(
     weights = jnp.exp(-dists / ell)
 
     # Normalize weights for each event so they sum to 1 across hospitals
-    weight_sums = jnp.sum(weights, axis=1, keepdims=True) + \
-        1e-8  # avoid division by zero
+    weight_sums = jnp.sum(weights, axis=1, keepdims=True) + 1e-8  # avoid division by zero
     norm_weights = weights / weight_sums
 
     return norm_weights  # shape (E, H)
@@ -165,9 +164,7 @@ def casualty_model(
     # ========== Spatial allocation of casualties to hospitals ==========
 
     # Compute spatial weights for each event-hospital pair
-    norm_weights = spatial_kernel_weights(
-        jnp.array(event_coords), jnp.array(hospital_coords), ell
-    )
+    norm_weights = spatial_kernel_weights(jnp.array(event_coords), jnp.array(hospital_coords), ell)
 
     # Accumulate event contributions to each hospital per day
     # effective_events[d,h] = sum of normalized weights of all events on day d going to hospital h
@@ -192,8 +189,7 @@ def casualty_model(
 
     # Total injuries per day (summing across hospitals)
     # Use sampled injuries if obs was None, otherwise use provided injuries
-    injuries_to_use = obs_inj if injuries_obs is None else jnp.array(
-        injuries_obs)
+    injuries_to_use = obs_inj if injuries_obs is None else jnp.array(injuries_obs)
     injuries_total = jnp.nansum(injuries_to_use, axis=1)  # shape (T,)
 
     # Convolve injuries with delay distribution to get expected delayed deaths
@@ -204,7 +200,7 @@ def casualty_model(
     conv_deaths = jnp.zeros(n_days)
     for k in range(delay_len):
         # Deaths occurring k+1 days after injury
-        conv_deaths = conv_deaths + pad[k: n_days + k] * delay_probs[k]
+        conv_deaths = conv_deaths + pad[k : n_days + k] * delay_probs[k]
 
     # Expected late deaths = p_late * convolved injuries
     expected_late_deaths = p_late * conv_deaths
@@ -292,9 +288,7 @@ def casualty_model_with_covariates(
         mu_i = mu_i_base
 
     # Rest of the model follows the same structure as casualty_model
-    norm_weights = spatial_kernel_weights(
-        jnp.array(event_coords), jnp.array(hospital_coords), ell
-    )
+    norm_weights = spatial_kernel_weights(jnp.array(event_coords), jnp.array(hospital_coords), ell)
 
     effective_events = jnp.zeros((n_days, n_hospitals))
     effective_events = effective_events.at[event_day_index].add(norm_weights)
@@ -315,7 +309,7 @@ def casualty_model_with_covariates(
     pad = jnp.pad(injuries_total, (0, delay_len))
     conv_deaths = jnp.zeros(n_days)
     for k in range(delay_len):
-        conv_deaths = conv_deaths + pad[k: n_days + k] * delay_probs[k]
+        conv_deaths = conv_deaths + pad[k : n_days + k] * delay_probs[k]
 
     expected_late_deaths = p_late * conv_deaths
 
@@ -327,5 +321,4 @@ def casualty_model_with_covariates(
 
     expected_deaths = expected_immediate_deaths + expected_late_deaths
 
-    numpyro.sample("obs_deaths", dist.Poisson(
-        expected_deaths), obs=jnp.array(deaths_obs))
+    numpyro.sample("obs_deaths", dist.Poisson(expected_deaths), obs=jnp.array(deaths_obs))
