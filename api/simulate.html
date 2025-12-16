@@ -1,0 +1,245 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulate Module &mdash; TRACE 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Analysis Module" href="analysis.html" />
+    <link rel="prev" title="Model Module" href="model.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            TRACE
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Model Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../model/00_overview.html">Model Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../model/01_background.html">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../model/02_description.html">Model Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../model/03_implementation.html">Model Implementation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/01_basic_example.html">Tutorial: Basic Example with Simulated Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/02_gaza_analysis.html">Tutorial: Gaza Conflict Casualty Analysis</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="data.html">Data Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model.html">Model Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Simulate Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#trace.simulate.simulate_conflict_data"><code class="docutils literal notranslate"><span class="pre">simulate_conflict_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#trace.simulate.generate_scenario_events"><code class="docutils literal notranslate"><span class="pre">generate_scenario_events()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">Analysis Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Additional Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">TRACE</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Simulate Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/simulate.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="module-trace.simulate">
+<span id="simulate-module"></span><h1>Simulate Module<a class="headerlink" href="#module-trace.simulate" title="Link to this heading"></a></h1>
+<p>Simulation module for generating synthetic conflict casualty data.</p>
+<p>This module provides tools to simulate hypothetical conflict scenarios with
+multiple regions, hospitals, and realistic casualty dynamics. Useful for
+model validation and testing.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="trace.simulate.simulate_conflict_data">
+<span class="sig-prename descclassname"><span class="pre">trace.simulate.</span></span><span class="sig-name descname"><span class="pre">simulate_conflict_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_regions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_hospitals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu_w_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu_i_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_late_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay_probs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ell_true</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_immediate_true</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region_populations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">birth_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">migration_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">events_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/trace/simulate.html#simulate_conflict_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trace.simulate.simulate_conflict_data" title="Link to this definition"></a></dt>
+<dd><p>Simulate synthetic conflict casualty data for a hypothetical country.</p>
+<p>This function generates realistic conflict event data with spatial and temporal
+dynamics, including hospital admissions and mortality with appropriate delays.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_regions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of regions in the country</p></li>
+<li><p><strong>n_hospitals</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of hospitals</p></li>
+<li><p><strong>T</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of days to simulate</p></li>
+<li><p><strong>mu_w_true</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – True average number of wounded per event</p></li>
+<li><p><strong>mu_i_true</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – True average number of immediate deaths per event</p></li>
+<li><p><strong>p_late_true</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – True probability an injured person eventually dies</p></li>
+<li><p><strong>delay_probs</strong> (<em>np.ndarray</em>) – Array of probabilities for delay 1,2,… days until death (must sum to 1)</p></li>
+<li><p><strong>ell_true</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>default=20.0</em>) – True spatial length scale for hospital allocation (in coordinate units)</p></li>
+<li><p><strong>p_immediate_true</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Probability a casualty is an immediate death. If None, computed from mu_i/total</p></li>
+<li><p><strong>region_populations</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Initial population for each region. If None, uses 100,000 per region</p></li>
+<li><p><strong>birth_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>default=0.0</em>) – Daily birth rate per person (fraction)</p></li>
+<li><p><strong>migration_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>default=0.0</em>) – Daily net migration rate per person (fraction)</p></li>
+<li><p><strong>events_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>default=1.0</em>) – Average number of events per day (Poisson rate)</p></li>
+<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Random seed for reproducibility</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>Dictionary containing:
+events : list[dict]</p>
+<blockquote>
+<div><p>Event dictionaries with keys: date, region, latitude, longitude, casualties,
+immediate_deaths, injured.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>hospital_incidence<span class="classifier">np.ndarray</span></dt><dd><p>Array of shape (T, n_hospitals) with daily injured counts.</p>
+</dd>
+<dt>national_deaths<span class="classifier">np.ndarray</span></dt><dd><p>Array of length T with daily death counts.</p>
+</dd>
+<dt>region_pop<span class="classifier">np.ndarray</span></dt><dd><p>Array of shape (T+1, n_regions) with populations over time.</p>
+</dd>
+<dt>hospital_coords<span class="classifier">np.ndarray</span></dt><dd><p>Array of shape (n_hospitals, 2) with hospital locations.</p>
+</dd>
+<dt>region_centers<span class="classifier">list[tuple[float, float]]</span></dt><dd><p>List of (x, y) tuples for region centers.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">delay_probs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">simulate_conflict_data</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">n_regions</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">n_hospitals</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">T</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">mu_w_true</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">mu_i_true</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">p_late_true</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">delay_probs</span><span class="o">=</span><span class="n">delay_probs</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">events_rate</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Simulated </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;events&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2"> events&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total deaths: </span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;national_deaths&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<p>The simulation process:
+1. Places regions and hospitals in a 100x100 coordinate space
+2. Generates events via Poisson process
+3. Allocates casualties to hospitals via exponential decay kernel
+4. Schedules delayed deaths according to delay distribution
+5. Tracks population changes over time</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="trace.simulate.generate_scenario_events">
+<span class="sig-prename descclassname"><span class="pre">trace.simulate.</span></span><span class="sig-name descname"><span class="pre">generate_scenario_events</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interventions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/trace/simulate.html#generate_scenario_events"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trace.simulate.generate_scenario_events" title="Link to this definition"></a></dt>
+<dd><p>Generate event counts for scenario-based forecasting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>T</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of days to generate</p></li>
+<li><p><strong>baseline_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Baseline event rate (events per day)</p></li>
+<li><p><strong>interventions</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>, </em><em>optional</em>) – List of (start_day, end_day, multiplier) tuples representing
+interventions that change the event rate</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Array of length T with event counts per day</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Baseline of 2 events/day, with ceasefire from day 30-60 (0.1x rate)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">events</span> <span class="o">=</span> <span class="n">generate_scenario_events</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">T</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">baseline_rate</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">interventions</span><span class="o">=</span><span class="p">[(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)]</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="model.html" class="btn btn-neutral float-left" title="Model Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="analysis.html" class="btn btn-neutral float-right" title="Analysis Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, OJ Watson.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

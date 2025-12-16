@@ -1,0 +1,350 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TRACE Documentation &mdash; TRACE 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Model Introduction" href="model/00_overview.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            TRACE
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Model Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="model/00_overview.html">Model Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model/01_background.html">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model/02_description.html">Model Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model/03_implementation.html">Model Implementation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/01_basic_example.html">Tutorial: Basic Example with Simulated Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/02_gaza_analysis.html">Tutorial: Gaza Conflict Casualty Analysis</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/data.html">Data Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/model.html">Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/simulate.html">Simulate Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/analysis.html">Analysis Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Additional Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">TRACE</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">TRACE Documentation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="trace-documentation">
+<h1>TRACE Documentation<a class="headerlink" href="#trace-documentation" title="Link to this heading"></a></h1>
+<p><strong>TRACE</strong> (Temporal and Regional Analysis of Conflict Events) is a Python package for analyzing conflict casualties using semi-mechanistic Bayesian hierarchical models.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>TRACE integrates multiple data streams—conflict events from ACLED, hospital admissions, and national mortality data—to provide insights into casualty dynamics and enable short-term forecasting. The package is built on JAX and NumPyro for fast, GPU-accelerated Bayesian inference.</p>
+</section>
+<section id="key-features">
+<h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Semi-Mechanistic Bayesian Models</strong>: Combines mechanistic understanding with data-driven inference</p></li>
+<li><p><strong>Spatial Modeling</strong>: Distance-based kernels for distributing casualties among hospitals</p></li>
+<li><p><strong>Temporal Dynamics</strong>: Delay distributions from injury to death</p></li>
+<li><p><strong>Multiple Data Streams</strong>: Integrates conflict events, hospital admissions, and mortality</p></li>
+<li><p><strong>Fast Inference</strong>: JAX/NumPyro backend with GPU support</p></li>
+<li><p><strong>Forecasting</strong>: Project future casualties under different scenarios</p></li>
+<li><p><strong>Validation Tools</strong>: Synthetic data generation for model testing</p></li>
+</ul>
+</section>
+<section id="quick-start">
+<h2>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">trace</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">trace.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">fetch_acled_data</span><span class="p">,</span> <span class="n">prepare_acled_events</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">trace.analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_inference</span><span class="p">,</span> <span class="n">plot_fit</span>
+
+<span class="c1"># Fetch conflict event data</span>
+<span class="n">events_df</span> <span class="o">=</span> <span class="n">fetch_acled_data</span><span class="p">(</span>
+    <span class="n">country</span><span class="o">=</span><span class="s2">&quot;Palestine&quot;</span><span class="p">,</span>
+    <span class="n">start_date</span><span class="o">=</span><span class="s2">&quot;2023-01-01&quot;</span><span class="p">,</span>
+    <span class="n">end_date</span><span class="o">=</span><span class="s2">&quot;2023-12-31&quot;</span><span class="p">,</span>
+    <span class="n">api_token</span><span class="o">=</span><span class="s2">&quot;YOUR_TOKEN&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Prepare for modeling</span>
+<span class="n">events_by_day</span><span class="p">,</span> <span class="n">event_days</span><span class="p">,</span> <span class="n">event_coords</span><span class="p">,</span> <span class="n">dates</span> <span class="o">=</span> <span class="n">prepare_acled_events</span><span class="p">(</span>
+    <span class="n">events_df</span><span class="p">,</span> <span class="s2">&quot;2023-01-01&quot;</span><span class="p">,</span> <span class="s2">&quot;2023-12-31&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Run inference</span>
+<span class="n">mcmc</span><span class="p">,</span> <span class="n">samples</span> <span class="o">=</span> <span class="n">run_inference</span><span class="p">(</span>
+    <span class="n">events_by_day</span><span class="o">=</span><span class="n">events_by_day</span><span class="p">,</span>
+    <span class="n">event_day_index</span><span class="o">=</span><span class="n">event_days</span><span class="p">,</span>
+    <span class="n">event_coords</span><span class="o">=</span><span class="n">event_coords</span><span class="p">,</span>
+    <span class="n">hospital_coords</span><span class="o">=</span><span class="n">hospital_locations</span><span class="p">,</span>
+    <span class="n">injuries_obs</span><span class="o">=</span><span class="n">hospital_data</span><span class="p">,</span>
+    <span class="n">deaths_obs</span><span class="o">=</span><span class="n">mortality_data</span>
+<span class="p">)</span>
+
+<span class="c1"># Visualize results</span>
+<span class="n">plot_fit</span><span class="p">(</span><span class="n">dates</span><span class="p">,</span> <span class="n">injuries_obs</span><span class="p">,</span> <span class="n">deaths_obs</span><span class="p">,</span> <span class="n">posterior_predictive</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
+<section id="from-pypi">
+<h3>From PyPI<a class="headerlink" href="#from-pypi" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>trace-conflict
+</pre></div>
+</div>
+</section>
+<section id="from-source">
+<h3>From Source<a class="headerlink" href="#from-source" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/imperial-college/trace.git
+<span class="nb">cd</span><span class="w"> </span>trace
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</pre></div>
+</div>
+</section>
+<section id="development-installation">
+<h3>Development Installation<a class="headerlink" href="#development-installation" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev,docs]&quot;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="contents">
+<h2>Contents<a class="headerlink" href="#contents" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Model Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="model/00_overview.html">Model Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="model/00_overview.html#background-and-motivation">Background and Motivation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/00_overview.html#conflict-casualty-dynamics-as-a-semi-mechanistic-process">Conflict Casualty Dynamics as a Semi-Mechanistic Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/00_overview.html#the-bayesian-approach">The Bayesian Approach</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/00_overview.html#uses-of-trace">Uses of TRACE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/00_overview.html#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/00_overview.html#data-sources">Data Sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/00_overview.html#mathematical-framework">Mathematical Framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/00_overview.html#prior-specifications">Prior Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/00_overview.html#extensions">Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/00_overview.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/00_overview.html#references">References</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/00_overview.html#related-packages">Related Packages</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="model/01_background.html">Background</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="model/01_background.html#the-trace-framework">The TRACE Framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/01_background.html#mathematical-foundations">Mathematical Foundations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/01_background.html#prior-specifications">Prior Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/01_background.html#inference">Inference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/01_background.html#comparison-to-epidemic-models">Comparison to Epidemic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/01_background.html#comparison-to-traditional-conflict-models">Comparison to Traditional Conflict Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/01_background.html#data-requirements-and-sources">Data Requirements and Sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/01_background.html#case-study-gaza-2023-2024">Case Study: Gaza (2023-2024)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/01_background.html#limitations-and-caveats">Limitations and Caveats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/01_background.html#software-implementation">Software Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/01_background.html#related-work-and-packages">Related Work and Packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/01_background.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/01_background.html#contributing">Contributing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/01_background.html#acknowledgments">Acknowledgments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/01_background.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="model/02_description.html">Model Description</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="model/02_description.html#basic-model">1. Basic Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/02_description.html#regression-structure">2. Regression Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/02_description.html#parameter-priors">3. Parameter Priors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/02_description.html#posterior-inference">4. Posterior Inference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/02_description.html#posterior-predictive-distribution">5. Posterior Predictive Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/02_description.html#forecasting">6. Forecasting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/02_description.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="model/03_implementation.html">Model Implementation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="model/03_implementation.html#numpyro-primer">1. NumPyro Primer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/03_implementation.html#trace-model-implementation">2. TRACE Model Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/03_implementation.html#running-inference">3. Running Inference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/03_implementation.html#computational-considerations">4. Computational Considerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/03_implementation.html#posterior-predictive-sampling">5. Posterior Predictive Sampling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/03_implementation.html#forecasting">6. Forecasting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/03_implementation.html#model-extensions">7. Model Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/03_implementation.html#debugging-tips">8. Debugging Tips</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/03_implementation.html#code-reference">9. Code Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/03_implementation.html#references">References</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/01_basic_example.html">Tutorial: Basic Example with Simulated Data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/01_basic_example.html#Installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/01_basic_example.html#Import-Libraries">Import Libraries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/01_basic_example.html#1.-Data-Simulation">1. Data Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/01_basic_example.html#2.-Prepare-Data-for-Modeling">2. Prepare Data for Modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/01_basic_example.html#3.-Model-Fitting-with-MCMC">3. Model Fitting with MCMC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/01_basic_example.html#4.-Posterior-Predictive-Checks">4. Posterior Predictive Checks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/01_basic_example.html#5.-Forecasting">5. Forecasting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/01_basic_example.html#Summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/02_gaza_analysis.html">Tutorial: Gaza Conflict Casualty Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/02_gaza_analysis.html#learning-objectives">Learning Objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/02_gaza_analysis.html#warning-sensitive-content">Warning: Sensitive Content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/02_gaza_analysis.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/02_gaza_analysis.html#data-acquisition">1. Data Acquisition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/02_gaza_analysis.html#exploratory-analysis">2. Exploratory Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/02_gaza_analysis.html#model-fitting">3. Model Fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/02_gaza_analysis.html#model-diagnostics">4. Model Diagnostics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/02_gaza_analysis.html#posterior-predictive-checks">5. Posterior Predictive Checks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/02_gaza_analysis.html#policy-relevant-forecasting">6. Policy-Relevant Forecasting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/02_gaza_analysis.html#sensitivity-analysis">7. Sensitivity Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/02_gaza_analysis.html#interpretation-and-caveats">8. Interpretation and Caveats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/02_gaza_analysis.html#extensions-and-future-work">9. Extensions and Future Work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/02_gaza_analysis.html#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/02_gaza_analysis.html#references">References</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/data.html">Data Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/data.html#trace.data.fetch_acled_data"><code class="docutils literal notranslate"><span class="pre">fetch_acled_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/data.html#trace.data.prepare_acled_events"><code class="docutils literal notranslate"><span class="pre">prepare_acled_events()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/data.html#trace.data.load_hospital_data"><code class="docutils literal notranslate"><span class="pre">load_hospital_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/data.html#trace.data.load_national_deaths"><code class="docutils literal notranslate"><span class="pre">load_national_deaths()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/data.html#trace.data.create_hospital_coordinates"><code class="docutils literal notranslate"><span class="pre">create_hospital_coordinates()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/data.html#trace.data.load_example_acled_data"><code class="docutils literal notranslate"><span class="pre">load_example_acled_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/data.html#trace.data.fetch_palestine_mortality_data"><code class="docutils literal notranslate"><span class="pre">fetch_palestine_mortality_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/data.html#trace.data.prepare_mortality_data"><code class="docutils literal notranslate"><span class="pre">prepare_mortality_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/model.html">Model Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/model.html#trace.model.spatial_kernel_weights"><code class="docutils literal notranslate"><span class="pre">spatial_kernel_weights()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/model.html#trace.model.casualty_model"><code class="docutils literal notranslate"><span class="pre">casualty_model()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/model.html#trace.model.casualty_model_with_covariates"><code class="docutils literal notranslate"><span class="pre">casualty_model_with_covariates()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/simulate.html">Simulate Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/simulate.html#trace.simulate.simulate_conflict_data"><code class="docutils literal notranslate"><span class="pre">simulate_conflict_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/simulate.html#trace.simulate.generate_scenario_events"><code class="docutils literal notranslate"><span class="pre">generate_scenario_events()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/analysis.html">Analysis Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/analysis.html#trace.analysis.run_inference"><code class="docutils literal notranslate"><span class="pre">run_inference()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/analysis.html#trace.analysis.posterior_predictive"><code class="docutils literal notranslate"><span class="pre">posterior_predictive()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/analysis.html#trace.analysis.forecast"><code class="docutils literal notranslate"><span class="pre">forecast()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/analysis.html#trace.analysis.plot_fit"><code class="docutils literal notranslate"><span class="pre">plot_fit()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/analysis.html#trace.analysis.plot_forecast"><code class="docutils literal notranslate"><span class="pre">plot_forecast()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/analysis.html#trace.analysis.create_arviz_inference_data"><code class="docutils literal notranslate"><span class="pre">create_arviz_inference_data()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Additional Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+</ul>
+</div>
+</section>
+<section id="indices-and-tables">
+<h2>Indices and Tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="model/00_overview.html" class="btn btn-neutral float-right" title="Model Introduction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, OJ Watson.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

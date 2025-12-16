@@ -1,0 +1,690 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Model Implementation &mdash; TRACE 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tutorial: Basic Example with Simulated Data" href="../tutorials/01_basic_example.html" />
+    <link rel="prev" title="Model Description" href="02_description.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            TRACE
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Model Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="00_overview.html">Model Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="01_background.html">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02_description.html">Model Description</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Model Implementation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#numpyro-primer">1. NumPyro Primer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#basic-model-structure">1.1 Basic Model Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inference-with-nuts">1.2 Inference with NUTS</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#trace-model-implementation">2. TRACE Model Implementation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#function-signature">2.1 Function Signature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#parameter-priors">2.2 Parameter Priors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#spatial-kernel">2.3 Spatial Kernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hospital-injury-likelihood">2.4 Hospital Injury Likelihood</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#death-likelihood">2.5 Death Likelihood</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#running-inference">3. Running Inference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#preparing-data">3.1 Preparing Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#specifying-priors">3.2 Specifying Priors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-mcmc">3.3 Running MCMC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#accessing-results">3.4 Accessing Results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#computational-considerations">4. Computational Considerations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#performance-optimization">4.1 Performance Optimization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#memory-management">4.2 Memory Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#convergence-diagnostics">4.3 Convergence Diagnostics</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#posterior-predictive-sampling">5. Posterior Predictive Sampling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#forecasting">6. Forecasting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model-extensions">7. Model Extensions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#time-varying-parameters">7.1 Time-Varying Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#multiple-regions">7.2 Multiple Regions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#negative-binomial">7.3 Negative Binomial</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#debugging-tips">8. Debugging Tips</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#prior-predictive-checks">8.1 Prior Predictive Checks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#initialization-failures">8.2 Initialization Failures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#divergences">8.3 Divergences</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#code-reference">9. Code Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/01_basic_example.html">Tutorial: Basic Example with Simulated Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/02_gaza_analysis.html">Tutorial: Gaza Conflict Casualty Analysis</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/data.html">Data Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/model.html">Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/simulate.html">Simulate Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/analysis.html">Analysis Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Additional Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">TRACE</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Model Implementation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/model/03_implementation.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="model-implementation">
+<h1>Model Implementation<a class="headerlink" href="#model-implementation" title="Link to this heading"></a></h1>
+<p>This vignette describes the NumPyro implementation of the <strong>TRACE</strong> casualty model. We explain the code structure, demonstrate how to specify models, and provide guidance on computational considerations.</p>
+<section id="numpyro-primer">
+<h2>1. NumPyro Primer<a class="headerlink" href="#numpyro-primer" title="Link to this heading"></a></h2>
+<p><a class="reference external" href="https://num.pyro.ai">NumPyro</a> is a lightweight probabilistic programming library built on JAX. It provides:</p>
+<ul class="simple">
+<li><p><strong>Expressive modeling language</strong>: Define complex hierarchical models declaratively</p></li>
+<li><p><strong>Efficient inference</strong>: State-of-the-art MCMC algorithms (NUTS, HMC)</p></li>
+<li><p><strong>GPU acceleration</strong>: Leverage JAX’s JIT compilation and device support</p></li>
+<li><p><strong>Automatic differentiation</strong>: Enable gradient-based inference algorithms</p></li>
+</ul>
+<section id="basic-model-structure">
+<h3>1.1 Basic Model Structure<a class="headerlink" href="#basic-model-structure" title="Link to this heading"></a></h3>
+<p>A NumPyro model is a Python function that defines the generative process:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpyro</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpyro.distributions</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dist</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">simple_model</span><span class="p">(</span><span class="n">obs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1"># Sample from prior</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;mu&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;sigma&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Exponential</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+    
+    <span class="c1"># Likelihood</span>
+    <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;obs&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="p">),</span> <span class="n">obs</span><span class="o">=</span><span class="n">obs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Key concepts:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">numpyro.sample()</span></code>: Declares a random variable</p></li>
+<li><p>First argument: Parameter name (used in MCMC output)</p></li>
+<li><p>Second argument: Distribution</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">obs</span></code> keyword: Conditions on observed data (if provided)</p></li>
+</ul>
+</section>
+<section id="inference-with-nuts">
+<h3>1.2 Inference with NUTS<a class="headerlink" href="#inference-with-nuts" title="Link to this heading"></a></h3>
+<p>To fit the model:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">numpyro.infer</span><span class="w"> </span><span class="kn">import</span> <span class="n">MCMC</span><span class="p">,</span> <span class="n">NUTS</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax</span>
+
+<span class="c1"># Define sampler</span>
+<span class="n">kernel</span> <span class="o">=</span> <span class="n">NUTS</span><span class="p">(</span><span class="n">simple_model</span><span class="p">)</span>
+<span class="n">mcmc</span> <span class="o">=</span> <span class="n">MCMC</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="n">num_warmup</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
+
+<span class="c1"># Run inference</span>
+<span class="n">mcmc</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">obs</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+
+<span class="c1"># Extract samples</span>
+<span class="n">samples</span> <span class="o">=</span> <span class="n">mcmc</span><span class="o">.</span><span class="n">get_samples</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">num_warmup</span></code>: Burn-in iterations for adaptation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">num_samples</span></code>: Posterior samples to draw</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">num_chains</span></code>: Number of independent chains (for convergence assessment)</p></li>
+</ul>
+</section>
+</section>
+<section id="trace-model-implementation">
+<h2>2. TRACE Model Implementation<a class="headerlink" href="#trace-model-implementation" title="Link to this heading"></a></h2>
+<p>The core model is implemented in <code class="docutils literal notranslate"><span class="pre">trace.model.casualty_model()</span></code>. We’ll walk through each component.</p>
+<section id="function-signature">
+<h3>2.1 Function Signature<a class="headerlink" href="#function-signature" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">casualty_model</span><span class="p">(</span>
+    <span class="n">events_by_day</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>      <span class="c1"># (T,) event counts per day</span>
+    <span class="n">event_day_index</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>    <span class="c1"># (E,) day index for each event</span>
+    <span class="n">event_coords</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>        <span class="c1"># (E, 2) event locations</span>
+    <span class="n">hospital_coords</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>     <span class="c1"># (H, 2) hospital locations</span>
+    <span class="n">injuries_obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>        <span class="c1"># (T, H) observed injuries</span>
+    <span class="n">deaths_obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>          <span class="c1"># (T,) observed deaths</span>
+    <span class="n">delay_probs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># (L,) delay distribution</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</pre></div>
+</div>
+<p><strong>Inputs</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">events_by_day</span></code>: Number of events on each day (length <span class="math notranslate nohighlight">\(T\)</span>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">event_day_index</span></code>: Day index (0-indexed) for each of the <span class="math notranslate nohighlight">\(E\)</span> events</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">event_coords</span></code>: <span class="math notranslate nohighlight">\((x, y)\)</span> coordinates for each event</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hospital_coords</span></code>: <span class="math notranslate nohighlight">\((x, y)\)</span> coordinates for each of <span class="math notranslate nohighlight">\(H\)</span> hospitals</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">injuries_obs</span></code>: Observed injury counts (matrix of size <span class="math notranslate nohighlight">\(T \times H\)</span>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">deaths_obs</span></code>: Observed daily deaths (vector of length <span class="math notranslate nohighlight">\(T\)</span>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">delay_probs</span></code>: Delay distribution <span class="math notranslate nohighlight">\(f_k\)</span> (defaults to [0.5, 0.3, 0.15, 0.05])</p></li>
+</ul>
+<p><strong>Returns</strong>: None (model functions define the probabilistic program, don’t return values)</p>
+</section>
+<section id="parameter-priors">
+<h3>2.2 Parameter Priors<a class="headerlink" href="#parameter-priors" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Average wounded per event</span>
+<span class="n">mu_w</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;mu_w&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Exponential</span><span class="p">(</span><span class="mf">0.3</span><span class="p">))</span>
+
+<span class="c1"># Average immediate deaths per event</span>
+<span class="n">mu_i</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;mu_i&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Exponential</span><span class="p">(</span><span class="mf">0.3</span><span class="p">))</span>
+
+<span class="c1"># Hospital fatality rate</span>
+<span class="n">p_late</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;p_late&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Beta</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+
+<span class="c1"># Spatial length scale</span>
+<span class="n">ell</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;ell&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Exponential</span><span class="p">(</span><span class="mf">1.0</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Each <code class="docutils literal notranslate"><span class="pre">numpyro.sample()</span></code> call:</p>
+<ol class="arabic simple">
+<li><p>Names the parameter (e.g., “mu_w”)</p></li>
+<li><p>Specifies the prior distribution</p></li>
+<li><p>Returns a sample (during inference) or prior draw (during prior predictive sampling)</p></li>
+</ol>
+</section>
+<section id="spatial-kernel">
+<h3>2.3 Spatial Kernel<a class="headerlink" href="#spatial-kernel" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">spatial_kernel_weights</span><span class="p">(</span>
+    <span class="n">event_coords</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">hospital_coords</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">ell</span><span class="p">:</span> <span class="nb">float</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute normalized spatial weights.&quot;&quot;&quot;</span>
+    <span class="c1"># Pairwise distances: (E, H)</span>
+    <span class="n">dists</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span>
+        <span class="n">event_coords</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">hospital_coords</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span>
+        <span class="n">axis</span><span class="o">=</span><span class="mi">2</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Exponential decay kernel</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">dists</span> <span class="o">/</span> <span class="n">ell</span><span class="p">)</span>
+    
+    <span class="c1"># Normalize to sum to 1 for each event</span>
+    <span class="n">norm_weights</span> <span class="o">=</span> <span class="n">weights</span> <span class="o">/</span> <span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-8</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">norm_weights</span>  <span class="c1"># (E, H)</span>
+</pre></div>
+</div>
+<p><strong>Broadcasting</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">event_coords[:,</span> <span class="pre">None,</span> <span class="pre">:]</span></code>: Shape (E, 1, 2)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hospital_coords[None,</span> <span class="pre">:,</span> <span class="pre">:]</span></code>: Shape (1, H, 2)</p></li>
+<li><p>Subtraction broadcasts to (E, H, 2)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">linalg.norm(...,</span> <span class="pre">axis=2)</span></code> reduces to (E, H) distance matrix</p></li>
+</ul>
+<p><strong>Numerical Stability</strong>: Adding <code class="docutils literal notranslate"><span class="pre">1e-8</span></code> prevents division by zero if all weights are negligible.</p>
+</section>
+<section id="hospital-injury-likelihood">
+<h3>2.4 Hospital Injury Likelihood<a class="headerlink" href="#hospital-injury-likelihood" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute spatial weights for all events</span>
+<span class="n">norm_weights</span> <span class="o">=</span> <span class="n">spatial_kernel_weights</span><span class="p">(</span>
+    <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">event_coords</span><span class="p">),</span>
+    <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">hospital_coords</span><span class="p">),</span>
+    <span class="n">ell</span>
+<span class="p">)</span>
+
+<span class="c1"># Accumulate event contributions per day</span>
+<span class="n">effective_events</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">T</span><span class="p">,</span> <span class="n">H</span><span class="p">))</span>
+<span class="n">effective_events</span> <span class="o">=</span> <span class="n">effective_events</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">event_day_index</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">norm_weights</span><span class="p">)</span>
+
+<span class="c1"># Expected injuries</span>
+<span class="n">lam_injuries</span> <span class="o">=</span> <span class="n">mu_w</span> <span class="o">*</span> <span class="n">effective_events</span>  <span class="c1"># (T, H)</span>
+<span class="n">lam_injuries</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">lam_injuries</span><span class="p">,</span> <span class="mf">1e-8</span><span class="p">)</span>  <span class="c1"># Numerical stability</span>
+
+<span class="c1"># Likelihood</span>
+<span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>
+    <span class="s2">&quot;obs_injuries&quot;</span><span class="p">,</span>
+    <span class="n">dist</span><span class="o">.</span><span class="n">Poisson</span><span class="p">(</span><span class="n">lam_injuries</span><span class="p">)</span><span class="o">.</span><span class="n">to_event</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span>
+    <span class="n">obs</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">injuries_obs</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Key Operations</strong>:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">spatial_kernel_weights()</span></code>: Returns (E, H) matrix of allocation weights</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.at[event_day_index].add()</span></code>: JAX’s functional array update — accumulates weights by day</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">to_event(2)</span></code>: Treats the (T, H) matrix as a single multivariate observation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">obs=...</span></code>: Conditions on observed data</p></li>
+</ol>
+<p><strong>Why <code class="docutils literal notranslate"><span class="pre">to_event(2)</span></code>?</strong> Without it, each <span class="math notranslate nohighlight">\(H_{t,j}\)</span> would be treated as an independent observation. <code class="docutils literal notranslate"><span class="pre">to_event(2)</span></code> declares that the entire matrix is a single realization of the model.</p>
+</section>
+<section id="death-likelihood">
+<h3>2.5 Death Likelihood<a class="headerlink" href="#death-likelihood" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Total injuries per day</span>
+<span class="n">injuries_total</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">injuries_obs</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># (T,)</span>
+
+<span class="c1"># Convolve with delay distribution</span>
+<span class="n">L</span> <span class="o">=</span> <span class="n">delay_probs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">pad</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">injuries_total</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">L</span><span class="p">))</span>
+<span class="n">conv_deaths</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">L</span><span class="p">):</span>
+    <span class="c1"># Deaths k+1 days after injury</span>
+    <span class="n">conv_deaths</span> <span class="o">=</span> <span class="n">conv_deaths</span> <span class="o">+</span> <span class="n">pad</span><span class="p">[</span><span class="n">k</span> <span class="p">:</span> <span class="n">T</span> <span class="o">+</span> <span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">delay_probs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+<span class="c1"># Expected deaths</span>
+<span class="n">expected_immediate</span> <span class="o">=</span> <span class="n">mu_i</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">events_by_day</span><span class="p">)</span>
+<span class="n">expected_late</span> <span class="o">=</span> <span class="n">p_late</span> <span class="o">*</span> <span class="n">conv_deaths</span>
+<span class="n">expected_deaths</span> <span class="o">=</span> <span class="n">expected_immediate</span> <span class="o">+</span> <span class="n">expected_late</span>
+<span class="n">expected_deaths</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">expected_deaths</span><span class="p">,</span> <span class="mf">1e-8</span><span class="p">)</span>
+
+<span class="c1"># Likelihood</span>
+<span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>
+    <span class="s2">&quot;obs_deaths&quot;</span><span class="p">,</span>
+    <span class="n">dist</span><span class="o">.</span><span class="n">Poisson</span><span class="p">(</span><span class="n">expected_deaths</span><span class="p">),</span>
+    <span class="n">obs</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">deaths_obs</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Convolution Details</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pad(injuries_total,</span> <span class="pre">(0,</span> <span class="pre">L))</span></code>: Pads array on the right to avoid index errors</p></li>
+<li><p>Loop over delay lags: Each iteration adds contribution from injuries <span class="math notranslate nohighlight">\(k\)</span> days ago</p></li>
+<li><p>Result: <span class="math notranslate nohighlight">\(\sum_{k=1}^L I_{t-k} f_k\)</span> for each day <span class="math notranslate nohighlight">\(t\)</span></p></li>
+</ul>
+<p><strong>Why not use <code class="docutils literal notranslate"><span class="pre">jnp.convolve()</span></code>?</strong> The standard convolution function doesn’t handle the temporal indexing we need (deaths from past injuries), so we implement it manually with a loop.</p>
+</section>
+</section>
+<section id="running-inference">
+<h2>3. Running Inference<a class="headerlink" href="#running-inference" title="Link to this heading"></a></h2>
+<section id="preparing-data">
+<h3>3.1 Preparing Data<a class="headerlink" href="#preparing-data" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">trace.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_example_acled_data</span><span class="p">,</span> <span class="n">prepare_acled_events</span>
+
+<span class="c1"># Load ACLED data</span>
+<span class="n">events_df</span> <span class="o">=</span> <span class="n">load_example_acled_data</span><span class="p">()</span>
+
+<span class="c1"># Prepare for modeling</span>
+<span class="n">events_by_day</span><span class="p">,</span> <span class="n">event_days</span><span class="p">,</span> <span class="n">event_coords</span><span class="p">,</span> <span class="n">dates</span> <span class="o">=</span> <span class="n">prepare_acled_events</span><span class="p">(</span>
+    <span class="n">events_df</span><span class="p">,</span>
+    <span class="n">start_date</span><span class="o">=</span><span class="s2">&quot;2023-10-07&quot;</span><span class="p">,</span>
+    <span class="n">end_date</span><span class="o">=</span><span class="s2">&quot;2023-12-31&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Hospital coordinates (example)</span>
+<span class="n">hospital_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+    <span class="p">[</span><span class="mf">31.5</span><span class="p">,</span> <span class="mf">34.45</span><span class="p">],</span>   <span class="c1"># Gaza City</span>
+    <span class="p">[</span><span class="mf">31.35</span><span class="p">,</span> <span class="mf">34.30</span><span class="p">],</span>  <span class="c1"># Khan Younis</span>
+    <span class="p">[</span><span class="mf">31.28</span><span class="p">,</span> <span class="mf">34.25</span><span class="p">],</span>  <span class="c1"># Rafah</span>
+<span class="p">])</span>
+
+<span class="c1"># Load injuries and deaths (from your data sources)</span>
+<span class="n">injuries_obs</span> <span class="o">=</span> <span class="n">load_hospital_data</span><span class="p">(</span><span class="s2">&quot;hospital_data.csv&quot;</span><span class="p">)</span>
+<span class="n">deaths_obs</span> <span class="o">=</span> <span class="n">load_mortality_data</span><span class="p">(</span><span class="s2">&quot;deaths.csv&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="specifying-priors">
+<h3>3.2 Specifying Priors<a class="headerlink" href="#specifying-priors" title="Link to this heading"></a></h3>
+<p>Default priors are built into the model, but you can modify them by editing <code class="docutils literal notranslate"><span class="pre">trace.model.casualty_model()</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># More informative prior based on domain knowledge</span>
+<span class="n">mu_w</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;mu_w&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>  <span class="c1"># Mean 5, SD 1</span>
+
+<span class="c1"># Tighter prior on hospital fatality rate</span>
+<span class="n">p_late</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;p_late&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Beta</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span>  <span class="c1"># Mean 0.2, tighter</span>
+</pre></div>
+</div>
+</section>
+<section id="running-mcmc">
+<h3>3.3 Running MCMC<a class="headerlink" href="#running-mcmc" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">trace.analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_inference</span>
+
+<span class="n">mcmc</span><span class="p">,</span> <span class="n">samples</span> <span class="o">=</span> <span class="n">run_inference</span><span class="p">(</span>
+    <span class="n">events_by_day</span><span class="o">=</span><span class="n">events_by_day</span><span class="p">,</span>
+    <span class="n">event_day_index</span><span class="o">=</span><span class="n">event_days</span><span class="p">,</span>
+    <span class="n">event_coords</span><span class="o">=</span><span class="n">event_coords</span><span class="p">,</span>
+    <span class="n">hospital_coords</span><span class="o">=</span><span class="n">hospital_coords</span><span class="p">,</span>
+    <span class="n">injuries_obs</span><span class="o">=</span><span class="n">injuries_obs</span><span class="p">,</span>
+    <span class="n">deaths_obs</span><span class="o">=</span><span class="n">deaths_obs</span><span class="p">,</span>
+    <span class="n">num_warmup</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+    <span class="n">num_samples</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span>
+    <span class="n">num_chains</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">rng_seed</span><span class="o">=</span><span class="mi">42</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Recommended Settings</strong>:</p>
+<ul class="simple">
+<li><p><strong>Development</strong>: <code class="docutils literal notranslate"><span class="pre">num_warmup=500,</span> <span class="pre">num_samples=1000,</span> <span class="pre">num_chains=1</span></code> (fast iteration)</p></li>
+<li><p><strong>Production</strong>: <code class="docutils literal notranslate"><span class="pre">num_warmup=2000,</span> <span class="pre">num_samples=4000,</span> <span class="pre">num_chains=4</span></code> (robust inference)</p></li>
+<li><p><strong>Publication</strong>: <code class="docutils literal notranslate"><span class="pre">num_warmup=5000,</span> <span class="pre">num_samples=10000,</span> <span class="pre">num_chains=4</span></code> (high precision)</p></li>
+</ul>
+</section>
+<section id="accessing-results">
+<h3>3.4 Accessing Results<a class="headerlink" href="#accessing-results" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Posterior means</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;mu_w: </span><span class="si">{</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;mu_w&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;mu_i: </span><span class="si">{</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;mu_i&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;p_late: </span><span class="si">{</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;p_late&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ell: </span><span class="si">{</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;ell&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Credible intervals</span>
+<span class="n">mu_w_ci</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;mu_w&#39;</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">97.5</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;95% CI for mu_w: [</span><span class="si">{</span><span class="n">mu_w_ci</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">mu_w_ci</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+
+<span class="c1"># Full summary</span>
+<span class="n">mcmc</span><span class="o">.</span><span class="n">print_summary</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="computational-considerations">
+<h2>4. Computational Considerations<a class="headerlink" href="#computational-considerations" title="Link to this heading"></a></h2>
+<section id="performance-optimization">
+<h3>4.1 Performance Optimization<a class="headerlink" href="#performance-optimization" title="Link to this heading"></a></h3>
+<p><strong>GPU Acceleration</strong>: If a CUDA-compatible GPU is available:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span><span class="s2">&quot;jax[cuda12_pip]&quot;</span><span class="w"> </span>-f<span class="w"> </span>https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+</pre></div>
+</div>
+<p>JAX will automatically use the GPU, providing 10-100x speedup.</p>
+<p><strong>Multiple Chains in Parallel</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpyro</span>
+<span class="n">numpyro</span><span class="o">.</span><span class="n">set_host_device_count</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>  <span class="c1"># Use 4 CPU cores for parallel chains</span>
+</pre></div>
+</div>
+<p><strong>JIT Compilation</strong>: NumPyro automatically JIT-compiles the model. First run will be slow (compilation), subsequent runs are fast.</p>
+</section>
+<section id="memory-management">
+<h3>4.2 Memory Management<a class="headerlink" href="#memory-management" title="Link to this heading"></a></h3>
+<p>For large datasets:</p>
+<ul class="simple">
+<li><p><strong>Subsample</strong>: Fit model to a subset of time period initially</p></li>
+<li><p><strong>Batch Processing</strong>: Process multiple regions separately, then combine</p></li>
+<li><p><strong>Thinning</strong>: Keep every <span class="math notranslate nohighlight">\(k\)</span>-th MCMC sample to reduce memory</p></li>
+</ul>
+</section>
+<section id="convergence-diagnostics">
+<h3>4.3 Convergence Diagnostics<a class="headerlink" href="#convergence-diagnostics" title="Link to this heading"></a></h3>
+<p>Check convergence after every run:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">arviz</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">az</span>
+
+<span class="c1"># Convert to ArviZ format</span>
+<span class="n">idata</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">from_numpyro</span><span class="p">(</span><span class="n">mcmc</span><span class="p">)</span>
+
+<span class="c1"># Diagnostics</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">az</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">idata</span><span class="p">))</span>
+
+<span class="c1"># Rhat should be &lt; 1.01</span>
+<span class="k">assert</span> <span class="p">(</span><span class="n">az</span><span class="o">.</span><span class="n">rhat</span><span class="p">(</span><span class="n">idata</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1.01</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> <span class="s2">&quot;Chains have not converged!&quot;</span>
+
+<span class="c1"># Effective sample size should be &gt; 100 per chain</span>
+<span class="k">assert</span> <span class="p">(</span><span class="n">az</span><span class="o">.</span><span class="n">ess</span><span class="p">(</span><span class="n">idata</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> <span class="s2">&quot;Insufficient effective samples!&quot;</span>
+</pre></div>
+</div>
+<p><strong>Trace Plots</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">az</span><span class="o">.</span><span class="n">plot_trace</span><span class="p">(</span><span class="n">idata</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;trace_plot.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Look for:</p>
+<ul class="simple">
+<li><p><strong>Stationarity</strong>: No trends or drift</p></li>
+<li><p><strong>Mixing</strong>: Rapid exploration of parameter space</p></li>
+<li><p><strong>Between-chain agreement</strong>: Multiple chains should overlap</p></li>
+</ul>
+</section>
+</section>
+<section id="posterior-predictive-sampling">
+<h2>5. Posterior Predictive Sampling<a class="headerlink" href="#posterior-predictive-sampling" title="Link to this heading"></a></h2>
+<p>Generate predictions from the posterior:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">trace.analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">posterior_predictive</span>
+
+<span class="n">preds</span> <span class="o">=</span> <span class="n">posterior_predictive</span><span class="p">(</span>
+    <span class="n">samples</span><span class="o">=</span><span class="n">samples</span><span class="p">,</span>
+    <span class="n">events_by_day</span><span class="o">=</span><span class="n">events_by_day</span><span class="p">,</span>
+    <span class="n">event_day_index</span><span class="o">=</span><span class="n">event_days</span><span class="p">,</span>
+    <span class="n">event_coords</span><span class="o">=</span><span class="n">event_coords</span><span class="p">,</span>
+    <span class="n">hospital_coords</span><span class="o">=</span><span class="n">hospital_coords</span><span class="p">,</span>
+    <span class="n">injuries_obs_shape</span><span class="o">=</span><span class="n">injuries_obs</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+    <span class="n">deaths_obs_shape</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">deaths_obs</span><span class="p">),</span>
+    <span class="n">delay_probs</span><span class="o">=</span><span class="n">delay_probs</span><span class="p">,</span>
+    <span class="n">rng_seed</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+
+<span class="c1"># preds[&#39;obs_injuries&#39;]: (num_samples, T, H)</span>
+<span class="c1"># preds[&#39;obs_deaths&#39;]: (num_samples, T)</span>
+
+<span class="c1"># Compute credible intervals</span>
+<span class="n">deaths_median</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">preds</span><span class="p">[</span><span class="s1">&#39;obs_deaths&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">deaths_lower</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">preds</span><span class="p">[</span><span class="s1">&#39;obs_deaths&#39;</span><span class="p">],</span> <span class="mf">2.5</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">deaths_upper</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">preds</span><span class="p">[</span><span class="s1">&#39;obs_deaths&#39;</span><span class="p">],</span> <span class="mf">97.5</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="forecasting">
+<h2>6. Forecasting<a class="headerlink" href="#forecasting" title="Link to this heading"></a></h2>
+<p>Project future casualties under scenarios:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">trace.analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">forecast</span>
+
+<span class="c1"># Scenario: Continue with 2 events per day</span>
+<span class="n">future_events</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+
+<span class="n">forecast_results</span> <span class="o">=</span> <span class="n">forecast</span><span class="p">(</span>
+    <span class="n">samples</span><span class="o">=</span><span class="n">samples</span><span class="p">,</span>
+    <span class="n">future_events_by_day</span><span class="o">=</span><span class="n">future_events</span><span class="p">,</span>
+    <span class="n">delay_probs</span><span class="o">=</span><span class="n">delay_probs</span>
+<span class="p">)</span>
+
+<span class="c1"># Results contain median and credible intervals</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">forecast_results</span><span class="p">[</span><span class="s1">&#39;deaths_median&#39;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">forecast_results</span><span class="p">[</span><span class="s1">&#39;deaths_lower&#39;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">forecast_results</span><span class="p">[</span><span class="s1">&#39;deaths_upper&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+<section id="model-extensions">
+<h2>7. Model Extensions<a class="headerlink" href="#model-extensions" title="Link to this heading"></a></h2>
+<section id="time-varying-parameters">
+<h3>7.1 Time-Varying Parameters<a class="headerlink" href="#time-varying-parameters" title="Link to this heading"></a></h3>
+<p>Modify the model to include covariates:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">trace.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">casualty_model_with_covariates</span>
+
+<span class="c1"># Define intervention indicator</span>
+<span class="n">ceasefire</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+<span class="n">ceasefire</span><span class="p">[</span><span class="mi">60</span><span class="p">:</span><span class="mi">90</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Ceasefire days 60-90</span>
+
+<span class="n">covariates</span> <span class="o">=</span> <span class="n">ceasefire</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">mcmc</span><span class="p">,</span> <span class="n">samples</span> <span class="o">=</span> <span class="n">run_inference_with_covariates</span><span class="p">(</span>
+    <span class="o">...</span><span class="p">,</span>
+    <span class="n">covariates</span><span class="o">=</span><span class="n">covariates</span>
+<span class="p">)</span>
+
+<span class="c1"># Coefficient interpretation</span>
+<span class="n">beta</span> <span class="o">=</span> <span class="n">samples</span><span class="p">[</span><span class="s1">&#39;beta&#39;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># Effect of ceasefire</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Ceasefire effect: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">beta</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">x multiplier&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="multiple-regions">
+<h3>7.2 Multiple Regions<a class="headerlink" href="#multiple-regions" title="Link to this heading"></a></h3>
+<p>For hierarchical models across regions, see <a class="reference internal" href="#05_partial_pooling.md"><span class="xref myst">Partial Pooling</span></a>.</p>
+</section>
+<section id="negative-binomial">
+<h3>7.3 Negative Binomial<a class="headerlink" href="#negative-binomial" title="Link to this heading"></a></h3>
+<p>To handle overdispersion, replace Poisson with Negative Binomial in the model code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Instead of:</span>
+<span class="c1"># numpyro.sample(&quot;obs_deaths&quot;, dist.Poisson(expected_deaths), obs=deaths_obs)</span>
+
+<span class="c1"># Use:</span>
+<span class="n">phi</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;phi_deaths&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Gamma</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+<span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>
+    <span class="s2">&quot;obs_deaths&quot;</span><span class="p">,</span>
+    <span class="n">dist</span><span class="o">.</span><span class="n">NegativeBinomial2</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="n">expected_deaths</span><span class="p">,</span> <span class="n">concentration</span><span class="o">=</span><span class="n">phi</span><span class="p">),</span>
+    <span class="n">obs</span><span class="o">=</span><span class="n">deaths_obs</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="debugging-tips">
+<h2>8. Debugging Tips<a class="headerlink" href="#debugging-tips" title="Link to this heading"></a></h2>
+<section id="prior-predictive-checks">
+<h3>8.1 Prior Predictive Checks<a class="headerlink" href="#prior-predictive-checks" title="Link to this heading"></a></h3>
+<p>Sample from the prior (before seeing data):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">numpyro.infer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Predictive</span>
+
+<span class="n">prior_pred</span> <span class="o">=</span> <span class="n">Predictive</span><span class="p">(</span><span class="n">casualty_model</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">prior_samples</span> <span class="o">=</span> <span class="n">prior_pred</span><span class="p">(</span>
+    <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
+    <span class="n">events_by_day</span><span class="o">=</span><span class="n">events_by_day</span><span class="p">,</span>
+    <span class="n">event_day_index</span><span class="o">=</span><span class="n">event_days</span><span class="p">,</span>
+    <span class="n">event_coords</span><span class="o">=</span><span class="n">event_coords</span><span class="p">,</span>
+    <span class="n">hospital_coords</span><span class="o">=</span><span class="n">hospital_coords</span><span class="p">,</span>
+    <span class="n">injuries_obs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># Don&#39;t condition on data</span>
+    <span class="n">deaths_obs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">delay_probs</span><span class="o">=</span><span class="n">delay_probs</span>
+<span class="p">)</span>
+
+<span class="c1"># Check if prior predictions are reasonable</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Prior predictive deaths: </span><span class="si">{</span><span class="n">prior_samples</span><span class="p">[</span><span class="s1">&#39;obs_deaths&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If prior predictions are wildly unrealistic, adjust priors.</p>
+</section>
+<section id="initialization-failures">
+<h3>8.2 Initialization Failures<a class="headerlink" href="#initialization-failures" title="Link to this heading"></a></h3>
+<p>If you see “initial energy is NaN” or similar errors:</p>
+<ol class="arabic simple">
+<li><p><strong>Check data</strong>: Ensure no NaN or inf values</p></li>
+<li><p><strong>Numerical stability</strong>: Add small epsilon to rates (already done in code)</p></li>
+<li><p><strong>Prior support</strong>: Ensure priors match parameter constraints</p></li>
+<li><p><strong>Initialization</strong>: Try different random seeds</p></li>
+</ol>
+</section>
+<section id="divergences">
+<h3>8.3 Divergences<a class="headerlink" href="#divergences" title="Link to this heading"></a></h3>
+<p>If MCMC reports divergent transitions:</p>
+<ol class="arabic simple">
+<li><p><strong>Increase target acceptance</strong>: <code class="docutils literal notranslate"><span class="pre">target_accept_prob=0.9</span></code> (default is 0.8)</p></li>
+<li><p><strong>Reparameterize</strong>: Use non-centered parameterizations for hierarchical models</p></li>
+<li><p><strong>Stronger priors</strong>: More informative priors can help with difficult geometries</p></li>
+</ol>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">kernel</span> <span class="o">=</span> <span class="n">NUTS</span><span class="p">(</span><span class="n">casualty_model</span><span class="p">,</span> <span class="n">target_accept_prob</span><span class="o">=</span><span class="mf">0.95</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="code-reference">
+<h2>9. Code Reference<a class="headerlink" href="#code-reference" title="Link to this heading"></a></h2>
+<p>All model code is available in:</p>
+<ul class="simple">
+<li><p><strong>Core model</strong>: <code class="docutils literal notranslate"><span class="pre">src/trace/model.py</span></code></p></li>
+<li><p><strong>Inference wrapper</strong>: <code class="docutils literal notranslate"><span class="pre">src/trace/analysis.py</span></code></p></li>
+<li><p><strong>Data preparation</strong>: <code class="docutils literal notranslate"><span class="pre">src/trace/data.py</span></code></p></li>
+<li><p><strong>Simulation</strong>: <code class="docutils literal notranslate"><span class="pre">src/trace/simulate.py</span></code></p></li>
+</ul>
+<p>See the <a class="reference internal" href="../api/model.html"><span class="std std-doc">API Documentation</span></a> for complete function signatures.</p>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>NumPyro Documentation</strong>: https://num.pyro.ai</p></li>
+<li><p><strong>JAX Documentation</strong>: https://jax.readthedocs.io</p></li>
+<li><p><strong>NUTS Algorithm</strong> <span id="id1">[<a class="reference internal" href="02_description.html#id7" title="Matthew D Hoffman and Andrew Gelman. The no-u-turn sampler: adaptively setting path lengths in hamiltonian monte carlo. Journal of Machine Learning Research, 15(1):1593–1623, 2014.">Hoffman and Gelman, 2014</a>]</span></p></li>
+<li><p><strong>Bayesian Workflow</strong> <span id="id2">[]</span></p></li>
+</ul>
+<hr class="docutils" />
+<p><em>Next: <a class="reference internal" href="#04_schematic.md"><span class="xref myst">Model Schematic</span></a> provides visual diagrams of the model structure.</em></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="02_description.html" class="btn btn-neutral float-left" title="Model Description" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../tutorials/01_basic_example.html" class="btn btn-neutral float-right" title="Tutorial: Basic Example with Simulated Data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, OJ Watson.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,624 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>trace.data &mdash; TRACE 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            TRACE
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Model Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../model/00_overview.html">Model Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../model/01_background.html">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../model/02_description.html">Model Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../model/03_implementation.html">Model Implementation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/01_basic_example.html">Tutorial: Basic Example with Simulated Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/02_gaza_analysis.html">Tutorial: Gaza Conflict Casualty Analysis</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/data.html">Data Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/model.html">Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/simulate.html">Simulate Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/analysis.html">Analysis Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Additional Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">TRACE</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">trace.data</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for trace.data</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Data handling module for TRACE.</span>
+
+<span class="sd">This module provides functions to fetch and prepare conflict event data from ACLED,</span>
+<span class="sd">as well as utilities for loading hospital and mortality data.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+
+<div class="viewcode-block" id="fetch_acled_data">
+<a class="viewcode-back" href="../../api/data.html#trace.data.fetch_acled_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fetch_acled_data</span><span class="p">(</span>
+    <span class="n">country</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">api_token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">fields</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">api_email</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fetch ACLED conflict event data for a given country and date range.</span>
+
+<span class="sd">    ACLED (Armed Conflict Location &amp; Event Data Project) provides detailed information</span>
+<span class="sd">    on political violence and protest events. This function queries the ACLED API</span>
+<span class="sd">    and returns a pandas DataFrame with event data.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    country : str</span>
+<span class="sd">        Country name (e.g., &quot;Palestine&quot;, &quot;Ukraine&quot;, &quot;Syria&quot;)</span>
+<span class="sd">    start_date : str</span>
+<span class="sd">        Start date in format &quot;YYYY-MM-DD&quot;</span>
+<span class="sd">    end_date : str</span>
+<span class="sd">        End date in format &quot;YYYY-MM-DD&quot;</span>
+<span class="sd">    api_token : str, optional</span>
+<span class="sd">        ACLED API access token. Required for full API access.</span>
+<span class="sd">        Register at https://developer.acleddata.com/</span>
+<span class="sd">    fields : list of str, optional</span>
+<span class="sd">        Specific fields to retrieve. If None, returns all available fields.</span>
+<span class="sd">    api_email : str, optional</span>
+<span class="sd">        Email associated with ACLED API account</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pd.DataFrame</span>
+<span class="sd">        DataFrame with columns including:</span>
+<span class="sd">        - event_date: Date of the event</span>
+<span class="sd">        - latitude: Latitude coordinate</span>
+<span class="sd">        - longitude: Longitude coordinate</span>
+<span class="sd">        - fatalities: Number of reported fatalities</span>
+<span class="sd">        - event_type: Type of conflict event</span>
+<span class="sd">        - notes: Description of the event</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; events_df = fetch_acled_data(</span>
+<span class="sd">    ...     country=&quot;Palestine&quot;,</span>
+<span class="sd">    ...     start_date=&quot;2023-01-01&quot;,</span>
+<span class="sd">    ...     end_date=&quot;2023-12-31&quot;,</span>
+<span class="sd">    ...     api_token=&quot;YOUR_TOKEN&quot;,</span>
+<span class="sd">    ...     api_email=&quot;your@email.com&quot;</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &gt;&gt;&gt; print(events_df.head())</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - API access requires registration at https://developer.acleddata.com/</span>
+<span class="sd">    - Free tier has rate limits; check ACLED documentation for details</span>
+<span class="sd">    - The API returns JSON data which is converted to a DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">base_url</span> <span class="o">=</span> <span class="s2">&quot;https://api.acleddata.com/acled/read&quot;</span>
+
+    <span class="c1"># Build query parameters</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;country&quot;</span><span class="p">:</span> <span class="n">country</span><span class="p">,</span>
+        <span class="s2">&quot;event_date&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">start_date</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="n">end_date</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;event_date_where&quot;</span><span class="p">:</span> <span class="s2">&quot;BETWEEN&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>  <span class="c1"># 0 means no limit (retrieve all records in range)</span>
+        <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">fields</span><span class="p">:</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;fields&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">api_token</span><span class="p">:</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">api_token</span>
+
+    <span class="k">if</span> <span class="n">api_email</span><span class="p">:</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">api_email</span>
+
+    <span class="c1"># Acknowledge terms of use</span>
+    <span class="n">params</span><span class="p">[</span><span class="s2">&quot;terms&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;accept&quot;</span>
+
+    <span class="c1"># Make the GET request to ACLED API</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">base_url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+    <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to fetch ACLED data: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+    <span class="c1"># The JSON structure typically contains a list of event records under &#39;data&#39; key</span>
+    <span class="n">events</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="p">[])</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">events</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: No events found for </span><span class="si">{</span><span class="n">country</span><span class="si">}</span><span class="s2"> between </span><span class="si">{</span><span class="n">start_date</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">end_date</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+
+    <span class="c1"># Convert to DataFrame</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">events</span><span class="p">)</span>
+
+    <span class="c1"># Ensure date is in datetime format</span>
+    <span class="k">if</span> <span class="s2">&quot;event_date&quot;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;event_date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;event_date&quot;</span><span class="p">])</span>
+
+    <span class="c1"># Convert numeric fields from string to numeric types if needed</span>
+    <span class="n">num_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;fatalities&quot;</span><span class="p">,</span> <span class="s2">&quot;latitude&quot;</span><span class="p">,</span> <span class="s2">&quot;longitude&quot;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">num_fields</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">df</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">field</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;coerce&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+
+<div class="viewcode-block" id="prepare_acled_events">
+<a class="viewcode-back" href="../../api/data.html#trace.data.prepare_acled_events">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">prepare_acled_events</span><span class="p">(</span>
+    <span class="n">events_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DatetimeIndex</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prepare ACLED events DataFrame for modeling.</span>
+
+<span class="sd">    This function transforms raw ACLED event data into the format required by</span>
+<span class="sd">    the casualty model: daily event counts, event-day mappings, and coordinates.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    events_df : pd.DataFrame</span>
+<span class="sd">        DataFrame from fetch_acled_data with event information</span>
+<span class="sd">    start_date : str</span>
+<span class="sd">        Start date of analysis period in format &quot;YYYY-MM-DD&quot;</span>
+<span class="sd">    end_date : str</span>
+<span class="sd">        End date of analysis period in format &quot;YYYY-MM-DD&quot;</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    events_by_day : list of int</span>
+<span class="sd">        Array of length T with number of events per day</span>
+<span class="sd">    event_days : list of int</span>
+<span class="sd">        Array of day indices (0..T-1) for each event in the dataset</span>
+<span class="sd">    event_coords : np.ndarray</span>
+<span class="sd">        Array of shape (E, 2) with (latitude, longitude) for each event</span>
+<span class="sd">    dates : pd.DatetimeIndex</span>
+<span class="sd">        DatetimeIndex of actual dates corresponding to each time index</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; events_by_day, event_days, event_coords, dates = prepare_acled_events(</span>
+<span class="sd">    ...     events_df, &quot;2023-01-01&quot;, &quot;2023-12-31&quot;</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &gt;&gt;&gt; print(f&quot;Total days: {len(events_by_day)}&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; print(f&quot;Total events: {len(event_days)}&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Create a date range for the analysis period</span>
+    <span class="n">dates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">&quot;D&quot;</span><span class="p">)</span>
+    <span class="n">date_to_index</span> <span class="o">=</span> <span class="p">{</span><span class="n">d</span><span class="p">:</span> <span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dates</span><span class="p">)}</span>
+    <span class="n">n_days</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span>
+
+    <span class="c1"># Filter events to within the specified range</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">events_df</span><span class="p">[</span><span class="s2">&quot;event_date&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">start_date</span><span class="p">))</span> <span class="o">&amp;</span> <span class="p">(</span>
+        <span class="n">events_df</span><span class="p">[</span><span class="s2">&quot;event_date&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">end_date</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">events_df</span> <span class="o">=</span> <span class="n">events_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">events_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;event_date&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Map each event&#39;s date to an index in 0..T-1</span>
+    <span class="n">event_days</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">events_df</span><span class="p">[</span><span class="s2">&quot;event_date&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">date_to_index</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">normalize</span><span class="p">(),</span> <span class="kc">None</span><span class="p">))</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Remove any events that fall outside the known date range (None indices)</span>
+    <span class="n">valid_idx</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span> <span class="n">day</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">day</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">event_days</span><span class="p">)</span> <span class="k">if</span> <span class="n">day</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">valid_idx</span><span class="p">:</span>
+        <span class="c1"># If no valid events in range, return empty structures</span>
+        <span class="k">return</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_days</span><span class="p">,</span> <span class="p">[],</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">dates</span>
+
+    <span class="n">indices</span><span class="p">,</span> <span class="n">event_days</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">valid_idx</span><span class="p">)</span>
+    <span class="n">event_days</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">event_days</span><span class="p">)</span>
+
+    <span class="c1"># Extract coordinates for each valid event</span>
+    <span class="k">if</span> <span class="s2">&quot;latitude&quot;</span> <span class="ow">in</span> <span class="n">events_df</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="s2">&quot;longitude&quot;</span> <span class="ow">in</span> <span class="n">events_df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="n">events_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">events_df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">indices</span><span class="p">)],</span> <span class="p">[</span><span class="s2">&quot;latitude&quot;</span><span class="p">,</span> <span class="s2">&quot;longitude&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># Compute daily event counts</span>
+    <span class="n">events_by_day</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_days</span>
+    <span class="k">for</span> <span class="n">day</span> <span class="ow">in</span> <span class="n">event_days</span><span class="p">:</span>
+        <span class="n">events_by_day</span><span class="p">[</span><span class="n">day</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">events_by_day</span><span class="p">,</span> <span class="n">event_days</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">dates</span></div>
+
+
+
+<div class="viewcode-block" id="load_hospital_data">
+<a class="viewcode-back" href="../../api/data.html#trace.data.load_hospital_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_hospital_data</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load daily hospital casualty incidence data from a CSV file.</span>
+
+<span class="sd">    The file is expected to have columns: &#39;date&#39;, &#39;hospital_id&#39;, &#39;count&#39;.</span>
+<span class="sd">    Returns a pandas DataFrame pivoted to shape (date x hospital).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filepath : str</span>
+<span class="sd">        Path to CSV file containing hospital data</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pd.DataFrame</span>
+<span class="sd">        DataFrame with dates as index and hospital IDs as columns,</span>
+<span class="sd">        containing daily casualty counts</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; hospital_df = load_hospital_data(&quot;hospital_admissions.csv&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; print(hospital_df.shape)  # (num_days, num_hospitals)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">])</span>
+
+    <span class="c1"># Pivot to get each hospital as a column, dates as index</span>
+    <span class="n">df_pivot</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s2">&quot;hospital_id&quot;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s2">&quot;count&quot;</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Ensure sorted by date</span>
+    <span class="n">df_pivot</span> <span class="o">=</span> <span class="n">df_pivot</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">df_pivot</span></div>
+
+
+
+<div class="viewcode-block" id="load_national_deaths">
+<a class="viewcode-back" href="../../api/data.html#trace.data.load_national_deaths">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_national_deaths</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load daily national death counts from a CSV file.</span>
+
+<span class="sd">    The file should have columns: &#39;date&#39;, &#39;deaths&#39;.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filepath : str</span>
+<span class="sd">        Path to CSV file containing mortality data</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pd.Series</span>
+<span class="sd">        Series indexed by date with daily death counts</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; deaths_series = load_national_deaths(&quot;mortality_data.csv&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; print(deaths_series.head())</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">])</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">deaths_series</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;deaths&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">deaths_series</span></div>
+
+
+
+<div class="viewcode-block" id="create_hospital_coordinates">
+<a class="viewcode-back" href="../../api/data.html#trace.data.create_hospital_coordinates">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_hospital_coordinates</span><span class="p">(</span>
+    <span class="n">hospital_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">locations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create hospital coordinate array for spatial modeling.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    hospital_ids : list of str</span>
+<span class="sd">        List of hospital identifiers</span>
+<span class="sd">    locations : dict, optional</span>
+<span class="sd">        Dictionary mapping hospital_id to (latitude, longitude) tuples.</span>
+<span class="sd">        If None, generates random locations for testing.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.ndarray</span>
+<span class="sd">        Array of shape (H, 2) with (latitude, longitude) for each hospital</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; coords = create_hospital_coordinates(</span>
+<span class="sd">    ...     [&quot;H1&quot;, &quot;H2&quot;, &quot;H3&quot;],</span>
+<span class="sd">    ...     {&quot;H1&quot;: (31.5, 34.5), &quot;H2&quot;: (31.6, 34.6), &quot;H3&quot;: (31.4, 34.4)}</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">locations</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Generate random locations for testing</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning: No locations provided, generating random coordinates&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">hospital_ids</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
+
+    <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">locations</span><span class="p">[</span><span class="n">hid</span><span class="p">]</span> <span class="k">for</span> <span class="n">hid</span> <span class="ow">in</span> <span class="n">hospital_ids</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">coords</span></div>
+
+
+
+<div class="viewcode-block" id="load_example_acled_data">
+<a class="viewcode-back" href="../../api/data.html#trace.data.load_example_acled_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_example_acled_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load example ACLED data included with the package.</span>
+
+<span class="sd">    This function loads a sample ACLED dataset for Palestine that is</span>
+<span class="sd">    included with the package for demonstration and testing purposes.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pd.DataFrame</span>
+<span class="sd">        DataFrame with ACLED event data</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; events_df = load_example_acled_data()</span>
+<span class="sd">    &gt;&gt;&gt; print(f&quot;Loaded {len(events_df)} events&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; print(events_df.columns.tolist())</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get the path to the data file</span>
+    <span class="n">package_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
+    <span class="n">data_file</span> <span class="o">=</span> <span class="n">package_dir</span> <span class="o">/</span> <span class="s2">&quot;data_files&quot;</span> <span class="o">/</span> <span class="s2">&quot;acled_example.csv&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">data_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Example ACLED data file not found at </span><span class="si">{</span><span class="n">data_file</span><span class="si">}</span><span class="s2">. &quot;</span>
+            <span class="s2">&quot;Please ensure the package is properly installed.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Load the CSV</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">data_file</span><span class="p">)</span>
+
+    <span class="c1"># Ensure date is in datetime format</span>
+    <span class="k">if</span> <span class="s2">&quot;event_date&quot;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;event_date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;event_date&quot;</span><span class="p">])</span>
+
+    <span class="c1"># Convert numeric fields</span>
+    <span class="n">num_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;fatalities&quot;</span><span class="p">,</span> <span class="s2">&quot;latitude&quot;</span><span class="p">,</span> <span class="s2">&quot;longitude&quot;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">num_fields</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">df</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">field</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;coerce&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+
+<div class="viewcode-block" id="fetch_palestine_mortality_data">
+<a class="viewcode-back" href="../../api/data.html#trace.data.fetch_palestine_mortality_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fetch_palestine_mortality_data</span><span class="p">(</span>
+    <span class="n">start_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fetch daily mortality data for Gaza from Tech for Palestine.</span>
+
+<span class="sd">    This function retrieves daily casualty reports from the Tech for Palestine</span>
+<span class="sd">    dataset, which aggregates data from Gaza&#39;s Ministry of Health and Government</span>
+<span class="sd">    Media Office.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    start_date : str, optional</span>
+<span class="sd">        Start date in format &quot;YYYY-MM-DD&quot;. If None, returns all available data.</span>
+<span class="sd">    end_date : str, optional</span>
+<span class="sd">        End date in format &quot;YYYY-MM-DD&quot;. If None, returns all available data.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pd.DataFrame</span>
+<span class="sd">        DataFrame with columns:</span>
+<span class="sd">        - report_date: Date of the report</span>
+<span class="sd">        - killed: Daily deaths (if available)</span>
+<span class="sd">        - killed_cum: Cumulative deaths</span>
+<span class="sd">        - injured: Daily injuries (if available)</span>
+<span class="sd">        - injured_cum: Cumulative injuries</span>
+<span class="sd">        - ext_killed: Extrapolated daily deaths</span>
+<span class="sd">        - ext_injured: Extrapolated daily injuries</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; mortality_df = fetch_palestine_mortality_data(</span>
+<span class="sd">    ...     start_date=&quot;2023-10-07&quot;,</span>
+<span class="sd">    ...     end_date=&quot;2023-12-31&quot;</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &gt;&gt;&gt; print(f&quot;Loaded {len(mortality_df)} days of mortality data&quot;)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - Data is from https://data.techforpalestine.org/</span>
+<span class="sd">    - Numbers include only direct casualties of war</span>
+<span class="sd">    - Extrapolated fields (ext_*) fill gaps in official reporting</span>
+<span class="sd">    - Data is updated daily (morning Eastern time)</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    - Dataset documentation: https://data.techforpalestine.org/docs/casualties-daily/</span>
+<span class="sd">    - Ministry of Health methodology: https://www.dropsitenews.com/p/how-gaza-health-ministry-counts-dead</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://data.techforpalestine.org/api/v2/casualties_daily.csv&quot;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+    <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to fetch Palestine mortality data: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Read CSV from response content</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">StringIO</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">StringIO</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">))</span>
+
+    <span class="c1"># Convert report_date to datetime</span>
+    <span class="k">if</span> <span class="s2">&quot;report_date&quot;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;report_date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;report_date&quot;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="s2">&quot;date&quot;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;report_date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">])</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="s2">&quot;report_date&quot;</span><span class="p">})</span>
+
+    <span class="c1"># Filter by date range if specified</span>
+    <span class="k">if</span> <span class="n">start_date</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;report_date&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">start_date</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">end_date</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;report_date&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">end_date</span><span class="p">)]</span>
+
+    <span class="c1"># Sort by date</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;report_date&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+
+<div class="viewcode-block" id="prepare_mortality_data">
+<a class="viewcode-back" href="../../api/data.html#trace.data.prepare_mortality_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">prepare_mortality_data</span><span class="p">(</span>
+    <span class="n">mortality_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">use_extrapolated</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prepare mortality data for modeling.</span>
+
+<span class="sd">    Converts a mortality DataFrame into a daily time series aligned with</span>
+<span class="sd">    the analysis period.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mortality_df : pd.DataFrame</span>
+<span class="sd">        DataFrame from fetch_palestine_mortality_data()</span>
+<span class="sd">    start_date : str</span>
+<span class="sd">        Start date of analysis period in format &quot;YYYY-MM-DD&quot;</span>
+<span class="sd">    end_date : str</span>
+<span class="sd">        End date of analysis period in format &quot;YYYY-MM-DD&quot;</span>
+<span class="sd">    use_extrapolated : bool, default=True</span>
+<span class="sd">        If True, uses extrapolated daily deaths (ext_killed) to fill gaps.</span>
+<span class="sd">        If False, uses only official daily deaths (killed).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pd.Series</span>
+<span class="sd">        Series indexed by date with daily death counts</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; mortality_df = fetch_palestine_mortality_data()</span>
+<span class="sd">    &gt;&gt;&gt; deaths_series = prepare_mortality_data(</span>
+<span class="sd">    ...     mortality_df, &quot;2023-10-07&quot;, &quot;2023-12-31&quot;</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Create date range for analysis period</span>
+    <span class="n">dates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">&quot;D&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Choose which field to use</span>
+    <span class="k">if</span> <span class="n">use_extrapolated</span> <span class="ow">and</span> <span class="s2">&quot;ext_killed&quot;</span> <span class="ow">in</span> <span class="n">mortality_df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">death_field</span> <span class="o">=</span> <span class="s2">&quot;ext_killed&quot;</span>
+    <span class="k">elif</span> <span class="s2">&quot;killed&quot;</span> <span class="ow">in</span> <span class="n">mortality_df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">death_field</span> <span class="o">=</span> <span class="s2">&quot;killed&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No suitable death count field found in mortality data&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Create series indexed by date</span>
+    <span class="n">mortality_df</span> <span class="o">=</span> <span class="n">mortality_df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;report_date&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Reindex to analysis period, filling missing values with 0</span>
+    <span class="n">deaths_series</span> <span class="o">=</span> <span class="n">mortality_df</span><span class="p">[</span><span class="n">death_field</span><span class="p">]</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">dates</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">deaths_series</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, OJ Watson.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,476 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Model Description &mdash; TRACE 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Model Implementation" href="03_implementation.html" />
+    <link rel="prev" title="Background" href="01_background.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            TRACE
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Model Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="00_overview.html">Model Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="01_background.html">Background</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Model Description</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#basic-model">1. Basic Model</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#observation-models">1.1 Observation Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hospital-injury-model">1.2 Hospital Injury Model</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#spatial-kernel">1.2.1 Spatial Kernel</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#death-model">1.3 Death Model</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#delay-distribution">1.3.1 Delay Distribution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#interpretation">1.3.2 Interpretation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#regression-structure">2. Regression Structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#time-varying-casualty-rates">2.1 Time-Varying Casualty Rates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#autoreg">2.2 Autoreg</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#parameter-priors">3. Parameter Priors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#casualty-rate-priors">3.1 Casualty Rate Priors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hospital-fatality-rate">3.2 Hospital Fatality Rate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#spatial-length-scale">3.3 Spatial Length Scale</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#posterior-inference">4. Posterior Inference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mcmc-diagnostics">4.1 MCMC Diagnostics</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#posterior-predictive-distribution">5. Posterior Predictive Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#forecasting">6. Forecasting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="03_implementation.html">Model Implementation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/01_basic_example.html">Tutorial: Basic Example with Simulated Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/02_gaza_analysis.html">Tutorial: Gaza Conflict Casualty Analysis</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/data.html">Data Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/model.html">Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/simulate.html">Simulate Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/analysis.html">Analysis Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Additional Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">TRACE</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Model Description</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/model/02_description.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="model-description">
+<h1>Model Description<a class="headerlink" href="#model-description" title="Link to this heading"></a></h1>
+<p>This vignette provides a detailed mathematical specification of the <strong>TRACE</strong> casualty model. We describe the basic model for a single region, then discuss extensions for multiple populations and time-varying effects.</p>
+<section id="basic-model">
+<h2>1. Basic Model<a class="headerlink" href="#basic-model" title="Link to this heading"></a></h2>
+<p>We formulate the model for a single homogeneous population over <span class="math notranslate nohighlight">\(T\)</span> days. The model integrates three data streams:</p>
+<ol class="arabic simple">
+<li><p><strong>Conflict Events</strong>: <span class="math notranslate nohighlight">\(E_t\)</span> events on day <span class="math notranslate nohighlight">\(t\)</span>, with locations <span class="math notranslate nohighlight">\((x_e, y_e)\)</span> for <span class="math notranslate nohighlight">\(e \in E_t\)</span></p></li>
+<li><p><strong>Hospital Injuries</strong>: <span class="math notranslate nohighlight">\(H = (H_{1,1}, \ldots, H_{T,J})\)</span> where <span class="math notranslate nohighlight">\(H_{t,j}\)</span> is injuries at hospital <span class="math notranslate nohighlight">\(j\)</span> on day <span class="math notranslate nohighlight">\(t\)</span></p></li>
+<li><p><strong>Deaths</strong>: <span class="math notranslate nohighlight">\(D = (D_1, \ldots, D_T)\)</span> where <span class="math notranslate nohighlight">\(D_t\)</span> is national deaths on day <span class="math notranslate nohighlight">\(t\)</span></p></li>
+</ol>
+<section id="observation-models">
+<h3>1.1 Observation Models<a class="headerlink" href="#observation-models" title="Link to this heading"></a></h3>
+<p>Both injuries and deaths are modeled as Poisson random variables:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align}
+H_{t,j} &amp;\sim \text{Poisson}(\lambda_{t,j}), \quad j = 1, \ldots, J \tag{1.1} \\
+D_t &amp;\sim \text{Poisson}(\delta_t), \quad t = 1, \ldots, T \tag{1.2}
+\end{align}
+\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\lambda_{t,j}\)</span> is the expected number of injuries at hospital <span class="math notranslate nohighlight">\(j\)</span> on day <span class="math notranslate nohighlight">\(t\)</span>, and <span class="math notranslate nohighlight">\(\delta_t\)</span> is the expected number of deaths on day <span class="math notranslate nohighlight">\(t\)</span>.</p>
+<p><strong>Note on Overdispersion</strong>: The Poisson assumption can be relaxed to accommodate extra-Poisson variation by using Negative Binomial distributions:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align}
+H_{t,j} &amp;\sim \text{NegativeBinomial}(\lambda_{t,j}, \phi_H) \\
+D_t &amp;\sim \text{NegativeBinomial}(\delta_t, \phi_D)
+\end{align}
+\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\phi_H\)</span> and <span class="math notranslate nohighlight">\(\phi_D\)</span> are overdispersion parameters. This extension is described in Section 1.5.</p>
+</section>
+<section id="hospital-injury-model">
+<h3>1.2 Hospital Injury Model<a class="headerlink" href="#hospital-injury-model" title="Link to this heading"></a></h3>
+<p>Expected injuries at each hospital are determined by:</p>
+<ol class="arabic simple">
+<li><p>The number and location of conflict events</p></li>
+<li><p>Average casualties per event</p></li>
+<li><p>Spatial allocation to hospitals</p></li>
+</ol>
+<p>Formally:</p>
+<div class="math notranslate nohighlight">
+\[
+\lambda_{t,j} = \mu_w \sum_{e \in E_t} w_{e,j} \tag{1.3}
+\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\mu_w &gt; 0\)</span> is the average number of wounded (hospitalized) per event</p></li>
+<li><p><span class="math notranslate nohighlight">\(w_{e,j} \in [0,1]\)</span> is the fraction of casualties from event <span class="math notranslate nohighlight">\(e\)</span> allocated to hospital <span class="math notranslate nohighlight">\(j\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\sum_j w_{e,j} = 1\)</span> for all events <span class="math notranslate nohighlight">\(e\)</span></p></li>
+</ul>
+<section id="spatial-kernel">
+<h4>1.2.1 Spatial Kernel<a class="headerlink" href="#spatial-kernel" title="Link to this heading"></a></h4>
+<p>The spatial weights are determined by an exponential decay kernel:</p>
+<div class="math notranslate nohighlight">
+\[
+w_{e,j} = \frac{\exp(-d_{e,j}/\ell)}{\sum_{j'=1}^J \exp(-d_{e,j'}/\ell)} \tag{1.4}
+\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(d_{e,j}\)</span> is the Euclidean distance between event <span class="math notranslate nohighlight">\(e\)</span> and hospital <span class="math notranslate nohighlight">\(j\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\ell &gt; 0\)</span> is a spatial length scale parameter controlling decay</p></li>
+</ul>
+<p><strong>Properties</strong>:</p>
+<ul class="simple">
+<li><p>Hospitals closer to events receive higher weight</p></li>
+<li><p>As <span class="math notranslate nohighlight">\(\ell \to 0\)</span>, all weight goes to nearest hospital</p></li>
+<li><p>As <span class="math notranslate nohighlight">\(\ell \to \infty\)</span>, weights approach uniform distribution <span class="math notranslate nohighlight">\(w_{e,j} \to 1/J\)</span></p></li>
+<li><p>The kernel respects the constraint <span class="math notranslate nohighlight">\(\sum_j w_{e,j} = 1\)</span></p></li>
+</ul>
+<p><strong>Alternative Kernels</strong>: Other distance-based kernels can be used, such as:</p>
+<ul class="simple">
+<li><p>Power law: <span class="math notranslate nohighlight">\(w_{e,j} \propto d_{e,j}^{-\alpha}\)</span></p></li>
+<li><p>Gaussian: <span class="math notranslate nohighlight">\(w_{e,j} \propto \exp(-d_{e,j}^2 / 2\ell^2)\)</span></p></li>
+<li><p>Gravity model: <span class="math notranslate nohighlight">\(w_{e,j} \propto C_j / d_{e,j}^\alpha\)</span> where <span class="math notranslate nohighlight">\(C_j\)</span> is hospital capacity</p></li>
+</ul>
+</section>
+</section>
+<section id="death-model">
+<h3>1.3 Death Model<a class="headerlink" href="#death-model" title="Link to this heading"></a></h3>
+<p>Deaths arise from two sources:</p>
+<ol class="arabic simple">
+<li><p><strong>Immediate Deaths</strong>: Fatalities occurring at the conflict event location</p></li>
+<li><p><strong>Delayed Deaths</strong>: Hospital fatalities occurring days after injury</p></li>
+</ol>
+<p>The total expected deaths on day <span class="math notranslate nohighlight">\(t\)</span> is:</p>
+<div class="math notranslate nohighlight">
+\[
+\delta_t = \underbrace{\mu_i |E_t|}_{\text{immediate}} + \underbrace{p_{\text{late}} \sum_{k=1}^L I_{t-k} f_k}_{\text{delayed}} \tag{1.5}
+\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\mu_i \geq 0\)</span> is average immediate deaths per event</p></li>
+<li><p><span class="math notranslate nohighlight">\(|E_t|\)</span> is the number of events on day <span class="math notranslate nohighlight">\(t\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(I_t = \sum_j H_{t,j}\)</span> is total injuries on day <span class="math notranslate nohighlight">\(t\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(p_{\text{late}} \in [0,1]\)</span> is probability an injured person eventually dies</p></li>
+<li><p><span class="math notranslate nohighlight">\(f = (f_1, \ldots, f_L)\)</span> is the delay distribution with <span class="math notranslate nohighlight">\(\sum_k f_k = 1\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(L\)</span> is the maximum delay (support of delay distribution)</p></li>
+</ul>
+<section id="delay-distribution">
+<h4>1.3.1 Delay Distribution<a class="headerlink" href="#delay-distribution" title="Link to this heading"></a></h4>
+<p>The delay distribution <span class="math notranslate nohighlight">\(f_k\)</span> represents the probability that death occurs <span class="math notranslate nohighlight">\(k\)</span> days after injury. This can be:</p>
+<p><strong>Empirically Estimated</strong>: From medical literature on trauma outcomes. For conflict settings, typical estimates suggest:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(f_1 \approx 0.5\)</span> — 50% die within 1 day</p></li>
+<li><p><span class="math notranslate nohighlight">\(f_2 \approx 0.3\)</span> — 30% die on day 2</p></li>
+<li><p><span class="math notranslate nohighlight">\(f_3 \approx 0.15\)</span> — 15% die on day 3</p></li>
+<li><p><span class="math notranslate nohighlight">\(f_4 \approx 0.05\)</span> — 5% die on day 4+</p></li>
+</ul>
+<p><strong>Parametric Form</strong>: E.g., geometric or discretized exponential:</p>
+<div class="math notranslate nohighlight">
+\[
+f_k = (1-\rho)\rho^{k-1}, \quad k = 1, 2, \ldots
+\]</div>
+<p><strong>Flexible</strong>: Estimated as free parameters with Dirichlet prior:</p>
+<div class="math notranslate nohighlight">
+\[
+f \sim \text{Dirichlet}(\alpha_1, \ldots, \alpha_L)
+\]</div>
+</section>
+<section id="interpretation">
+<h4>1.3.2 Interpretation<a class="headerlink" href="#interpretation" title="Link to this heading"></a></h4>
+<p>The convolution term <span class="math notranslate nohighlight">\(\sum_{k=1}^L I_{t-k} f_k\)</span> represents the expected number of injuries from previous days that result in death on day <span class="math notranslate nohighlight">\(t\)</span>. Multiplying by <span class="math notranslate nohighlight">\(p_{\text{late}}\)</span> scales this to the actual hospital fatality rate.</p>
+<p><strong>Identifiability</strong>: The parameters <span class="math notranslate nohighlight">\(p_{\text{late}}\)</span> and <span class="math notranslate nohighlight">\(f\)</span> are partially confounded — similar data can be explained by:</p>
+<ul class="simple">
+<li><p>High <span class="math notranslate nohighlight">\(p_{\text{late}}\)</span> with short delays (most deaths occur quickly)</p></li>
+<li><p>Low <span class="math notranslate nohighlight">\(p_{\text{late}}\)</span> with long delays (deaths are rare but spread over time)</p></li>
+</ul>
+<p>Informative priors or fixed <span class="math notranslate nohighlight">\(f\)</span> based on medical literature help resolve this.</p>
+</section>
+</section>
+</section>
+<section id="regression-structure">
+<h2>2. Regression Structure<a class="headerlink" href="#regression-structure" title="Link to this heading"></a></h2>
+<p>The model can be extended to include time-varying effects through regression:</p>
+<section id="time-varying-casualty-rates">
+<h3>2.1 Time-Varying Casualty Rates<a class="headerlink" href="#time-varying-casualty-rates" title="Link to this heading"></a></h3>
+<p>Allow parameters to depend on covariates <span class="math notranslate nohighlight">\(X_t\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align}
+\mu_{w,t} &amp;= \mu_w \cdot \exp(X_t \beta_w) \\
+\mu_{i,t} &amp;= \mu_i \cdot \exp(X_t \beta_i)
+\end{align}
+\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\beta_w\)</span> and <span class="math notranslate nohighlight">\(\beta_i\)</span> are regression coefficients.</p>
+<p><strong>Example Covariates</strong>:</p>
+<ul class="simple">
+<li><p>Ceasefire indicator: <span class="math notranslate nohighlight">\(X_t = \mathbb{1}(\text{ceasefire on day } t)\)</span></p></li>
+<li><p>Conflict type: Different coefficients for different event types</p></li>
+<li><p>Time trend: <span class="math notranslate nohighlight">\(X_t = t\)</span> to capture systematic changes</p></li>
+</ul>
+<p><strong>Priors</strong>: Coefficients typically receive normal priors:</p>
+<div class="math notranslate nohighlight">
+\[
+\beta_k \sim \mathcal{N}(0, \sigma_\beta^2)
+\]</div>
+</section>
+<section id="autoreg">
+<h3>2.2 Autoreg<a class="headerlink" href="#autoreg" title="Link to this heading"></a></h3>
+<p>ressive Structure</p>
+<p>For smoothly varying parameters, use random walk or autoregressive priors:</p>
+<div class="math notranslate nohighlight">
+\[
+\log \mu_{w,t} = \log \mu_{w,t-1} + \epsilon_t, \quad \epsilon_t \sim \mathcal{N}(0, \sigma^2)
+\]</div>
+<p>This allows casualty rates to evolve over time without requiring explicit covariates.</p>
+</section>
+</section>
+<section id="parameter-priors">
+<h2>3. Parameter Priors<a class="headerlink" href="#parameter-priors" title="Link to this heading"></a></h2>
+<p>Default weakly informative priors are chosen to be:</p>
+<ol class="arabic simple">
+<li><p>Proper (for computational stability)</p></li>
+<li><p>Regularizing (preventing extreme values)</p></li>
+<li><p>Scientifically plausible</p></li>
+</ol>
+<section id="casualty-rate-priors">
+<h3>3.1 Casualty Rate Priors<a class="headerlink" href="#casualty-rate-priors" title="Link to this heading"></a></h3>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align}
+\mu_w &amp;\sim \text{Exponential}(\lambda_w) \\
+\mu_i &amp;\sim \text{Exponential}(\lambda_i)
+\end{align}
+\end{split}\]</div>
+<p>With default rates <span class="math notranslate nohighlight">\(\lambda_w = \lambda_i = 0.3\)</span>, giving prior means around 3.3 casualties per event.</p>
+<p><strong>Rationale</strong>: Exponential priors are:</p>
+<ul class="simple">
+<li><p>Non-negative (as required)</p></li>
+<li><p>Weakly informative (allowing a wide range)</p></li>
+<li><p>Proper (integrable)</p></li>
+</ul>
+<p><strong>Sensitivity</strong>: Users should assess sensitivity to these choices, particularly if prior knowledge suggests very different casualty rates.</p>
+</section>
+<section id="hospital-fatality-rate">
+<h3>3.2 Hospital Fatality Rate<a class="headerlink" href="#hospital-fatality-rate" title="Link to this heading"></a></h3>
+<div class="math notranslate nohighlight">
+\[
+p_{\text{late}} \sim \text{Beta}(\alpha, \beta)
+\]</div>
+<p>Default: <span class="math notranslate nohighlight">\(\alpha = 2, \beta = 10\)</span>, giving:</p>
+<ul class="simple">
+<li><p>Prior mean: <span class="math notranslate nohighlight">\(\mathbb{E}[p_{\text{late}}] = \alpha/(\alpha + \beta) \approx 0.17\)</span></p></li>
+<li><p>Prior mode: <span class="math notranslate nohighlight">\((\\alpha - 1)/(\alpha + \beta - 2) \approx 0.1\)</span></p></li>
+<li><p>Support: <span class="math notranslate nohighlight">\((0, 1)\)</span> as required for a probability</p></li>
+</ul>
+<p><strong>Rationale</strong>: Based on medical literature suggesting 10-20% hospital fatality rates for severe trauma in conflict settings <span id="id1">[<a class="reference internal" href="#id20" title="GBD 2019 Diseases and Injuries Collaborators. Global burden of 369 diseases and injuries in 204 countries and territories, 1990–2019: a systematic analysis for the global burden of disease study 2019. The Lancet, 396(10258):1204–1222, 2020.">GBD 2019 Diseases and Injuries Collaborators, 2020</a>]</span>.</p>
+</section>
+<section id="spatial-length-scale">
+<h3>3.3 Spatial Length Scale<a class="headerlink" href="#spatial-length-scale" title="Link to this heading"></a></h3>
+<div class="math notranslate nohighlight">
+\[
+\ell \sim \text{Exponential}(\lambda_\ell)
+\]</div>
+<p>Default: <span class="math notranslate nohighlight">\(\lambda_\ell = 1.0\)</span>, giving prior mean of 1 degree (approximately 100 km at mid-latitudes).</p>
+<p><strong>Interpretation</strong>:</p>
+<ul class="simple">
+<li><p>Small <span class="math notranslate nohighlight">\(\ell\)</span> (e.g., 0.1 degree): Very local allocation, casualties go to nearest hospital</p></li>
+<li><p>Medium <span class="math notranslate nohighlight">\(\ell\)</span> (e.g., 1 degree): Regional allocation, distance matters but not exclusively</p></li>
+<li><p>Large <span class="math notranslate nohighlight">\(\ell\)</span> (e.g., 10 degrees): Diffuse allocation, distance less important</p></li>
+</ul>
+<p><strong>Context-Specific</strong>: For small regions like Gaza (<span class="math notranslate nohighlight">\(\sim\)</span>40 km long), <span class="math notranslate nohighlight">\(\ell \approx 0.5\)</span> degrees is reasonable. For larger countries, <span class="math notranslate nohighlight">\(\ell\)</span> may be several degrees.</p>
+</section>
+</section>
+<section id="posterior-inference">
+<h2>4. Posterior Inference<a class="headerlink" href="#posterior-inference" title="Link to this heading"></a></h2>
+<p>The joint posterior distribution is:</p>
+<div class="math notranslate nohighlight">
+\[
+p(\mu_w, \mu_i, p_{\text{late}}, \ell | H, D, E) \propto p(\mu_w) p(\mu_i) p(p_{\text{late}}) p(\ell) \times \mathcal{L}(H | \mu_w, \ell, E) \times \mathcal{L}(D | \mu_i, p_{\text{late}}, H, E)
+\]</div>
+<p>where:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align}
+\mathcal{L}(H | \mu_w, \ell, E) &amp;= \prod_{t=1}^T \prod_{j=1}^J \text{Poisson}(H_{t,j} | \lambda_{t,j}) \\
+\mathcal{L}(D | \mu_i, p_{\text{late}}, H, E) &amp;= \prod_{t=1}^T \text{Poisson}(D_t | \delta_t)
+\end{align}
+\end{split}\]</div>
+<p>This posterior is represented in a NumPyro model and sampled using the No-U-Turn Sampler (NUTS) <span id="id2">[<a class="reference internal" href="#id7" title="Matthew D Hoffman and Andrew Gelman. The no-u-turn sampler: adaptively setting path lengths in hamiltonian monte carlo. Journal of Machine Learning Research, 15(1):1593–1623, 2014.">Hoffman and Gelman, 2014</a>]</span>, an adaptive Hamiltonian Monte Carlo algorithm.</p>
+<section id="mcmc-diagnostics">
+<h3>4.1 MCMC Diagnostics<a class="headerlink" href="#mcmc-diagnostics" title="Link to this heading"></a></h3>
+<p>After sampling, convergence should be assessed using:</p>
+<ol class="arabic simple">
+<li><p><strong>Trace Plots</strong>: Visual inspection of parameter traces</p></li>
+<li><p><strong><span class="math notranslate nohighlight">\(\hat{R}\)</span> Statistic</strong> <span id="id3">[<a class="reference internal" href="#id8">Gelman <em>et al.</em>, 2013</a>]</span>: Should be <span class="math notranslate nohighlight">\(&lt; 1.01\)</span> for all parameters</p></li>
+<li><p><strong>Effective Sample Size</strong> (ESS): Should be <span class="math notranslate nohighlight">\(&gt; 100\)</span> per chain</p></li>
+<li><p><strong>Divergences</strong>: Should be zero or very few</p></li>
+</ol>
+<p>See the <a class="reference internal" href="#03_diagnostics.md"><span class="xref myst">Diagnostics Guide</span></a> for details.</p>
+</section>
+</section>
+<section id="posterior-predictive-distribution">
+<h2>5. Posterior Predictive Distribution<a class="headerlink" href="#posterior-predictive-distribution" title="Link to this heading"></a></h2>
+<p>For model checking, we sample from the posterior predictive distribution:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align}
+\tilde{H}_{t,j} &amp;\sim \text{Poisson}(\lambda_{t,j}^{(s)}) \\
+\tilde{D}_t &amp;\sim \text{Poisson}(\delta_t^{(s)})
+\end{align}
+\end{split}\]</div>
+<p>for each posterior sample <span class="math notranslate nohighlight">\(s = 1, \ldots, S\)</span>.</p>
+<p><strong>Posterior Predictive Checks</strong>: Compare observed data <span class="math notranslate nohighlight">\(H, D\)</span> to replicated data <span class="math notranslate nohighlight">\(\tilde{H}, \tilde{D}\)</span>:</p>
+<ul class="simple">
+<li><p><strong>Coverage</strong>: Do 95% credible intervals contain 95% of observations?</p></li>
+<li><p><strong>Mean</strong>: Is <span class="math notranslate nohighlight">\(\mathbb{E}[\tilde{H}] \approx H\)</span>?</p></li>
+<li><p><strong>Dispersion</strong>: Is <span class="math notranslate nohighlight">\(\text{Var}(\tilde{H}) \approx \text{Var}(H)\)</span>?</p></li>
+</ul>
+<p>Systematic discrepancies suggest model misspecification.</p>
+</section>
+<section id="forecasting">
+<h2>6. Forecasting<a class="headerlink" href="#forecasting" title="Link to this heading"></a></h2>
+<p>To forecast <span class="math notranslate nohighlight">\(h\)</span> days into the future, we need:</p>
+<ol class="arabic simple">
+<li><p><strong>Scenario for Future Events</strong>: <span class="math notranslate nohighlight">\(\tilde{E}_{T+1}, \ldots, \tilde{E}_{T+h}\)</span></p></li>
+<li><p><strong>Posterior Samples</strong>: <span class="math notranslate nohighlight">\(\theta^{(1)}, \ldots, \theta^{(S)}\)</span> where <span class="math notranslate nohighlight">\(\theta = (\mu_w, \mu_i, p_{\text{late}}, \ell)\)</span></p></li>
+</ol>
+<p>For each posterior sample <span class="math notranslate nohighlight">\(s\)</span>:</p>
+<ol class="arabic simple">
+<li><p>Simulate injuries: <span class="math notranslate nohighlight">\(\tilde{H}_{t,j}^{(s)} \sim \text{Poisson}(\mu_w^{(s)} \sum_{e \in \tilde{E}_t} w_{e,j}^{(s)})\)</span></p></li>
+<li><p>Simulate deaths: <span class="math notranslate nohighlight">\(\tilde{D}_t^{(s)} \sim \text{Poisson}(\mu_i^{(s)} |\tilde{E}_t| + p_{\text{late}}^{(s)} \sum_k \tilde{I}_{t-k}^{(s)} f_k)\)</span></p></li>
+</ol>
+<p>Aggregate across samples to obtain forecast distributions.</p>
+<p><strong>Scenarios</strong>:</p>
+<ul class="simple">
+<li><p><strong>Baseline</strong>: <span class="math notranslate nohighlight">\(\tilde{E}_t\)</span> matches recent historical rate</p></li>
+<li><p><strong>Ceasefire</strong>: <span class="math notranslate nohighlight">\(|\tilde{E}_t| \to 0\)</span></p></li>
+<li><p><strong>Escalation</strong>: <span class="math notranslate nohighlight">\(|\tilde{E}_t|\)</span> increases by factor <span class="math notranslate nohighlight">\(\alpha &gt; 1\)</span></p></li>
+<li><p><strong>Custom</strong>: User-specified event counts</p></li>
+</ul>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<div class="docutils container" id="id4">
+<div role="list" class="citation-list">
+<div class="citation" id="id8" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">1</a><span class="fn-bracket">]</span></span>
+<p><strong>missing journal in Gelman2013</strong></p>
+</div>
+<div class="citation" id="id7" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>Matthew D Hoffman and Andrew Gelman. The no-u-turn sampler: adaptively setting path lengths in hamiltonian monte carlo. <em>Journal of Machine Learning Research</em>, 15(1):1593–1623, 2014.</p>
+</div>
+<div class="citation" id="id20" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">3</a><span class="fn-bracket">]</span></span>
+<p>GBD 2019 Diseases and Injuries Collaborators. Global burden of 369 diseases and injuries in 204 countries and territories, 1990–2019: a systematic analysis for the global burden of disease study 2019. <em>The Lancet</em>, 396(10258):1204–1222, 2020.</p>
+</div>
+</div>
+</div>
+<hr class="docutils" />
+<p><em>See <a class="reference internal" href="03_implementation.html"><span class="std std-doc">Model Implementation</span></a> for details on the NumPyro code.</em></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="01_background.html" class="btn btn-neutral float-left" title="Background" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="03_implementation.html" class="btn btn-neutral float-right" title="Model Implementation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, OJ Watson.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

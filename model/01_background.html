@@ -1,0 +1,770 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Background &mdash; TRACE 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Model Description" href="02_description.html" />
+    <link rel="prev" title="Model Introduction" href="00_overview.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            TRACE
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Model Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="00_overview.html">Model Introduction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Background</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#the-trace-framework">The TRACE Framework</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#conflict-event-process">1. Conflict Event Process</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#spatial-allocation-to-hospitals">2. Spatial Allocation to Hospitals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#temporal-dynamics-injury-to-death">3. Temporal Dynamics: Injury to Death</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#mathematical-foundations">Mathematical Foundations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#hospital-injury-likelihood">Hospital Injury Likelihood</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#death-likelihood">Death Likelihood</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#extensions">Extensions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#prior-specifications">Prior Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#inference">Inference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#comparison-to-epidemic-models">Comparison to Epidemic Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#comparison-to-traditional-conflict-models">Comparison to Traditional Conflict Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lanchester-models">Lanchester Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#agent-based-models">Agent-Based Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#statistical-forecasting">Statistical Forecasting</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#data-requirements-and-sources">Data Requirements and Sources</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#conflict-events">1. Conflict Events</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hospital-admissions">2. Hospital Admissions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mortality-data">3. Mortality Data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#case-study-gaza-2023-2024">Case Study: Gaza (2023-2024)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#limitations-and-caveats">Limitations and Caveats</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#data-quality">1. Data Quality</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#identifiability">2. Identifiability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#causal-inference">3. Causal Inference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#indirect-deaths">4. Indirect Deaths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ethical-considerations">5. Ethical Considerations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#software-implementation">Software Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#related-work-and-packages">Related Work and Packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#contributing">Contributing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#acknowledgments">Acknowledgments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="02_description.html">Model Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03_implementation.html">Model Implementation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/01_basic_example.html">Tutorial: Basic Example with Simulated Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/02_gaza_analysis.html">Tutorial: Gaza Conflict Casualty Analysis</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/data.html">Data Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/model.html">Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/simulate.html">Simulate Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/analysis.html">Analysis Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Additional Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">TRACE</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Background</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/model/01_background.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="background">
+<h1>Background<a class="headerlink" href="#background" title="Link to this heading"></a></h1>
+<p>The open-source Python package <strong>TRACE</strong> (Temporal and Regional Analysis of Conflict Events) provides a framework for Bayesian, regression-oriented modeling of the temporal dynamics of conflict casualties. Typically these models are fit to multiple data streams—conflict event data, hospital admission records, and mortality time series—for a given population and period. Casualty dynamics are described explicitly through a semi-mechanistic process; observed data are linked to latent conflict intensity, which is in turn modeled through discrete event processes tempered by spatially-varying allocation weights. Regression models are specified for several objects in the model. For example, casualty rates can be expressed as transformed predictors, which may include both covariates and autoregressive terms. A range of prior distributions can be specified for unknown parameters by leveraging functionality from <strong>NumPyro</strong> <span id="id1">[<a class="reference internal" href="#id79" title="Du Phan, Neeraj Pradhan, and Martin Jankowiak. Composable effects for flexible and accelerated probabilistic programming in numpyro. arXiv preprint arXiv:1912.11554, 2019.">Phan <em>et al.</em>, 2019</a>]</span> and <strong>JAX</strong> <span id="id2">[<a class="reference internal" href="#id80">Bradbury <em>et al.</em>, 2018</a>]</span>. Multilevel models are supported by partially pooling covariate effects appearing in predictors between multiple populations or regions.</p>
+<p>The mathematical framework motivating the implemented models builds upon semi-mechanistic approaches developed for epidemic modeling <span id="id3">[<a class="reference internal" href="#id55" title="Samir Bhatt, Neil Ferguson, Seth Flaxman, Axel Gandy, Swapnil Mishra, and James A Scott. Semi-mechanistic bayesian modeling of covid-19 with renewal processes. arXiv preprint arXiv:2012.00394, 2020.">Bhatt <em>et al.</em>, 2020</a>, <a class="reference internal" href="#id54" title="Seth Flaxman, Swapnil Mishra, Axel Gandy, H Juliette T Unwin, Thomas A Mellan, Helen Coupland, Charles Whittaker, Harrison Zhu, Tresnia Berah, Jeffrey W Eaton, and others. Estimating the effects of non-pharmaceutical interventions on covid-19 in europe. Nature, 584(7820):257–261, 2020.">Flaxman <em>et al.</em>, 2020</a>]</span>. Specific analyses using such models have appeared during the COVID-19 pandemic and have been used to estimate the effect of control measures <span id="id4">[<a class="reference internal" href="#id54" title="Seth Flaxman, Swapnil Mishra, Axel Gandy, H Juliette T Unwin, Thomas A Mellan, Helen Coupland, Charles Whittaker, Harrison Zhu, Tresnia Berah, Jeffrey W Eaton, and others. Estimating the effects of non-pharmaceutical interventions on covid-19 in europe. Nature, 584(7820):257–261, 2020.">Flaxman <em>et al.</em>, 2020</a>, <a class="reference internal" href="#id73">Mellan <em>et al.</em>, 2020</a>, <a class="reference internal" href="#id74" title="Alden M Olney, Jarvis Smith, Sanjay Sen, Fred Thomas, and H Juliette T Unwin. Estimating the effect of social distancing interventions on covid-19 in the united states. American Journal of Epidemiology, 190(8):1527–1536, 2021.">Olney <em>et al.</em>, 2021</a>]</span>, and to forecast disease dynamics under assumed epidemiological parameters and mitigation scenarios <span id="id5">[<a class="reference internal" href="#id76" title="Iwona Hawryluk, Thomas A Mellan, Henrique Hoeltgebaum, Swapnil Mishra, Ricardo P Schnekenberg, Charlie Whittaker, Harrison Zhu, Axel Gandy, Christl A Donnelly, Seth Flaxman, and others. Inference of covid-19 epidemiological distributions from brazilian hospital data. Journal of the Royal Society Interface, 17(172):20200596, 2020.">Hawryluk <em>et al.</em>, 2020</a>, <a class="reference internal" href="#id75" title="Michaela AC Vollmer, Swapnil Mishra, H Juliette T Unwin, Axel Gandy, Thomas A Mellan, Valerie Bradley, Harrison Zhu, Helen Coupland, Iwona Hawryluk, Michael Hutchinson, and others. A framework for evaluating epidemic forecasts. BMC Medicine, 18(1):1–18, 2020.">Vollmer <em>et al.</em>, 2020</a>]</span>. The modeling approach has been extended to estimate differences in transmissibility between COVID-19 lineages <span id="id6">[<a class="reference internal" href="#id77" title="Nuno R Faria, Thomas A Mellan, Charlie Whittaker, Ingra M Claro, Darlan da S Candido, Swapnil Mishra, Myuki AE Crispim, Flavia CS Sales, Iwona Hawryluk, John T McCrone, and others. Genomics and epidemiology of the p. 1 sars-cov-2 lineage in manaus, brazil. Science, 372(6544):815–821, 2021.">Faria <em>et al.</em>, 2021</a>, <a class="reference internal" href="#id78" title="Erik Volz, Swapnil Mishra, Meera Chand, Jeffrey C Barrett, Robert Johnson, Lily Geidelberg, Wes R Hinsley, Daniel J Laydon, Gavin Dabrera, Áine O'Toole, and others. Assessing transmissibility of sars-cov-2 lineage b. 1.1. 7 in england. Nature, 593(7858):266–269, 2021.">Volz <em>et al.</em>, 2021</a>]</span>. <strong>TRACE</strong> adapts these methods to the conflict domain, where discrete violent events replace continuous disease transmission, and spatial allocation to hospitals replaces age-stratified contact matrices.</p>
+<p>Models of casualty dynamics are commonly classified as either mechanistic or statistical <span id="id7">[<a class="reference internal" href="#id61" title="Monica F Myers, David J Rogers, J Cox, Antoine Flahault, and Simon I Hay. Forecasting disease risk for increased epidemic preparedness in public health. Advances in Parasitology, 47:309–330, 2000.">Myers <em>et al.</em>, 2000</a>]</span>. Mechanistic models derive casualty patterns from theoretical considerations over how conflicts unfold, such as Lanchester’s equations for combat attrition <span id="id8">[<a class="reference internal" href="#id63" title="Frederick W Lanchester. Aircraft in Warfare: The Dawn of the Fourth Arm. Constable and Company Ltd, 1914.">Lanchester, 1914</a>]</span>, agent-based simulations of tactical engagements <span id="id9">[<a class="reference internal" href="#id82" title="Joshua M Epstein. Modeling civil violence: an agent-based computational approach. Proceedings of the National Academy of Sciences, 99(suppl 3):7243–7250, 2002.">Epstein, 2002</a>]</span>, or network models of insurgent activity <span id="id10">[<a class="reference internal" href="#id83" title="Juan Camilo Bohorquez, Sean Gourley, Alexander R Dixon, Michael Spagat, and Neil F Johnson. Common ecology quantifies human insurgency. Nature, 462(7275):911–914, 2009.">Bohorquez <em>et al.</em>, 2009</a>]</span>. These models propose explicit equations or rules that govern the evolution of combatants and casualties over time. Such models are motivated by theories of military strategy, resource constraints, and behavioral dynamics. Purely statistical models, on the other hand, make few assumptions over the generative mechanism, and instead infer future dynamics from the history of the process and related covariates. Examples include Generalized Linear Models (GLMs) for event counts, time series approaches including Auto Regressive Integrated Moving Average (ARIMA) models <span id="id11">[<a class="reference internal" href="#id81" title="George EP Box and Gwilym M Jenkins. Time series analysis: forecasting and control. Holden-Day, 1970.">Box and Jenkins, 1970</a>]</span>, and more modern forecasting methods based on machine learning <span id="id12">[<a class="reference internal" href="#id85" title="Robert A Blair and Nicholas Sambanis. Forecasting civil wars: theory and structure in an age of &quot;big data&quot; and machine learning. Journal of Conflict Resolution, 65(10):1752–1781, 2021.">Blair and Sambanis, 2021</a>, <a class="reference internal" href="#id84" title="John Mueller and Tim Sweijs. War, ai and the new global arms race. International Affairs, 96(4):1-20, 2020.">Mueller and Sweijs, 2020</a>]</span>.</p>
+<p><strong>TRACE</strong> provides models which are <em>semi-mechanistic</em>. These are statistical models that explicitly describe casualty generation processes. Discrete conflict events precipitate casualties, which are allocated spatially to hospitals based on distance-weighted kernels. Injuries lead to deaths with explicit delay distributions, allowing temporal dynamics to be tracked explicitly. This approach has been used in multiple previous epidemic modeling works <span id="id13">[<a class="reference internal" href="#id89" title="Simon Cauchemez, Pierre-Yves Boelle, Christl A Donnelly, Neil M Ferguson, Guy Thomas, Gabriel M Leung, Anthony J Hedley, Roy M Anderson, and Alain-Jacques Valleron. Real-time estimates in early detection of sars. Emerging Infectious Diseases, 12(1):110, 2006.">Cauchemez <em>et al.</em>, 2006</a>, <a class="reference internal" href="#id87" title="Anne Cori, Neil M Ferguson, Christophe Fraser, and Simon Cauchemez. A new framework and software to estimate time-varying reproduction numbers during epidemics. American Journal of Epidemiology, 178(9):1505–1512, 2013.">Cori <em>et al.</em>, 2013</a>, <a class="reference internal" href="#id86" title="Christophe Fraser. Estimating individual and household reproduction numbers in an emerging epidemic. PloS one, 2(8):e758, 2007.">Fraser, 2007</a>, <a class="reference internal" href="#id88" title="Pierre Nouvellet, Anne Cori, Tini Garske, Isobel M Blake, Ilaria Dorigatti, Wes Hinsley, Thibaut Jombart, Harriet L Mills, Gemma Nedjati-Gilani, Maria D Van Kerkhove, and others. A simple approach to measure transmissibility and forecast incidence. Epidemics, 22:29–35, 2018.">Nouvellet <em>et al.</em>, 2018</a>]</span> and has analogues in conflict modeling through spatial point process approaches <span id="id14">[<a class="reference internal" href="#id93" title="Håvard Hegre, Joakim Karlsen, Håvard Mokleiv Nygård, Håvard Strand, and Henrik Urdal. Predicting armed conflict, 2010–2050. International Studies Quarterly, 57(2):250–270, 2013.">Hegre <em>et al.</em>, 2013</a>, <a class="reference internal" href="#id92" title="Andrew Zammit-Mangion, Michael Dewar, Visakan Kadirkamanathan, and Guido Sanguinetti. Point process modeling of the afghan war diary. Proceedings of the National Academy of Sciences, 109(31):12414–12419, 2012.">Zammit-Mangion <em>et al.</em>, 2012</a>]</span>. In addition, population adjustments may be applied to account for displacement or changes in population at risk. The models are <em>statistical</em> in the sense that they define a likelihood function for the observed data. After also specifying prior distributions for model parameters, samples from the posterior can then be obtained using either Hamiltonian Monte Carlo or Variational Bayes methods.</p>
+<p>The Bayesian approach has certain advantages in this context. Several aspects of these models are fundamentally unidentified <span id="id15">[<a class="reference internal" href="#id62" title="Kimberlyn Roosa and Gerardo Chowell. Assessing parameter identifiability in compartmental dynamic models using a computational approach: application to infectious disease transmission models. Theoretical Biology and Medical Modelling, 16(1):1–15, 2019.">Roosa and Chowell, 2019</a>]</span>. For most conflicts, casualty counts suffer from systematic under-reporting, with true tolls often substantially exceeding official figures <span id="id16">[<a class="reference internal" href="#id91" title="Ziad Obermeyer, Christopher JL Murray, and Emmanuela Gakidou. Fifty years of violent war deaths from vietnam to bosnia: analysis of data from the world health survey programme. BMJ, 336(7659):1482–1486, 2008.">Obermeyer <em>et al.</em>, 2008</a>, <a class="reference internal" href="#id90" title="Michael Spagat, Andrew Mack, Tara Cooper, and Joakim Kreutz. Estimating war deaths: an arena of contestation. Journal of Conflict Resolution, 53(6):934–950, 2009.">Spagat <em>et al.</em>, 2009</a>]</span>. Recorded counts could be explained by high casualties and low reporting, or alternatively by moderate casualties and better documentation. If a series of interventions are applied in sequence to reduce violence (ceasefires, humanitarian corridors, international pressure), then their effects may be confounded and difficult to disentangle <span id="id17">[<a class="reference internal" href="#id55" title="Samir Bhatt, Neil Ferguson, Seth Flaxman, Axel Gandy, Swapnil Mishra, and James A Scott. Semi-mechanistic bayesian modeling of covid-19 with renewal processes. arXiv preprint arXiv:2012.00394, 2020.">Bhatt <em>et al.</em>, 2020</a>]</span>. Bayesian approaches using MCMC allow full exploration of posterior correlations between such coupled parameters. Informative, or weakly informative, priors may be incorporated to regularize, and help to mitigate identifiability problems, which may otherwise pose difficulties for sampling <span id="id18">[<a class="reference internal" href="02_description.html#id8">Gelman <em>et al.</em>, 2013</a>, <a class="reference internal" href="#id58" title="Andrew Gelman, Aleks Jakulin, Maria Grazia Pittau, and Yu-Sung Su. A weakly informative default prior distribution for logistic and other regression models. The Annals of Applied Statistics, 2(4):1360–1383, 2008.">Gelman <em>et al.</em>, 2008</a>]</span>.</p>
+<p><strong>TRACE</strong>’s functionality can be used for a number of purposes. A researcher can simulate casualty dynamics under assumed parameters by setting tight priors around the assumed values. It is then possible to sample directly from the prior distribution without conditioning on data. This allows <em>in-silico</em> experimentation; for example, to assess the effect of varying a single parameter (conflict intensity, hospital fatality rates, spatial accessibility). Another goal of modeling is to assess whether a simple and parsimonious model of reality can replicate observed phenomena. This helps to isolate processes helpful for explaining the data. Models of varying complexity can be specified within <strong>TRACE</strong>, largely as a result of its regression-oriented framework. Posterior predictive checks can be used to assess model fit. If the model is deemed misspecified, additional features may be considered. This could be modeling population displacement, explicit modeling of mass casualty events <span id="id19">[<a class="reference internal" href="#id95" title="Eric Neumayer and Thomas Plümper. The escalation and de-escalation of violent conflicts. Journal of Peace Research, 53(6):749–763, 2016.">Neumayer and Plümper, 2016</a>]</span>, alternative and over-dispersed models for the data, or more flexible functional forms for casualty rates or hospital allocation patterns. This can be done rapidly within <strong>TRACE</strong>’s framework.</p>
+<p>Forecasting models are critical during ongoing conflicts as they are used to inform humanitarian response and policy decisions under uncertainty. As a sign of their importance, organizations such as the Armed Conflict Location &amp; Event Data Project (ACLED) <span id="id20">[<a class="reference internal" href="../tutorials/02_gaza_analysis.html#id18" title="Clionadh Raleigh, Andrew Linke, Håvard Hegre, and Joakim Karlsen. Introducing acled: an armed conflict location and event dataset. Journal of Peace Research, 47(5):651–660, 2010.">Raleigh <em>et al.</em>, 2010</a>]</span> and the Uppsala Conflict Data Program (UCDP) <span id="id21">[<a class="reference internal" href="#id96" title="Therése Pettersson and Magnus Öberg. Organized violence 1989–2020, with a special emphasis on syria. Journal of Peace Research, 57(4):597–613, 2020.">Pettersson and Öberg, 2020</a>]</span> maintain extensive databases of conflict events to support analytical and forecasting efforts. Long-term forecasts quantify the human cost of unmitigated conflict and provide a baseline from which to infer the effects of interventions. Short-term forecasts are crucial in informing decisions on how to distribute resources such as medical supplies, field hospitals, or evacuation capacity, or whether humanitarian organizations should increase their presence in affected areas. Traditional statistical approaches often give unrealistic long-term forecasts as they do not explicitly account for the mechanisms driving casualties or the effects of spatial structure. The semi-mechanistic approach of <strong>TRACE</strong> combines the strengths of statistical approaches with explicit casualty generation dynamics and can thus be used for forecasting at different time horizons.</p>
+<section id="the-trace-framework">
+<h2>The TRACE Framework<a class="headerlink" href="#the-trace-framework" title="Link to this heading"></a></h2>
+<p>The <strong>TRACE</strong> package implements semi-mechanistic Bayesian models for conflict casualty analysis. The core framework consists of three inter-related components:</p>
+<section id="conflict-event-process">
+<h3>1. Conflict Event Process<a class="headerlink" href="#conflict-event-process" title="Link to this heading"></a></h3>
+<p>Violent events are the primary drivers of casualties. These are typically recorded in event databases such as ACLED <span id="id22">[<a class="reference internal" href="../tutorials/02_gaza_analysis.html#id18" title="Clionadh Raleigh, Andrew Linke, Håvard Hegre, and Joakim Karlsen. Introducing acled: an armed conflict location and event dataset. Journal of Peace Research, 47(5):651–660, 2010.">Raleigh <em>et al.</em>, 2010</a>]</span>, which document the date, location, type, and sometimes reported casualties of political violence events. Let <span class="math notranslate nohighlight">\(E_t\)</span> denote the set of events occurring on day <span class="math notranslate nohighlight">\(t\)</span>, with <span class="math notranslate nohighlight">\(|E_t|\)</span> denoting the count. Each event <span class="math notranslate nohighlight">\(e \in E_t\)</span> is associated with a geographic location <span class="math notranslate nohighlight">\((x_e, y_e)\)</span> and potentially an event type (e.g., airstrike, shelling, armed clash).</p>
+<p>Unlike epidemics where new infections arise endogenously from previous infections, conflict events are often driven by external factors such as military operations, political decisions, or escalation dynamics. However, some conflicts do exhibit self-exciting properties <span id="id23">[<a class="reference internal" href="#id100" title="George O Mohler, Martin B Short, P Jeffrey Brantingham, Frederic Paik Schoenberg, and George E Tita. Self-exciting point process modeling of crime. Journal of the American Statistical Association, 106(493):100–108, 2011.">Mohler <em>et al.</em>, 2011</a>, <a class="reference internal" href="#id99" title="Michael Townsley. Space time dynamics of insurgent activity: the example of naxalite violence in the chhattisgarh region of india. Security Journal, 21(3):149–169, 2008.">Townsley, 2008</a>]</span>, where past violence increases the probability of future violence. <strong>TRACE</strong> currently treats events as exogenous inputs but can be extended to model event generation endogenously.</p>
+</section>
+<section id="spatial-allocation-to-hospitals">
+<h3>2. Spatial Allocation to Hospitals<a class="headerlink" href="#spatial-allocation-to-hospitals" title="Link to this heading"></a></h3>
+<p>Casualties from conflict events seek treatment at hospitals. The allocation of casualties to specific hospitals depends on:</p>
+<ul class="simple">
+<li><p><strong>Geographic proximity</strong>: Closer hospitals are more accessible</p></li>
+<li><p><strong>Hospital capacity</strong>: Larger facilities may draw from wider catchment areas</p></li>
+<li><p><strong>Infrastructure</strong>: Road networks, checkpoints, and damage affect accessibility</p></li>
+<li><p><strong>Security</strong>: Active conflict zones may make certain routes impassable</p></li>
+</ul>
+<p><strong>TRACE</strong> models this through spatial kernel functions. For event <span class="math notranslate nohighlight">\(e\)</span> and hospital <span class="math notranslate nohighlight">\(h\)</span> separated by distance <span class="math notranslate nohighlight">\(d_{e,h}\)</span>, the proportion of casualties allocated to hospital <span class="math notranslate nohighlight">\(h\)</span> is:</p>
+<div class="math notranslate nohighlight">
+\[
+w_{e,h} = \frac{k(d_{e,h}; \ell)}{\sum_{h'} k(d_{e,h'}; \ell)}
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(k(\cdot; \ell)\)</span> is a kernel function with length scale parameter <span class="math notranslate nohighlight">\(\ell\)</span>. The exponential kernel <span class="math notranslate nohighlight">\(k(d; \ell) = \exp(-d/\ell)\)</span> is used by default, giving heavier weight to nearby facilities. Alternative kernels (Gaussian, power-law, gravity-model based) can be specified to capture different accessibility patterns {cite}`Gething2012}.</p>
+<p>The spatial structure distinguishes <strong>TRACE</strong> from aggregate national-level models and allows for:</p>
+<ul class="simple">
+<li><p>Hospital-specific forecasting for resource planning</p></li>
+<li><p>Identifying underserved geographic areas</p></li>
+<li><p>Assessing the impact of hospital closures or damage</p></li>
+<li><p>Optimizing placement of mobile medical units</p></li>
+</ul>
+</section>
+<section id="temporal-dynamics-injury-to-death">
+<h3>3. Temporal Dynamics: Injury to Death<a class="headerlink" href="#temporal-dynamics-injury-to-death" title="Link to this heading"></a></h3>
+<p>Not all casualties die immediately. Many injured individuals are treated in hospitals, with outcomes (survival or death) occurring over subsequent days or weeks. This creates temporal delays between injury incidence and mortality observations. <strong>TRACE</strong> models this through:</p>
+<div class="math notranslate nohighlight">
+\[
+D_t = \underbrace{\mu_i |E_t|}_{\text{immediate deaths}} + \underbrace{p_{\text{late}} \sum_{k=1}^L I_{t-k} f_k}_{\text{delayed deaths}}
+\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(D_t\)</span> is deaths on day <span class="math notranslate nohighlight">\(t\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\mu_i\)</span> is average immediate deaths per event</p></li>
+<li><p><span class="math notranslate nohighlight">\(I_{t-k}\)</span> is injuries on day <span class="math notranslate nohighlight">\(t-k\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(p_{\text{late}}\)</span> is hospital fatality rate</p></li>
+<li><p><span class="math notranslate nohighlight">\(f_k\)</span> is delay distribution (probability death occurs <span class="math notranslate nohighlight">\(k\)</span> days post-injury)</p></li>
+</ul>
+<p>The delay distribution <span class="math notranslate nohighlight">\(f\)</span> can be informed by medical literature on trauma outcomes <span id="id24">[<a class="reference internal" href="#id71" title="Howard R Champion, Ronald F Bellamy, C Philip Roberts, and Ari Leppaniemi. A profile of combat injury. Journal of Trauma and Acute Care Surgery, 54(5):S13–S19, 2003.">Champion <em>et al.</em>, 2003</a>, <a class="reference internal" href="#id72" title="Brian J Eastridge, Robert L Mabry, Peter Seguin, Joyce Cantrell, Terrill Tops, Paul Uribe, Olga Mallett, Tamara Zubko, Lynne Oetjen-Gerdes, Todd E Rasmussen, and others. Death on the battlefield (2001–2011): implications for the future of combat casualty care. Journal of Trauma and Acute Care Surgery, 73(6):S431–S437, 2012.">Eastridge <em>et al.</em>, 2012</a>]</span>, which suggests that most conflict-related deaths among hospitalized patients occur within the first 72 hours, with a tail extending to weeks for severe injuries complicated by sepsis or organ failure.</p>
+<p>This temporal structure allows <strong>TRACE</strong> to:</p>
+<ul class="simple">
+<li><p>Separate immediate battlefield deaths from hospital deaths</p></li>
+<li><p>Estimate hospital fatality rates (indicator of care quality and injury severity)</p></li>
+<li><p>Project future deaths from current injuries (even if conflict stops)</p></li>
+<li><p>Distinguish between high-lethality (many immediate deaths) and high-injury (many hospitalizations) scenarios</p></li>
+</ul>
+</section>
+</section>
+<section id="mathematical-foundations">
+<h2>Mathematical Foundations<a class="headerlink" href="#mathematical-foundations" title="Link to this heading"></a></h2>
+<p>The model is formulated as a hierarchical Bayesian model with three likelihood components:</p>
+<section id="hospital-injury-likelihood">
+<h3>Hospital Injury Likelihood<a class="headerlink" href="#hospital-injury-likelihood" title="Link to this heading"></a></h3>
+<p>Daily injuries at hospital <span class="math notranslate nohighlight">\(h\)</span> are modeled as:</p>
+<div class="math notranslate nohighlight">
+\[
+H_{t,h} \sim \text{Poisson}(\lambda_{t,h})
+\]</div>
+<p>where the rate <span class="math notranslate nohighlight">\(\lambda_{t,h}\)</span> depends on events and spatial allocation:</p>
+<div class="math notranslate nohighlight">
+\[
+\lambda_{t,h} = \mu_w \sum_{e \in E_t} w_{e,h}
+\]</div>
+<p>Here <span class="math notranslate nohighlight">\(\mu_w\)</span> is the average number of wounded per event. This parameter varies substantially across conflict types: airstrikes on residential areas produce many casualties <span id="id25">[<a class="reference internal" href="#id98" title="Debarati Guha-Sapir, Olivier D'Aoust, Femke Vos, and Philippe Hoyois. Protecting the civilian population in modern wars. European Journal of Public Health, 20(4):471–474, 2010.">Guha-Sapir <em>et al.</em>, 2010</a>]</span>, while targeted assassinations may produce few.</p>
+</section>
+<section id="death-likelihood">
+<h3>Death Likelihood<a class="headerlink" href="#death-likelihood" title="Link to this heading"></a></h3>
+<p>National daily deaths are modeled as:</p>
+<div class="math notranslate nohighlight">
+\[
+D_t \sim \text{Poisson}(\delta_t)
+\]</div>
+<p>with rate <span class="math notranslate nohighlight">\(\delta_t\)</span> given by the sum of immediate and delayed components as described above.</p>
+</section>
+<section id="extensions">
+<h3>Extensions<a class="headerlink" href="#extensions" title="Link to this heading"></a></h3>
+<p>The basic Poisson framework can be extended to handle:</p>
+<ul class="simple">
+<li><p><strong>Overdispersion</strong>: Negative Binomial distributions <span class="math notranslate nohighlight">\(\text{NB}(\mu, \phi)\)</span> to capture extra-Poisson variation</p></li>
+<li><p><strong>Time-varying rates</strong>: <span class="math notranslate nohighlight">\(\mu_{w,t} = \mu_w \exp(X_t \beta)\)</span> where <span class="math notranslate nohighlight">\(X_t\)</span> are covariates (ceasefire indicators, conflict intensity metrics)</p></li>
+<li><p><strong>Event-type specific effects</strong>: Different <span class="math notranslate nohighlight">\(\mu_w\)</span> and <span class="math notranslate nohighlight">\(\mu_i\)</span> for airstrikes vs. ground combat</p></li>
+<li><p><strong>Hierarchical structure</strong>: Partial pooling of parameters across multiple conflict zones</p></li>
+</ul>
+</section>
+</section>
+<section id="prior-specifications">
+<h2>Prior Specifications<a class="headerlink" href="#prior-specifications" title="Link to this heading"></a></h2>
+<p>Default priors are weakly informative, balancing between being proper (for computational stability) and allowing data to dominate:</p>
+<ul class="simple">
+<li><p><strong>Casualty rates</strong>: <span class="math notranslate nohighlight">\(\mu_w, \mu_i \sim \text{Exponential}(0.3)\)</span>, implying prior mean of 3.3 casualties per event</p></li>
+<li><p><strong>Hospital fatality</strong>: <span class="math notranslate nohighlight">\(p_{\text{late}} \sim \text{Beta}(2, 10)\)</span>, implying prior mean ~17%, consistent with trauma literature</p></li>
+<li><p><strong>Spatial scale</strong>: <span class="math notranslate nohighlight">\(\ell \sim \text{Exponential}(1.0)\)</span>, implying prior mean of 1 degree (∼100 km)</p></li>
+</ul>
+<p>These defaults can and should be adjusted based on:</p>
+<ul class="simple">
+<li><p><strong>Context-specific information</strong>: Urban vs. rural, aerial bombardment vs. ground combat</p></li>
+<li><p><strong>Historical data</strong>: Casualty rates from similar conflicts</p></li>
+<li><p><strong>Expert knowledge</strong>: Input from humanitarian organizations or military analysts</p></li>
+</ul>
+<p>Sensitivity to priors should always be assessed, particularly for parameters that are weakly identified by data <span id="id26">[<a class="reference internal" href="#id58" title="Andrew Gelman, Aleks Jakulin, Maria Grazia Pittau, and Yu-Sung Su. A weakly informative default prior distribution for logistic and other regression models. The Annals of Applied Statistics, 2(4):1360–1383, 2008.">Gelman <em>et al.</em>, 2008</a>]</span>.</p>
+</section>
+<section id="inference">
+<h2>Inference<a class="headerlink" href="#inference" title="Link to this heading"></a></h2>
+<p>Posterior inference is performed using the No-U-Turn Sampler (NUTS) <span id="id27">[<a class="reference internal" href="02_description.html#id7" title="Matthew D Hoffman and Andrew Gelman. The no-u-turn sampler: adaptively setting path lengths in hamiltonian monte carlo. Journal of Machine Learning Research, 15(1):1593–1623, 2014.">Hoffman and Gelman, 2014</a>]</span>, an adaptive variant of Hamiltonian Monte Carlo (HMC) that automatically tunes step sizes and trajectory lengths. NUTS has become the default inference algorithm in modern probabilistic programming languages due to its efficiency on high-dimensional, correlated posteriors.</p>
+<p><strong>TRACE</strong> uses <strong>NumPyro</strong> <span id="id28">[<a class="reference internal" href="#id79" title="Du Phan, Neeraj Pradhan, and Martin Jankowiak. Composable effects for flexible and accelerated probabilistic programming in numpyro. arXiv preprint arXiv:1912.11554, 2019.">Phan <em>et al.</em>, 2019</a>]</span>, which implements NUTS on top of <strong>JAX</strong> <span id="id29">[<a class="reference internal" href="#id80">Bradbury <em>et al.</em>, 2018</a>]</span>. This provides:</p>
+<ul class="simple">
+<li><p><strong>Performance</strong>: JIT compilation and GPU acceleration enable rapid inference</p></li>
+<li><p><strong>Scalability</strong>: Can handle datasets with hundreds of thousands of events</p></li>
+<li><p><strong>Diagnostics</strong>: Automatic computation of <span class="math notranslate nohighlight">\(\hat{R}\)</span>, effective sample size, and divergence warnings</p></li>
+</ul>
+<p>Users should always check convergence diagnostics <span id="id30">[<a class="reference internal" href="02_description.html#id8">Gelman <em>et al.</em>, 2013</a>]</span>:</p>
+<ul class="simple">
+<li><p><strong><span class="math notranslate nohighlight">\(\hat{R} &lt; 1.01\)</span></strong>: Potential scale reduction factor, indicates chains have converged</p></li>
+<li><p><strong>ESS &gt; 100 per chain</strong>: Effective sample size, indicates sufficient posterior exploration</p></li>
+<li><p><strong>Zero divergences</strong>: Indicates sampler is exploring posterior geometry correctly</p></li>
+</ul>
+</section>
+<section id="comparison-to-epidemic-models">
+<h2>Comparison to Epidemic Models<a class="headerlink" href="#comparison-to-epidemic-models" title="Link to this heading"></a></h2>
+<p>The <strong>TRACE</strong> framework draws heavily from semi-mechanistic epidemic models, particularly the approach of Flaxman et al. <span id="id31">[<a class="reference internal" href="#id54" title="Seth Flaxman, Swapnil Mishra, Axel Gandy, H Juliette T Unwin, Thomas A Mellan, Helen Coupland, Charles Whittaker, Harrison Zhu, Tresnia Berah, Jeffrey W Eaton, and others. Estimating the effects of non-pharmaceutical interventions on covid-19 in europe. Nature, 584(7820):257–261, 2020.">Flaxman <em>et al.</em>, 2020</a>]</span> and the <strong>epidemia</strong> R package <span id="id32">[<a class="reference internal" href="#id60">Scott <em>et al.</em>, 2020</a>]</span>. However, there are key differences:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Aspect</p></th>
+<th class="head"><p>Epidemic Models</p></th>
+<th class="head"><p>Conflict Models (TRACE)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Generative Process</strong></p></td>
+<td><p>Infections → infections (self-exciting)</p></td>
+<td><p>Events → casualties (exogenous events)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Temporal Structure</strong></p></td>
+<td><p>Renewal equation with generation time</p></td>
+<td><p>Discrete events with injury-to-death delays</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Spatial Structure</strong></p></td>
+<td><p>Age-stratified contact matrices</p></td>
+<td><p>Geographic kernel-based hospital allocation</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Data Streams</strong></p></td>
+<td><p>Cases, deaths, seroprevalence</p></td>
+<td><p>Events, hospital admissions, mortality</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Interventions</strong></p></td>
+<td><p>NPIs (lockdowns, masks, vaccines)</p></td>
+<td><p>Ceasefires, humanitarian corridors</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Identifiability</strong></p></td>
+<td><p><span class="math notranslate nohighlight">\(R_t\)</span> vs. ascertainment confounded</p></td>
+<td><p>Immediate vs. delayed deaths confounded</p></td>
+</tr>
+</tbody>
+</table>
+<p>Despite differences, many methodological innovations transfer:</p>
+<ul class="simple">
+<li><p>Hierarchical regression for <span class="math notranslate nohighlight">\(R_t\)</span> → Hierarchical regression for casualty rates</p></li>
+<li><p>Partial pooling across countries → Partial pooling across conflict zones</p></li>
+<li><p>Posterior predictive forecasting → Scenario-based casualty projections</p></li>
+</ul>
+</section>
+<section id="comparison-to-traditional-conflict-models">
+<h2>Comparison to Traditional Conflict Models<a class="headerlink" href="#comparison-to-traditional-conflict-models" title="Link to this heading"></a></h2>
+<p><strong>TRACE</strong> differs from traditional conflict forecasting approaches:</p>
+<section id="lanchester-models">
+<h3>Lanchester Models<a class="headerlink" href="#lanchester-models" title="Link to this heading"></a></h3>
+<p>Lanchester’s attrition equations <span id="id33">[<a class="reference internal" href="#id63" title="Frederick W Lanchester. Aircraft in Warfare: The Dawn of the Fourth Arm. Constable and Company Ltd, 1914.">Lanchester, 1914</a>]</span> model combat as deterministic differential equations governing force sizes:</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{dN_1}{dt} = -\alpha_2 N_2, \quad \frac{dN_2}{dt} = -\alpha_1 N_1
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(N_i\)</span> is the size of force <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(\alpha_i\)</span> is its lethality. These are highly interpretable but:</p>
+<ul class="simple">
+<li><p>Require knowing force sizes (often unavailable in civil conflicts)</p></li>
+<li><p>Assume closed-system, symmetric warfare (unrealistic for asymmetric conflicts)</p></li>
+<li><p>No spatial structure or stochasticity</p></li>
+<li><p>Difficult to fit to observational data</p></li>
+</ul>
+<p>Recent applications to Gaza <span id="id34">[<a class="reference internal" href="#id64" title="Moshe Kress and Niall J MacKay. Lanchester models of urban warfare: the battle for gaza. Operations Research Perspectives, 13:100294, 2025.">Kress and MacKay, 2025</a>]</span> demonstrate their utility but also limitations.</p>
+</section>
+<section id="agent-based-models">
+<h3>Agent-Based Models<a class="headerlink" href="#agent-based-models" title="Link to this heading"></a></h3>
+<p>ABMs <span id="id35">[<a class="reference internal" href="#id82" title="Joshua M Epstein. Modeling civil violence: an agent-based computational approach. Proceedings of the National Academy of Sciences, 99(suppl 3):7243–7250, 2002.">Epstein, 2002</a>]</span> simulate individual combatants and civilians, allowing rich spatial and behavioral dynamics. However:</p>
+<ul class="simple">
+<li><p>Computationally intensive, limiting use for real-time forecasting</p></li>
+<li><p>Many free parameters, difficult to calibrate to data</p></li>
+<li><p>Validation challenging due to complexity</p></li>
+<li><p>Less suitable for probabilistic uncertainty quantification</p></li>
+</ul>
+</section>
+<section id="statistical-forecasting">
+<h3>Statistical Forecasting<a class="headerlink" href="#statistical-forecasting" title="Link to this heading"></a></h3>
+<p>Time series models (ARIMA, exponential smoothing) or machine learning (random forests, neural networks) can provide good short-term forecasts <span id="id36">[<a class="reference internal" href="#id85" title="Robert A Blair and Nicholas Sambanis. Forecasting civil wars: theory and structure in an age of &quot;big data&quot; and machine learning. Journal of Conflict Resolution, 65(10):1752–1781, 2021.">Blair and Sambanis, 2021</a>, <a class="reference internal" href="#id84" title="John Mueller and Tim Sweijs. War, ai and the new global arms race. International Affairs, 96(4):1-20, 2020.">Mueller and Sweijs, 2020</a>]</span> but:</p>
+<ul class="simple">
+<li><p>Lack mechanistic interpretation (black-box)</p></li>
+<li><p>Poor extrapolation beyond training regime</p></li>
+<li><p>No explicit spatial structure</p></li>
+<li><p>Difficult to incorporate scenario assumptions (e.g., ceasefire effects)</p></li>
+</ul>
+<p><strong>TRACE</strong> occupies a middle ground: more mechanistic than pure time series approaches, more statistically grounded than deterministic combat models, more computationally tractable than detailed ABMs.</p>
+</section>
+</section>
+<section id="data-requirements-and-sources">
+<h2>Data Requirements and Sources<a class="headerlink" href="#data-requirements-and-sources" title="Link to this heading"></a></h2>
+<p><strong>TRACE</strong> requires three primary data streams:</p>
+<section id="conflict-events">
+<h3>1. Conflict Events<a class="headerlink" href="#conflict-events" title="Link to this heading"></a></h3>
+<p>Geocoded event data with dates and locations. Sources include:</p>
+<ul class="simple">
+<li><p><strong>ACLED</strong> <span id="id37">[<a class="reference internal" href="../tutorials/02_gaza_analysis.html#id18" title="Clionadh Raleigh, Andrew Linke, Håvard Hegre, and Joakim Karlsen. Introducing acled: an armed conflict location and event dataset. Journal of Peace Research, 47(5):651–660, 2010.">Raleigh <em>et al.</em>, 2010</a>]</span>: Global coverage, updated weekly, includes event types and reported fatalities</p></li>
+<li><p><strong>UCDP GED</strong> <span id="id38">[<a class="reference internal" href="#id97" title="Ralph Sundberg and Erik Melander. Introducing the ucdp georeferenced event dataset. Journal of Peace Research, 50(4):523–532, 2013.">Sundberg and Melander, 2013</a>]</span>: Similar coverage, slightly different methodology</p></li>
+<li><p><strong>Local databases</strong>: News scraping, social media monitoring, witness reports</p></li>
+</ul>
+<p>Events should minimally include date and coordinates. Additional covariates (event type, weapon system, actors) enable richer models.</p>
+</section>
+<section id="hospital-admissions">
+<h3>2. Hospital Admissions<a class="headerlink" href="#hospital-admissions" title="Link to this heading"></a></h3>
+<p>Daily or weekly counts of conflict-related injuries at healthcare facilities. This is often the most challenging data to obtain:</p>
+<ul class="simple">
+<li><p><strong>Official health systems</strong>: Ministry of Health reports (often aggregated, may be incomplete)</p></li>
+<li><p><strong>Humanitarian organizations</strong>: MSF, ICRC, WHO often collect facility-level data but may not publicly release</p></li>
+<li><p><strong>Sentinel surveillance</strong>: Detailed data from subset of facilities</p></li>
+</ul>
+<p>When unavailable, <strong>TRACE</strong> can be fit to national mortality data alone, though this reduces inferential power.</p>
+</section>
+<section id="mortality-data">
+<h3>3. Mortality Data<a class="headerlink" href="#mortality-data" title="Link to this heading"></a></h3>
+<p>National or regional death counts. Sources include:</p>
+<ul class="simple">
+<li><p><strong>Official reports</strong>: Ministry of Health daily/weekly bulletins</p></li>
+<li><p><strong>Surveillance systems</strong>: Civil registration, burial records</p></li>
+<li><p><strong>Alternative sources</strong>: Media monitoring, NGO documentation (e.g., Tech for Palestine for Gaza)</p></li>
+</ul>
+<p>Mortality data is typically more complete than injury data but still suffers from under-reporting, particularly during intense conflict when recording systems break down <span id="id39">[<a class="reference internal" href="#id91" title="Ziad Obermeyer, Christopher JL Murray, and Emmanuela Gakidou. Fifty years of violent war deaths from vietnam to bosnia: analysis of data from the world health survey programme. BMJ, 336(7659):1482–1486, 2008.">Obermeyer <em>et al.</em>, 2008</a>]</span>.</p>
+</section>
+</section>
+<section id="case-study-gaza-2023-2024">
+<h2>Case Study: Gaza (2023-2024)<a class="headerlink" href="#case-study-gaza-2023-2024" title="Link to this heading"></a></h2>
+<p><strong>TRACE</strong> has been applied to the Gaza conflict following the October 7, 2023 escalation. This demonstrates the framework’s utility in an active humanitarian crisis:</p>
+<ul class="simple">
+<li><p><strong>Events</strong>: 27,815 ACLED events (Sept 2023 - Dec 2024)</p></li>
+<li><p><strong>Mortality</strong>: Daily reports from Gaza Ministry of Health via Tech for Palestine</p></li>
+<li><p><strong>Findings</strong>:</p>
+<ul>
+<li><p>~5 hospital admissions per conflict event</p></li>
+<li><p>~0.6 immediate deaths per event</p></li>
+<li><p>~49% hospital fatality rate (extremely high, indicating overwhelmed medical system)</p></li>
+<li><p>Under baseline scenario: ~3,900 deaths projected over 30 days</p></li>
+<li><p>Under ceasefire: ~400 deaths (mostly delayed from existing injuries)</p></li>
+<li><p><strong>Potential lives saved: 3,500 over 30 days</strong></p></li>
+</ul>
+</li>
+</ul>
+<p>These findings inform humanitarian planning and international advocacy. See the <a class="reference internal" href="../tutorials/02_gaza_analysis.html"><span class="std std-doc">Gaza Analysis Tutorial</span></a> for full details.</p>
+</section>
+<section id="limitations-and-caveats">
+<h2>Limitations and Caveats<a class="headerlink" href="#limitations-and-caveats" title="Link to this heading"></a></h2>
+<p>Users should be aware of several important limitations:</p>
+<section id="data-quality">
+<h3>1. Data Quality<a class="headerlink" href="#data-quality" title="Link to this heading"></a></h3>
+<p>All inferences are conditional on data quality. Under-reporting, selective reporting, and measurement error can bias estimates. Sensitivity analyses varying assumptions about reporting rates are essential.</p>
+</section>
+<section id="identifiability">
+<h3>2. Identifiability<a class="headerlink" href="#identifiability" title="Link to this heading"></a></h3>
+<p>Some parameters are only weakly identified. For example:</p>
+<ul class="simple">
+<li><p><strong>Immediate vs. delayed deaths</strong>: If delay distribution is misspecified, <span class="math notranslate nohighlight">\(\mu_i\)</span> and <span class="math notranslate nohighlight">\(p_{\text{late}}\)</span> can trade off</p></li>
+<li><p><strong>Spatial allocation</strong>: Without hospital-level data, spatial kernel parameters are unidentified</p></li>
+<li><p><strong>Reporting rates</strong>: Casualty rates and ascertainment are confounded</p></li>
+</ul>
+<p>Informative priors and external validation data (e.g., satellite imagery, media reports) can help.</p>
+</section>
+<section id="causal-inference">
+<h3>3. Causal Inference<a class="headerlink" href="#causal-inference" title="Link to this heading"></a></h3>
+<p><strong>TRACE</strong> is primarily a forecasting and descriptive tool. Causal claims about intervention effects require careful design:</p>
+<ul class="simple">
+<li><p>Adjust for confounders (conflict intensity, seasonality)</p></li>
+<li><p>Use difference-in-differences or interrupted time series designs</p></li>
+<li><p>Account for anticipation effects (if ceasefire is anticipated, behavior changes before)</p></li>
+</ul>
+</section>
+<section id="indirect-deaths">
+<h3>4. Indirect Deaths<a class="headerlink" href="#indirect-deaths" title="Link to this heading"></a></h3>
+<p><strong>TRACE</strong> models only direct conflict casualties. Indirect deaths from disease, malnutrition, and healthcare system collapse often exceed direct deaths <span id="id40">[<a class="reference internal" href="#id101" title="Gilbert Burnham, Riyadh Lafta, Shannon Doocy, and Les Roberts. Mortality after the 2003 invasion of iraq: a cross-sectional cluster sample survey. The Lancet, 368(9545):1421–1428, 2006.">Burnham <em>et al.</em>, 2006</a>, <a class="reference internal" href="#id102" title="Benjamin Coghlan, Richard J Brennan, Pascal Ngoy, David Dofara, Brad Otto, Mark Clements, and Tony Stewart. Mortality in the democratic republic of congo: an ongoing crisis. IRC and Burnet Institute, 2004.">Coghlan <em>et al.</em>, 2004</a>]</span> but require different modeling approaches (e.g., demographic models, epidemiological simulations).</p>
+</section>
+<section id="ethical-considerations">
+<h3>5. Ethical Considerations<a class="headerlink" href="#ethical-considerations" title="Link to this heading"></a></h3>
+<p>Casualty modeling raises ethical concerns:</p>
+<ul class="simple">
+<li><p><strong>Victim dignity</strong>: Numbers should not obscure individual suffering</p></li>
+<li><p><strong>Political use</strong>: Models may be used selectively to support political narratives</p></li>
+<li><p><strong>Dual use</strong>: Methods could potentially inform targeting decisions</p></li>
+</ul>
+<p>Researchers should engage with humanitarian organizations, adhere to ethical guidelines <span id="id41">[<a class="reference internal" href="#id103" title="Andrej Zwitter. Big data ethics. Big Data &amp; Society, 1(2):1–6, 2014.">Zwitter, 2014</a>]</span>, and communicate uncertainty transparently.</p>
+</section>
+</section>
+<section id="software-implementation">
+<h2>Software Implementation<a class="headerlink" href="#software-implementation" title="Link to this heading"></a></h2>
+<p><strong>TRACE</strong> is implemented in Python using:</p>
+<ul class="simple">
+<li><p><strong>JAX</strong> <span id="id42">[<a class="reference internal" href="#id80">Bradbury <em>et al.</em>, 2018</a>]</span>: Array operations, automatic differentiation, GPU support</p></li>
+<li><p><strong>NumPyro</strong> <span id="id43">[<a class="reference internal" href="#id79" title="Du Phan, Neeraj Pradhan, and Martin Jankowiak. Composable effects for flexible and accelerated probabilistic programming in numpyro. arXiv preprint arXiv:1912.11554, 2019.">Phan <em>et al.</em>, 2019</a>]</span>: Probabilistic programming with NUTS inference</p></li>
+<li><p><strong>ArviZ</strong> <span id="id44">[<a class="reference internal" href="#id104" title="Ravin Kumar, Colin Carroll, Ari Hartikainen, and Osvaldo Martin. Arviz a unified library for exploratory analysis of bayesian models in python. Journal of Open Source Software, 4(33):1143, 2019.">Kumar <em>et al.</em>, 2019</a>]</span>: Bayesian diagnostics and visualization</p></li>
+<li><p><strong>Pandas/NumPy</strong>: Data manipulation</p></li>
+</ul>
+<p>The package is open-source (MIT license), version-controlled on GitHub, and includes:</p>
+<ul class="simple">
+<li><p>Comprehensive documentation (this website)</p></li>
+<li><p>Worked examples with real data</p></li>
+<li><p>Unit tests for core functionality</p></li>
+<li><p>Continuous integration</p></li>
+</ul>
+</section>
+<section id="related-work-and-packages">
+<h2>Related Work and Packages<a class="headerlink" href="#related-work-and-packages" title="Link to this heading"></a></h2>
+<p><strong>TRACE</strong> builds on and complements:</p>
+<ul class="simple">
+<li><p><strong>epidemia</strong> (R) <span id="id45">[<a class="reference internal" href="#id60">Scott <em>et al.</em>, 2020</a>]</span>: Semi-mechanistic epidemic models (inspiration for TRACE)</p></li>
+<li><p><strong>EpiNow2</strong> (R) <span id="id46">[<a class="reference internal" href="#id105" title="Sam Abbott, Joel Hellewell, Robin N Thompson, Katharine Sherratt, Hamish P Gibbs, Nikos I Bosse, James D Munday, Sophie Meakin, Emma L Doughty, June Young Chun, and others. Estimating the time-varying reproduction number of sars-cov-2 using national and subnational case counts. Wellcome Open Research, 2020.">Abbott <em>et al.</em>, 2020</a>]</span>: Real-time epidemic forecasting</p></li>
+<li><p><strong>PyMC</strong> (Python) <span id="id47">[<a class="reference internal" href="#id106" title="John Salvatier, Thomas V Wiecki, and Christopher Fonnesbeck. Probabilistic programming in python using pymc3. PeerJ Computer Science, 2:e55, 2016.">Salvatier <em>et al.</em>, 2016</a>]</span>: General Bayesian modeling</p></li>
+<li><p><strong>Stan</strong> (C++) <span id="id48">[<a class="reference internal" href="#id107" title="Bob Carpenter, Andrew Gelman, Matthew D Hoffman, Daniel Lee, Ben Goodrich, Michael Betancourt, Marcus Brubaker, Jiqiang Guo, Peter Li, and Allen Riddell. Stan: a probabilistic programming language. Journal of Statistical Software, 2017.">Carpenter <em>et al.</em>, 2017</a>]</span>: Probabilistic programming with HMC</p></li>
+</ul>
+<p>Conflict-specific tools:</p>
+<ul class="simple">
+<li><p><strong>conflict_forecast</strong> (Python) <span id="id49">[<a class="reference internal" href="#id108" title="Håvard Hegre, Marie Allansson, Matthias Basedau, Michael Colaresi, Mihai Croicu, Hanne Fjelde, Frederick Hoyles, Lisa Hultman, Stina Högbladh, Remco Jansen, and others. Views2020: revising and evaluating the views political violence early-warning system. Journal of Peace Research, 58(3):599–611, 2021.">Hegre <em>et al.</em>, 2021</a>]</span>: Structural conflict prediction models</p></li>
+<li><p><strong>icews</strong> (R): Political event data analysis</p></li>
+<li><p><strong>ViEWS</strong> (Python) <span id="id50">[<a class="reference internal" href="#id109" title="Håvard Hegre, Nils W Metternich, Håvard Mokleiv Nygård, and Julian Wucherpfennig. Views: a political violence early-warning system. Journal of Peace Research, 56(2):155–174, 2019.">Hegre <em>et al.</em>, 2019</a>]</span>: Violence early warning system</p></li>
+</ul>
+<p><strong>TRACE</strong> is unique in combining:</p>
+<ul class="simple">
+<li><p>Semi-mechanistic casualty generation</p></li>
+<li><p>Spatial hospital allocation</p></li>
+<li><p>Bayesian uncertainty quantification</p></li>
+<li><p>Modern probabilistic programming tools (NumPyro/JAX)</p></li>
+</ul>
+</section>
+<section id="getting-started">
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading"></a></h2>
+<p>To begin using <strong>TRACE</strong>:</p>
+<ol class="arabic simple">
+<li><p><strong>Installation</strong>: See <a class="reference internal" href="#../installation.md"><span class="xref myst">Installation Guide</span></a></p></li>
+<li><p><strong>Basic Tutorial</strong>: Work through <a class="reference internal" href="#../tutorials/01_basic_example.md"><span class="xref myst">simulated data example</span></a></p></li>
+<li><p><strong>Real Data</strong>: Study <a class="reference internal" href="../tutorials/02_gaza_analysis.html"><span class="std std-doc">Gaza analysis</span></a></p></li>
+<li><p><strong>Model Details</strong>: Read <a class="reference internal" href="02_description.html"><span class="std std-doc">mathematical description</span></a></p></li>
+<li><p><strong>Implementation</strong>: Explore <a class="reference internal" href="03_implementation.html"><span class="std std-doc">NumPyro code</span></a></p></li>
+</ol>
+</section>
+<section id="contributing">
+<h2>Contributing<a class="headerlink" href="#contributing" title="Link to this heading"></a></h2>
+<p><strong>TRACE</strong> is under active development. Contributions are welcome:</p>
+<ul class="simple">
+<li><p><strong>Bug reports</strong>: <a class="reference external" href="https://github.com/imperial-college/trace/issues">GitHub Issues</a></p></li>
+<li><p><strong>Feature requests</strong>: Discuss via Issues</p></li>
+<li><p><strong>Code contributions</strong>: Submit Pull Requests</p></li>
+<li><p><strong>Documentation</strong>: Corrections and clarifications appreciated</p></li>
+</ul>
+<p>See <a class="reference internal" href="../contributing.html"><span class="std std-doc">Contributing Guide</span></a> for details.</p>
+</section>
+<section id="acknowledgments">
+<h2>Acknowledgments<a class="headerlink" href="#acknowledgments" title="Link to this heading"></a></h2>
+<p><strong>TRACE</strong> development was supported by Imperial College London. The modeling framework draws heavily from epidemic models developed by the MRC Centre for Global Infectious Disease Analysis, particularly the <strong>epidemia</strong> package <span id="id51">[<a class="reference internal" href="#id60">Scott <em>et al.</em>, 2020</a>]</span>. Data from ACLED <span id="id52">[<a class="reference internal" href="../tutorials/02_gaza_analysis.html#id18" title="Clionadh Raleigh, Andrew Linke, Håvard Hegre, and Joakim Karlsen. Introducing acled: an armed conflict location and event dataset. Journal of Peace Research, 47(5):651–660, 2010.">Raleigh <em>et al.</em>, 2010</a>]</span> and Tech for Palestine made the Gaza analysis possible.</p>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<div class="docutils container" id="id53">
+<div role="list" class="citation-list">
+<div class="citation" id="id105" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id46">1</a><span class="fn-bracket">]</span></span>
+<p>Sam Abbott, Joel Hellewell, Robin N Thompson, Katharine Sherratt, Hamish P Gibbs, Nikos I Bosse, James D Munday, Sophie Meakin, Emma L Doughty, June Young Chun, and others. Estimating the time-varying reproduction number of sars-cov-2 using national and subnational case counts. <em>Wellcome Open Research</em>, 2020.</p>
+</div>
+<div class="citation" id="id55" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id3">1</a>,<a role="doc-backlink" href="#id17">2</a>)</span>
+<p>Samir Bhatt, Neil Ferguson, Seth Flaxman, Axel Gandy, Swapnil Mishra, and James A Scott. Semi-mechanistic bayesian modeling of covid-19 with renewal processes. <em>arXiv preprint arXiv:2012.00394</em>, 2020.</p>
+</div>
+<div class="citation" id="id85" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id12">1</a>,<a role="doc-backlink" href="#id36">2</a>)</span>
+<p>Robert A Blair and Nicholas Sambanis. Forecasting civil wars: theory and structure in an age of &quot;big data&quot; and machine learning. <em>Journal of Conflict Resolution</em>, 65(10):1752–1781, 2021.</p>
+</div>
+<div class="citation" id="id83" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id10">4</a><span class="fn-bracket">]</span></span>
+<p>Juan Camilo Bohorquez, Sean Gourley, Alexander R Dixon, Michael Spagat, and Neil F Johnson. Common ecology quantifies human insurgency. <em>Nature</em>, 462(7275):911–914, 2009.</p>
+</div>
+<div class="citation" id="id81" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id11">5</a><span class="fn-bracket">]</span></span>
+<p>George EP Box and Gwilym M Jenkins. <em>Time series analysis: forecasting and control</em>. Holden-Day, 1970.</p>
+</div>
+<div class="citation" id="id80" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id2">1</a>,<a role="doc-backlink" href="#id29">2</a>,<a role="doc-backlink" href="#id42">3</a>)</span>
+<p><strong>missing journal in Bradbury2018</strong></p>
+</div>
+<div class="citation" id="id101" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id40">7</a><span class="fn-bracket">]</span></span>
+<p>Gilbert Burnham, Riyadh Lafta, Shannon Doocy, and Les Roberts. Mortality after the 2003 invasion of iraq: a cross-sectional cluster sample survey. <em>The Lancet</em>, 368(9545):1421–1428, 2006.</p>
+</div>
+<div class="citation" id="id107" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id48">8</a><span class="fn-bracket">]</span></span>
+<p>Bob Carpenter, Andrew Gelman, Matthew D Hoffman, Daniel Lee, Ben Goodrich, Michael Betancourt, Marcus Brubaker, Jiqiang Guo, Peter Li, and Allen Riddell. Stan: a probabilistic programming language. <em>Journal of Statistical Software</em>, 2017.</p>
+</div>
+<div class="citation" id="id89" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id13">9</a><span class="fn-bracket">]</span></span>
+<p>Simon Cauchemez, Pierre-Yves Boelle, Christl A Donnelly, Neil M Ferguson, Guy Thomas, Gabriel M Leung, Anthony J Hedley, Roy M Anderson, and Alain-Jacques Valleron. Real-time estimates in early detection of sars. <em>Emerging Infectious Diseases</em>, 12(1):110, 2006.</p>
+</div>
+<div class="citation" id="id71" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id24">10</a><span class="fn-bracket">]</span></span>
+<p>Howard R Champion, Ronald F Bellamy, C Philip Roberts, and Ari Leppaniemi. A profile of combat injury. <em>Journal of Trauma and Acute Care Surgery</em>, 54(5):S13–S19, 2003.</p>
+</div>
+<div class="citation" id="id102" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id40">11</a><span class="fn-bracket">]</span></span>
+<p>Benjamin Coghlan, Richard J Brennan, Pascal Ngoy, David Dofara, Brad Otto, Mark Clements, and Tony Stewart. Mortality in the democratic republic of congo: an ongoing crisis. <em>IRC and Burnet Institute</em>, 2004.</p>
+</div>
+<div class="citation" id="id87" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id13">12</a><span class="fn-bracket">]</span></span>
+<p>Anne Cori, Neil M Ferguson, Christophe Fraser, and Simon Cauchemez. A new framework and software to estimate time-varying reproduction numbers during epidemics. <em>American Journal of Epidemiology</em>, 178(9):1505–1512, 2013.</p>
+</div>
+<div class="citation" id="id72" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id24">13</a><span class="fn-bracket">]</span></span>
+<p>Brian J Eastridge, Robert L Mabry, Peter Seguin, Joyce Cantrell, Terrill Tops, Paul Uribe, Olga Mallett, Tamara Zubko, Lynne Oetjen-Gerdes, Todd E Rasmussen, and others. Death on the battlefield (2001–2011): implications for the future of combat casualty care. <em>Journal of Trauma and Acute Care Surgery</em>, 73(6):S431–S437, 2012.</p>
+</div>
+<div class="citation" id="id82" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>14<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id9">1</a>,<a role="doc-backlink" href="#id35">2</a>)</span>
+<p>Joshua M Epstein. Modeling civil violence: an agent-based computational approach. <em>Proceedings of the National Academy of Sciences</em>, 99(suppl 3):7243–7250, 2002.</p>
+</div>
+<div class="citation" id="id77" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">15</a><span class="fn-bracket">]</span></span>
+<p>Nuno R Faria, Thomas A Mellan, Charlie Whittaker, Ingra M Claro, Darlan da S Candido, Swapnil Mishra, Myuki AE Crispim, Flavia CS Sales, Iwona Hawryluk, John T McCrone, and others. Genomics and epidemiology of the p. 1 sars-cov-2 lineage in manaus, brazil. <em>Science</em>, 372(6544):815–821, 2021.</p>
+</div>
+<div class="citation" id="id54" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>16<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id3">1</a>,<a role="doc-backlink" href="#id4">2</a>,<a role="doc-backlink" href="#id31">3</a>)</span>
+<p>Seth Flaxman, Swapnil Mishra, Axel Gandy, H Juliette T Unwin, Thomas A Mellan, Helen Coupland, Charles Whittaker, Harrison Zhu, Tresnia Berah, Jeffrey W Eaton, and others. Estimating the effects of non-pharmaceutical interventions on covid-19 in europe. <em>Nature</em>, 584(7820):257–261, 2020.</p>
+</div>
+<div class="citation" id="id86" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id13">17</a><span class="fn-bracket">]</span></span>
+<p>Christophe Fraser. Estimating individual and household reproduction numbers in an emerging epidemic. <em>PloS one</em>, 2(8):e758, 2007.</p>
+</div>
+<div class="citation" id="id57" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>18<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id18">1</a>,<a role="doc-backlink" href="#id30">2</a>)</span>
+<p><strong>missing journal in Gelman2013</strong></p>
+</div>
+<div class="citation" id="id58" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>19<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id18">1</a>,<a role="doc-backlink" href="#id26">2</a>)</span>
+<p>Andrew Gelman, Aleks Jakulin, Maria Grazia Pittau, and Yu-Sung Su. A weakly informative default prior distribution for logistic and other regression models. <em>The Annals of Applied Statistics</em>, 2(4):1360–1383, 2008.</p>
+</div>
+<div class="citation" id="id98" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id25">20</a><span class="fn-bracket">]</span></span>
+<p>Debarati Guha-Sapir, Olivier D'Aoust, Femke Vos, and Philippe Hoyois. Protecting the civilian population in modern wars. <em>European Journal of Public Health</em>, 20(4):471–474, 2010.</p>
+</div>
+<div class="citation" id="id76" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">21</a><span class="fn-bracket">]</span></span>
+<p>Iwona Hawryluk, Thomas A Mellan, Henrique Hoeltgebaum, Swapnil Mishra, Ricardo P Schnekenberg, Charlie Whittaker, Harrison Zhu, Axel Gandy, Christl A Donnelly, Seth Flaxman, and others. Inference of covid-19 epidemiological distributions from brazilian hospital data. <em>Journal of the Royal Society Interface</em>, 17(172):20200596, 2020.</p>
+</div>
+<div class="citation" id="id108" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id49">22</a><span class="fn-bracket">]</span></span>
+<p>Håvard Hegre, Marie Allansson, Matthias Basedau, Michael Colaresi, Mihai Croicu, Hanne Fjelde, Frederick Hoyles, Lisa Hultman, Stina Högbladh, Remco Jansen, and others. Views2020: revising and evaluating the views political violence early-warning system. <em>Journal of Peace Research</em>, 58(3):599–611, 2021.</p>
+</div>
+<div class="citation" id="id93" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id14">23</a><span class="fn-bracket">]</span></span>
+<p>Håvard Hegre, Joakim Karlsen, Håvard Mokleiv Nygård, Håvard Strand, and Henrik Urdal. Predicting armed conflict, 2010–2050. <em>International Studies Quarterly</em>, 57(2):250–270, 2013.</p>
+</div>
+<div class="citation" id="id109" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id50">24</a><span class="fn-bracket">]</span></span>
+<p>Håvard Hegre, Nils W Metternich, Håvard Mokleiv Nygård, and Julian Wucherpfennig. Views: a political violence early-warning system. <em>Journal of Peace Research</em>, 56(2):155–174, 2019.</p>
+</div>
+<div class="citation" id="id56" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id27">25</a><span class="fn-bracket">]</span></span>
+<p>Matthew D Hoffman and Andrew Gelman. The no-u-turn sampler: adaptively setting path lengths in hamiltonian monte carlo. <em>Journal of Machine Learning Research</em>, 15(1):1593–1623, 2014.</p>
+</div>
+<div class="citation" id="id64" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id34">26</a><span class="fn-bracket">]</span></span>
+<p>Moshe Kress and Niall J MacKay. Lanchester models of urban warfare: the battle for gaza. <em>Operations Research Perspectives</em>, 13:100294, 2025.</p>
+</div>
+<div class="citation" id="id104" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id44">27</a><span class="fn-bracket">]</span></span>
+<p>Ravin Kumar, Colin Carroll, Ari Hartikainen, and Osvaldo Martin. Arviz a unified library for exploratory analysis of bayesian models in python. <em>Journal of Open Source Software</em>, 4(33):1143, 2019.</p>
+</div>
+<div class="citation" id="id63" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>28<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id8">1</a>,<a role="doc-backlink" href="#id33">2</a>)</span>
+<p>Frederick W Lanchester. <em>Aircraft in Warfare: The Dawn of the Fourth Arm</em>. Constable and Company Ltd, 1914.</p>
+</div>
+<div class="citation" id="id73" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">29</a><span class="fn-bracket">]</span></span>
+<p><strong>missing journal in Mellan_2020</strong></p>
+</div>
+<div class="citation" id="id100" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id23">30</a><span class="fn-bracket">]</span></span>
+<p>George O Mohler, Martin B Short, P Jeffrey Brantingham, Frederic Paik Schoenberg, and George E Tita. Self-exciting point process modeling of crime. <em>Journal of the American Statistical Association</em>, 106(493):100–108, 2011.</p>
+</div>
+<div class="citation" id="id84" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>31<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id12">1</a>,<a role="doc-backlink" href="#id36">2</a>)</span>
+<p>John Mueller and Tim Sweijs. War, ai and the new global arms race. <em>International Affairs</em>, 96(4):1–20, 2020.</p>
+</div>
+<div class="citation" id="id61" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">32</a><span class="fn-bracket">]</span></span>
+<p>Monica F Myers, David J Rogers, J Cox, Antoine Flahault, and Simon I Hay. Forecasting disease risk for increased epidemic preparedness in public health. <em>Advances in Parasitology</em>, 47:309–330, 2000.</p>
+</div>
+<div class="citation" id="id95" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id19">33</a><span class="fn-bracket">]</span></span>
+<p>Eric Neumayer and Thomas Plümper. The escalation and de-escalation of violent conflicts. <em>Journal of Peace Research</em>, 53(6):749–763, 2016.</p>
+</div>
+<div class="citation" id="id88" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id13">34</a><span class="fn-bracket">]</span></span>
+<p>Pierre Nouvellet, Anne Cori, Tini Garske, Isobel M Blake, Ilaria Dorigatti, Wes Hinsley, Thibaut Jombart, Harriet L Mills, Gemma Nedjati-Gilani, Maria D Van Kerkhove, and others. A simple approach to measure transmissibility and forecast incidence. <em>Epidemics</em>, 22:29–35, 2018.</p>
+</div>
+<div class="citation" id="id91" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>35<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id16">1</a>,<a role="doc-backlink" href="#id39">2</a>)</span>
+<p>Ziad Obermeyer, Christopher JL Murray, and Emmanuela Gakidou. Fifty years of violent war deaths from vietnam to bosnia: analysis of data from the world health survey programme. <em>BMJ</em>, 336(7659):1482–1486, 2008.</p>
+</div>
+<div class="citation" id="id74" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">36</a><span class="fn-bracket">]</span></span>
+<p>Alden M Olney, Jarvis Smith, Sanjay Sen, Fred Thomas, and H Juliette T Unwin. Estimating the effect of social distancing interventions on covid-19 in the united states. <em>American Journal of Epidemiology</em>, 190(8):1527–1536, 2021.</p>
+</div>
+<div class="citation" id="id96" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id21">37</a><span class="fn-bracket">]</span></span>
+<p>Therése Pettersson and Magnus Öberg. Organized violence 1989–2020, with a special emphasis on syria. <em>Journal of Peace Research</em>, 57(4):597–613, 2020.</p>
+</div>
+<div class="citation" id="id79" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>38<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id28">2</a>,<a role="doc-backlink" href="#id43">3</a>)</span>
+<p>Du Phan, Neeraj Pradhan, and Martin Jankowiak. Composable effects for flexible and accelerated probabilistic programming in numpyro. <em>arXiv preprint arXiv:1912.11554</em>, 2019.</p>
+</div>
+<div class="citation" id="id66" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>39<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id20">1</a>,<a role="doc-backlink" href="#id22">2</a>,<a role="doc-backlink" href="#id37">3</a>,<a role="doc-backlink" href="#id52">4</a>)</span>
+<p>Clionadh Raleigh, Andrew Linke, Håvard Hegre, and Joakim Karlsen. Introducing acled: an armed conflict location and event dataset. <em>Journal of Peace Research</em>, 47(5):651–660, 2010.</p>
+</div>
+<div class="citation" id="id62" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id15">40</a><span class="fn-bracket">]</span></span>
+<p>Kimberlyn Roosa and Gerardo Chowell. Assessing parameter identifiability in compartmental dynamic models using a computational approach: application to infectious disease transmission models. <em>Theoretical Biology and Medical Modelling</em>, 16(1):1–15, 2019.</p>
+</div>
+<div class="citation" id="id106" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id47">41</a><span class="fn-bracket">]</span></span>
+<p>John Salvatier, Thomas V Wiecki, and Christopher Fonnesbeck. Probabilistic programming in python using pymc3. <em>PeerJ Computer Science</em>, 2:e55, 2016.</p>
+</div>
+<div class="citation" id="id60" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>42<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id32">1</a>,<a role="doc-backlink" href="#id45">2</a>,<a role="doc-backlink" href="#id51">3</a>)</span>
+<p><strong>missing journal in Scott2020</strong></p>
+</div>
+<div class="citation" id="id90" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id16">43</a><span class="fn-bracket">]</span></span>
+<p>Michael Spagat, Andrew Mack, Tara Cooper, and Joakim Kreutz. Estimating war deaths: an arena of contestation. <em>Journal of Conflict Resolution</em>, 53(6):934–950, 2009.</p>
+</div>
+<div class="citation" id="id97" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id38">44</a><span class="fn-bracket">]</span></span>
+<p>Ralph Sundberg and Erik Melander. Introducing the ucdp georeferenced event dataset. <em>Journal of Peace Research</em>, 50(4):523–532, 2013.</p>
+</div>
+<div class="citation" id="id99" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id23">45</a><span class="fn-bracket">]</span></span>
+<p>Michael Townsley. Space time dynamics of insurgent activity: the example of naxalite violence in the chhattisgarh region of india. <em>Security Journal</em>, 21(3):149–169, 2008.</p>
+</div>
+<div class="citation" id="id75" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">46</a><span class="fn-bracket">]</span></span>
+<p>Michaela AC Vollmer, Swapnil Mishra, H Juliette T Unwin, Axel Gandy, Thomas A Mellan, Valerie Bradley, Harrison Zhu, Helen Coupland, Iwona Hawryluk, Michael Hutchinson, and others. A framework for evaluating epidemic forecasts. <em>BMC Medicine</em>, 18(1):1–18, 2020.</p>
+</div>
+<div class="citation" id="id78" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">47</a><span class="fn-bracket">]</span></span>
+<p>Erik Volz, Swapnil Mishra, Meera Chand, Jeffrey C Barrett, Robert Johnson, Lily Geidelberg, Wes R Hinsley, Daniel J Laydon, Gavin Dabrera, Áine O'Toole, and others. Assessing transmissibility of sars-cov-2 lineage b. 1.1. 7 in england. <em>Nature</em>, 593(7858):266–269, 2021.</p>
+</div>
+<div class="citation" id="id92" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id14">48</a><span class="fn-bracket">]</span></span>
+<p>Andrew Zammit-Mangion, Michael Dewar, Visakan Kadirkamanathan, and Guido Sanguinetti. Point process modeling of the afghan war diary. <em>Proceedings of the National Academy of Sciences</em>, 109(31):12414–12419, 2012.</p>
+</div>
+<div class="citation" id="id103" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id41">49</a><span class="fn-bracket">]</span></span>
+<p>Andrej Zwitter. Big data ethics. <em>Big Data &amp; Society</em>, 1(2):1–6, 2014.</p>
+</div>
+</div>
+</div>
+<hr class="docutils" />
+<p><em>This background vignette provides context for the <strong>TRACE</strong> package. For mathematical details, see <a class="reference internal" href="02_description.html"><span class="std std-doc">Model Description</span></a>. For usage instructions, see <a class="reference internal" href="#../tutorials/01_basic_example.md"><span class="xref myst">Tutorials</span></a>.</em></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="00_overview.html" class="btn btn-neutral float-left" title="Model Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="02_description.html" class="btn btn-neutral float-right" title="Model Description" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, OJ Watson.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

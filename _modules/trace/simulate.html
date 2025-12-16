@@ -1,0 +1,425 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>trace.simulate &mdash; TRACE 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            TRACE
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Model Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../model/00_overview.html">Model Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../model/01_background.html">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../model/02_description.html">Model Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../model/03_implementation.html">Model Implementation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/01_basic_example.html">Tutorial: Basic Example with Simulated Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/02_gaza_analysis.html">Tutorial: Gaza Conflict Casualty Analysis</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/data.html">Data Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/model.html">Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/simulate.html">Simulate Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/analysis.html">Analysis Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Additional Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">TRACE</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">trace.simulate</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for trace.simulate</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Simulation module for generating synthetic conflict casualty data.</span>
+
+<span class="sd">This module provides tools to simulate hypothetical conflict scenarios with</span>
+<span class="sd">multiple regions, hospitals, and realistic casualty dynamics. Useful for</span>
+<span class="sd">model validation and testing.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+
+<div class="viewcode-block" id="simulate_conflict_data">
+<a class="viewcode-back" href="../../api/simulate.html#trace.simulate.simulate_conflict_data">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">simulate_conflict_data</span><span class="p">(</span>
+    <span class="n">n_regions</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">n_hospitals</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">T</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">mu_w_true</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">mu_i_true</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">p_late_true</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">delay_probs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">ell_true</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">20.0</span><span class="p">,</span>
+    <span class="n">p_immediate_true</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">region_populations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">birth_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">migration_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">events_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Simulate synthetic conflict casualty data for a hypothetical country.</span>
+
+<span class="sd">    This function generates realistic conflict event data with spatial and temporal</span>
+<span class="sd">    dynamics, including hospital admissions and mortality with appropriate delays.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_regions : int</span>
+<span class="sd">        Number of regions in the country</span>
+<span class="sd">    n_hospitals : int</span>
+<span class="sd">        Number of hospitals</span>
+<span class="sd">    T : int</span>
+<span class="sd">        Number of days to simulate</span>
+<span class="sd">    mu_w_true : float</span>
+<span class="sd">        True average number of wounded per event</span>
+<span class="sd">    mu_i_true : float</span>
+<span class="sd">        True average number of immediate deaths per event</span>
+<span class="sd">    p_late_true : float</span>
+<span class="sd">        True probability an injured person eventually dies</span>
+<span class="sd">    delay_probs : np.ndarray</span>
+<span class="sd">        Array of probabilities for delay 1,2,... days until death (must sum to 1)</span>
+<span class="sd">    ell_true : float, default=20.0</span>
+<span class="sd">        True spatial length scale for hospital allocation (in coordinate units)</span>
+<span class="sd">    p_immediate_true : float, optional</span>
+<span class="sd">        Probability a casualty is an immediate death. If None, computed from mu_i/total</span>
+<span class="sd">    region_populations : list of float, optional</span>
+<span class="sd">        Initial population for each region. If None, uses 100,000 per region</span>
+<span class="sd">    birth_rate : float, default=0.0</span>
+<span class="sd">        Daily birth rate per person (fraction)</span>
+<span class="sd">    migration_rate : float, default=0.0</span>
+<span class="sd">        Daily net migration rate per person (fraction)</span>
+<span class="sd">    events_rate : float, default=1.0</span>
+<span class="sd">        Average number of events per day (Poisson rate)</span>
+<span class="sd">    seed : int, optional</span>
+<span class="sd">        Random seed for reproducibility</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        Dictionary containing:</span>
+<span class="sd">        events : list[dict]</span>
+<span class="sd">            Event dictionaries with keys: date, region, latitude, longitude, casualties,</span>
+<span class="sd">            immediate_deaths, injured.</span>
+<span class="sd">        hospital_incidence : np.ndarray</span>
+<span class="sd">            Array of shape (T, n_hospitals) with daily injured counts.</span>
+<span class="sd">        national_deaths : np.ndarray</span>
+<span class="sd">            Array of length T with daily death counts.</span>
+<span class="sd">        region_pop : np.ndarray</span>
+<span class="sd">            Array of shape (T+1, n_regions) with populations over time.</span>
+<span class="sd">        hospital_coords : np.ndarray</span>
+<span class="sd">            Array of shape (n_hospitals, 2) with hospital locations.</span>
+<span class="sd">        region_centers : list[tuple[float, float]]</span>
+<span class="sd">            List of (x, y) tuples for region centers.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; delay_probs = np.array([0.5, 0.3, 0.15, 0.05])</span>
+<span class="sd">    &gt;&gt;&gt; data = simulate_conflict_data(</span>
+<span class="sd">    ...     n_regions=3,</span>
+<span class="sd">    ...     n_hospitals=5,</span>
+<span class="sd">    ...     T=100,</span>
+<span class="sd">    ...     mu_w_true=5.0,</span>
+<span class="sd">    ...     mu_i_true=2.0,</span>
+<span class="sd">    ...     p_late_true=0.2,</span>
+<span class="sd">    ...     delay_probs=delay_probs,</span>
+<span class="sd">    ...     events_rate=2.0,</span>
+<span class="sd">    ...     seed=42</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &gt;&gt;&gt; print(f&quot;Simulated {len(data[&#39;events&#39;])} events&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; print(f&quot;Total deaths: {data[&#39;national_deaths&#39;].sum()}&quot;)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The simulation process:</span>
+<span class="sd">    1. Places regions and hospitals in a 100x100 coordinate space</span>
+<span class="sd">    2. Generates events via Poisson process</span>
+<span class="sd">    3. Allocates casualties to hospitals via exponential decay kernel</span>
+<span class="sd">    4. Schedules delayed deaths according to delay distribution</span>
+<span class="sd">    5. Tracks population changes over time</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span> <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">()</span>
+
+    <span class="c1"># ========== Set up spatial layout ==========</span>
+
+    <span class="c1"># Place region centers on a grid with jitter</span>
+    <span class="n">region_centers</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">n_regions</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">side</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n_regions</span><span class="p">)))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_regions</span><span class="p">):</span>
+            <span class="n">row</span><span class="p">,</span> <span class="n">col</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">side</span><span class="p">)</span>
+            <span class="n">center_x</span> <span class="o">=</span> <span class="p">(</span><span class="n">row</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">100.0</span> <span class="o">/</span> <span class="n">side</span><span class="p">)</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">center_y</span> <span class="o">=</span> <span class="p">(</span><span class="n">col</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">100.0</span> <span class="o">/</span> <span class="n">side</span><span class="p">)</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">region_centers</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">center_x</span><span class="p">,</span> <span class="n">center_y</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">region_centers</span> <span class="o">=</span> <span class="p">[(</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">)]</span>
+
+    <span class="c1"># Place hospitals randomly within the country</span>
+    <span class="n">hospital_coords</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_hospitals</span><span class="p">):</span>
+        <span class="n">hx</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="n">hy</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="n">hospital_coords</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">hx</span><span class="p">,</span> <span class="n">hy</span><span class="p">))</span>
+    <span class="n">hospital_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">hospital_coords</span><span class="p">)</span>
+
+    <span class="c1"># ========== Initialize populations ==========</span>
+
+    <span class="k">if</span> <span class="n">region_populations</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">region_populations</span> <span class="o">=</span> <span class="p">[</span><span class="mi">100000</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_regions</span>
+    <span class="n">region_populations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">region_populations</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="c1"># Compute p_immediate if not provided</span>
+    <span class="k">if</span> <span class="n">p_immediate_true</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">total_mean_casualties</span> <span class="o">=</span> <span class="n">mu_i_true</span> <span class="o">+</span> <span class="n">mu_w_true</span>
+        <span class="n">p_immediate_true</span> <span class="o">=</span> <span class="n">mu_i_true</span> <span class="o">/</span> <span class="n">total_mean_casualties</span> <span class="k">if</span> <span class="n">total_mean_casualties</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.0</span>
+
+    <span class="c1"># ========== Initialize output arrays ==========</span>
+
+    <span class="n">events</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">hospital_incidence</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">T</span><span class="p">,</span> <span class="n">n_hospitals</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">national_deaths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">region_pop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">T</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n_regions</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">region_pop</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">region_populations</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+    <span class="c1"># ========== Simulate day by day ==========</span>
+
+    <span class="k">for</span> <span class="n">day</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+        <span class="c1"># Generate number of events today</span>
+        <span class="n">n_events_today</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">events_rate</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">n_events_today</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Update population even with no events</span>
+            <span class="k">if</span> <span class="n">n_regions</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">growth_factor</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">birth_rate</span> <span class="o">+</span> <span class="n">migration_rate</span>
+                <span class="n">region_populations</span> <span class="o">=</span> <span class="n">region_populations</span> <span class="o">*</span> <span class="n">growth_factor</span>
+                <span class="n">region_pop</span><span class="p">[</span><span class="n">day</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">region_populations</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># Process each event</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_events_today</span><span class="p">):</span>
+            <span class="c1"># Choose region (weighted by population)</span>
+            <span class="k">if</span> <span class="n">n_regions</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">region_probs</span> <span class="o">=</span> <span class="n">region_populations</span> <span class="o">/</span> <span class="n">region_populations</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+                <span class="n">region_index</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">n_regions</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">region_probs</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">region_index</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="n">region_center</span> <span class="o">=</span> <span class="n">region_centers</span><span class="p">[</span><span class="n">region_index</span><span class="p">]</span> <span class="k">if</span> <span class="n">n_regions</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">region_centers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="c1"># Event location: random around region center</span>
+            <span class="n">ex</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">region_center</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">scale</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
+            <span class="n">ey</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">region_center</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">scale</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
+
+            <span class="c1"># Draw total casualties</span>
+            <span class="n">total_casualties</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">mu_w_true</span> <span class="o">+</span> <span class="n">mu_i_true</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">total_casualties</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Split into immediate deaths vs injured</span>
+            <span class="n">immediate_deaths</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">binomial</span><span class="p">(</span><span class="n">total_casualties</span><span class="p">,</span> <span class="n">p_immediate_true</span><span class="p">)</span>
+            <span class="n">injured</span> <span class="o">=</span> <span class="n">total_casualties</span> <span class="o">-</span> <span class="n">immediate_deaths</span>
+
+            <span class="c1"># Allocate injured to hospitals via spatial kernel</span>
+            <span class="k">if</span> <span class="n">injured</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">dists</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">hospital_coords</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ex</span><span class="p">,</span> <span class="n">ey</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">dists</span> <span class="o">/</span> <span class="n">ell_true</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">weights</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="c1"># Assign to nearest hospital</span>
+                    <span class="n">nearest_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">dists</span><span class="p">)</span>
+                    <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">dists</span><span class="p">)</span>
+                    <span class="n">weights</span><span class="p">[</span><span class="n">nearest_idx</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">weights</span> <span class="o">=</span> <span class="n">weights</span> <span class="o">/</span> <span class="n">weights</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+                <span class="c1"># Multinomial allocation</span>
+                <span class="n">injured_alloc</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">multinomial</span><span class="p">(</span><span class="n">injured</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
+                <span class="n">hospital_incidence</span><span class="p">[</span><span class="n">day</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+=</span> <span class="n">injured_alloc</span>
+
+            <span class="c1"># Record immediate deaths</span>
+            <span class="n">national_deaths</span><span class="p">[</span><span class="n">day</span><span class="p">]</span> <span class="o">+=</span> <span class="n">immediate_deaths</span>
+
+            <span class="c1"># Schedule delayed deaths</span>
+            <span class="k">if</span> <span class="n">injured</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">late_deaths</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">binomial</span><span class="p">(</span><span class="n">injured</span><span class="p">,</span> <span class="n">p_late_true</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">late_deaths</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">delays</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">multinomial</span><span class="p">(</span><span class="n">late_deaths</span><span class="p">,</span> <span class="n">delay_probs</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dcount</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">delays</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">dcount</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">death_day</span> <span class="o">=</span> <span class="n">day</span> <span class="o">+</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+                            <span class="k">if</span> <span class="n">death_day</span> <span class="o">&lt;</span> <span class="n">T</span><span class="p">:</span>
+                                <span class="n">national_deaths</span><span class="p">[</span><span class="n">death_day</span><span class="p">]</span> <span class="o">+=</span> <span class="n">dcount</span>
+
+            <span class="c1"># Record event</span>
+            <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="n">day</span><span class="p">,</span>
+                    <span class="s2">&quot;region&quot;</span><span class="p">:</span> <span class="n">region_index</span><span class="p">,</span>
+                    <span class="s2">&quot;latitude&quot;</span><span class="p">:</span> <span class="n">ex</span><span class="p">,</span>
+                    <span class="s2">&quot;longitude&quot;</span><span class="p">:</span> <span class="n">ey</span><span class="p">,</span>
+                    <span class="s2">&quot;casualties&quot;</span><span class="p">:</span> <span class="n">total_casualties</span><span class="p">,</span>
+                    <span class="s2">&quot;immediate_deaths&quot;</span><span class="p">:</span> <span class="n">immediate_deaths</span><span class="p">,</span>
+                    <span class="s2">&quot;injured&quot;</span><span class="p">:</span> <span class="n">injured</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Update populations</span>
+        <span class="k">if</span> <span class="n">n_regions</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">region_populations</span> <span class="o">=</span> <span class="n">region_populations</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">birth_rate</span> <span class="o">+</span> <span class="n">migration_rate</span><span class="p">)</span>
+
+            <span class="c1"># Subtract immediate deaths from regions</span>
+            <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="p">[</span><span class="n">ev</span> <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="n">events</span> <span class="k">if</span> <span class="n">ev</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">day</span><span class="p">]:</span>
+                <span class="n">region</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;region&quot;</span><span class="p">]</span>
+                <span class="n">region_populations</span><span class="p">[</span><span class="n">region</span><span class="p">]</span> <span class="o">-=</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;immediate_deaths&quot;</span><span class="p">]</span>
+
+            <span class="n">region_pop</span><span class="p">[</span><span class="n">day</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">region_populations</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;events&quot;</span><span class="p">:</span> <span class="n">events</span><span class="p">,</span>
+        <span class="s2">&quot;hospital_incidence&quot;</span><span class="p">:</span> <span class="n">hospital_incidence</span><span class="p">,</span>
+        <span class="s2">&quot;national_deaths&quot;</span><span class="p">:</span> <span class="n">national_deaths</span><span class="p">,</span>
+        <span class="s2">&quot;region_pop&quot;</span><span class="p">:</span> <span class="n">region_pop</span><span class="p">,</span>
+        <span class="s2">&quot;hospital_coords&quot;</span><span class="p">:</span> <span class="n">hospital_coords</span><span class="p">,</span>
+        <span class="s2">&quot;region_centers&quot;</span><span class="p">:</span> <span class="n">region_centers</span><span class="p">,</span>
+    <span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="generate_scenario_events">
+<a class="viewcode-back" href="../../api/simulate.html#trace.simulate.generate_scenario_events">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_scenario_events</span><span class="p">(</span>
+    <span class="n">T</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">baseline_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">interventions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate event counts for scenario-based forecasting.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    T : int</span>
+<span class="sd">        Number of days to generate</span>
+<span class="sd">    baseline_rate : float</span>
+<span class="sd">        Baseline event rate (events per day)</span>
+<span class="sd">    interventions : list of tuple, optional</span>
+<span class="sd">        List of (start_day, end_day, multiplier) tuples representing</span>
+<span class="sd">        interventions that change the event rate</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.ndarray</span>
+<span class="sd">        Array of length T with event counts per day</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; # Baseline of 2 events/day, with ceasefire from day 30-60 (0.1x rate)</span>
+<span class="sd">    &gt;&gt;&gt; events = generate_scenario_events(</span>
+<span class="sd">    ...     T=100,</span>
+<span class="sd">    ...     baseline_rate=2.0,</span>
+<span class="sd">    ...     interventions=[(30, 60, 0.1)]</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">baseline_rate</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">interventions</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">multiplier</span> <span class="ow">in</span> <span class="n">interventions</span><span class="p">:</span>
+            <span class="n">rates</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span> <span class="o">*=</span> <span class="n">multiplier</span>
+
+    <span class="n">events</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">rates</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">events</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, OJ Watson.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

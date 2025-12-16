@@ -1,0 +1,454 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>trace.model &mdash; TRACE 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            TRACE
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Model Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../model/00_overview.html">Model Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../model/01_background.html">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../model/02_description.html">Model Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../model/03_implementation.html">Model Implementation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/01_basic_example.html">Tutorial: Basic Example with Simulated Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/02_gaza_analysis.html">Tutorial: Gaza Conflict Casualty Analysis</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/data.html">Data Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/model.html">Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/simulate.html">Simulate Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/analysis.html">Analysis Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Additional Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">TRACE</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">trace.model</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for trace.model</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Bayesian hierarchical model for conflict casualties using NumPyro.</span>
+
+<span class="sd">This module implements the core probabilistic model that integrates conflict events,</span>
+<span class="sd">hospital admissions, and mortality data with spatial and temporal dynamics.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpyro</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpyro.distributions</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dist</span>
+
+
+<div class="viewcode-block" id="spatial_kernel_weights">
+<a class="viewcode-back" href="../../api/model.html#trace.model.spatial_kernel_weights">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">spatial_kernel_weights</span><span class="p">(</span>
+    <span class="n">event_coords</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">hospital_coords</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">ell</span><span class="p">:</span> <span class="nb">float</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute normalized spatial kernel weights for event-hospital allocation.</span>
+
+<span class="sd">    Uses an exponential decay kernel to model how casualties from a conflict event</span>
+<span class="sd">    are distributed among hospitals based on distance. Closer hospitals receive</span>
+<span class="sd">    more casualties.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    event_coords : jnp.ndarray</span>
+<span class="sd">        Array of shape (E, 2) with (latitude, longitude) for each event</span>
+<span class="sd">    hospital_coords : jnp.ndarray</span>
+<span class="sd">        Array of shape (H, 2) with (latitude, longitude) for each hospital</span>
+<span class="sd">    ell : float</span>
+<span class="sd">        Length scale parameter controlling spatial decay (in coordinate units)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    jnp.ndarray</span>
+<span class="sd">        Array of shape (E, H) where each row sums to 1, representing the</span>
+<span class="sd">        fraction of casualties from each event allocated to each hospital</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The kernel uses exponential decay: weight ∝ exp(-distance/ell)</span>
+<span class="sd">    For small regions, Euclidean distance on lat/lon is acceptable.</span>
+<span class="sd">    For larger regions, consider using haversine distance.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Compute pairwise distances between events and hospitals</span>
+    <span class="c1"># event_coords: (E, 2), hospital_coords: (H, 2)</span>
+    <span class="c1"># Broadcasting: (E, 1, 2) - (1, H, 2) = (E, H, 2)</span>
+    <span class="n">dists</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span>
+        <span class="n">event_coords</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">hospital_coords</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span>
+    <span class="p">)</span>  <span class="c1"># shape (E, H)</span>
+
+    <span class="c1"># Compute unnormalized weights using exponential decay kernel</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">dists</span> <span class="o">/</span> <span class="n">ell</span><span class="p">)</span>
+
+    <span class="c1"># Normalize weights for each event so they sum to 1 across hospitals</span>
+    <span class="n">weight_sums</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-8</span>  <span class="c1"># avoid division by zero</span>
+    <span class="n">norm_weights</span> <span class="o">=</span> <span class="n">weights</span> <span class="o">/</span> <span class="n">weight_sums</span>
+
+    <span class="k">return</span> <span class="n">norm_weights</span>  <span class="c1"># shape (E, H)</span></div>
+
+
+
+<div class="viewcode-block" id="casualty_model">
+<a class="viewcode-back" href="../../api/model.html#trace.model.casualty_model">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">casualty_model</span><span class="p">(</span>
+    <span class="n">events_by_day</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">event_day_index</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">event_coords</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">hospital_coords</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">injuries_obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">deaths_obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">delay_probs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Bayesian hierarchical model for conflict casualties.</span>
+
+<span class="sd">    This model integrates three data streams:</span>
+<span class="sd">    1. ACLED conflict events (exogenous input)</span>
+<span class="sd">    2. Hospital casualty admissions (observed)</span>
+<span class="sd">    3. National mortality data (observed)</span>
+
+<span class="sd">    The model uses spatial kernels to allocate casualties to hospitals and</span>
+<span class="sd">    delay distributions to model the time from injury to death.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    events_by_day : np.ndarray</span>
+<span class="sd">        1D array of length T with count of events per day</span>
+<span class="sd">    event_day_index : np.ndarray</span>
+<span class="sd">        1D array of length E listing the day index (0..T-1) of each event</span>
+<span class="sd">    event_coords : np.ndarray</span>
+<span class="sd">        Array of shape (E, 2) with (lat, lon) for each event</span>
+<span class="sd">    hospital_coords : np.ndarray</span>
+<span class="sd">        Array of shape (H, 2) with (lat, lon) for each hospital</span>
+<span class="sd">    injuries_obs : np.ndarray</span>
+<span class="sd">        Array of shape (T, H) with observed daily injured counts at each hospital</span>
+<span class="sd">    deaths_obs : np.ndarray</span>
+<span class="sd">        1D array of length T with observed daily death counts (national)</span>
+<span class="sd">    delay_probs : np.ndarray, optional</span>
+<span class="sd">        1D array for distribution of delay from injury to death.</span>
+<span class="sd">        If None, uses default [0.5, 0.3, 0.15, 0.05] for 1-4 day delays</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        This is a NumPyro model function that defines the probabilistic model.</span>
+<span class="sd">        It samples from priors and conditions on observed data.</span>
+
+<span class="sd">    Model Parameters (Inferred)</span>
+<span class="sd">    ---------------------------</span>
+<span class="sd">    mu_w : float</span>
+<span class="sd">        Average number of wounded (hospitalized) per conflict event</span>
+<span class="sd">    mu_i : float</span>
+<span class="sd">        Average number of immediate fatalities per event</span>
+<span class="sd">    p_late : float</span>
+<span class="sd">        Probability an injured person eventually dies (hospital fatality rate)</span>
+<span class="sd">    ell : float</span>
+<span class="sd">        Spatial length scale for hospital allocation kernel</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The model assumes:</span>
+<span class="sd">    - Casualties from events are allocated to hospitals via spatial kernel</span>
+<span class="sd">    - Immediate deaths occur on the event day</span>
+<span class="sd">    - Injured individuals may die later according to delay distribution</span>
+<span class="sd">    - All observations follow Poisson distributions (can be extended to Negative Binomial)</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    This function is used with NumPyro&#39;s MCMC inference:</span>
+
+<span class="sd">    &gt;&gt;&gt; from numpyro.infer import MCMC, NUTS</span>
+<span class="sd">    &gt;&gt;&gt; kernel = NUTS(casualty_model)</span>
+<span class="sd">    &gt;&gt;&gt; mcmc = MCMC(kernel, num_warmup=1000, num_samples=2000)</span>
+<span class="sd">    &gt;&gt;&gt; mcmc.run(rng_key, events_by_day, event_day_index, ...)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n_days</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">events_by_day</span><span class="p">)</span>
+    <span class="n">n_hospitals</span> <span class="o">=</span> <span class="n">hospital_coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">delay_probs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Default delay distribution: 50% die after 1 day, 30% after 2 days, etc.</span>
+        <span class="n">delay_probs</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">])</span>
+        <span class="n">delay_probs</span> <span class="o">=</span> <span class="n">delay_probs</span> <span class="o">/</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">delay_probs</span><span class="p">)</span>  <span class="c1"># ensure normalized</span>
+
+    <span class="c1"># ========== Priors for unknown parameters ==========</span>
+
+    <span class="c1"># Average wounded per event (mean ~3.3 with Exponential(0.3))</span>
+    <span class="n">mu_w</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;mu_w&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Exponential</span><span class="p">(</span><span class="mf">0.3</span><span class="p">))</span>
+
+    <span class="c1"># Average immediate deaths per event</span>
+    <span class="n">mu_i</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;mu_i&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Exponential</span><span class="p">(</span><span class="mf">0.3</span><span class="p">))</span>
+
+    <span class="c1"># Probability an injured person dies later (hospital fatality rate)</span>
+    <span class="c1"># Beta(2, 10) has mean ~0.17, reflecting that most injuries don&#39;t result in death</span>
+    <span class="n">p_late</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;p_late&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Beta</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+
+    <span class="c1"># Spatial length scale for hospital allocation (in coordinate units)</span>
+    <span class="c1"># Exponential(1.0) gives mean of 1.0 degree</span>
+    <span class="n">ell</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;ell&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Exponential</span><span class="p">(</span><span class="mf">1.0</span><span class="p">))</span>
+
+    <span class="c1"># Optional: Overdispersion parameters for Negative Binomial</span>
+    <span class="c1"># phi_hosp = numpyro.sample(&quot;phi_hosp&quot;, dist.Gamma(0.5, 0.5))</span>
+    <span class="c1"># phi_death = numpyro.sample(&quot;phi_death&quot;, dist.Gamma(0.5, 0.5))</span>
+
+    <span class="c1"># ========== Spatial allocation of casualties to hospitals ==========</span>
+
+    <span class="c1"># Compute spatial weights for each event-hospital pair</span>
+    <span class="n">norm_weights</span> <span class="o">=</span> <span class="n">spatial_kernel_weights</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">event_coords</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">hospital_coords</span><span class="p">),</span> <span class="n">ell</span><span class="p">)</span>
+
+    <span class="c1"># Accumulate event contributions to each hospital per day</span>
+    <span class="c1"># effective_events[d,h] = sum of normalized weights of all events on day d going to hospital h</span>
+    <span class="n">effective_events</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_days</span><span class="p">,</span> <span class="n">n_hospitals</span><span class="p">))</span>
+    <span class="n">effective_events</span> <span class="o">=</span> <span class="n">effective_events</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">event_day_index</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">norm_weights</span><span class="p">)</span>
+
+    <span class="c1"># ========== Hospital injuries likelihood ==========</span>
+
+    <span class="c1"># Expected injuries at each hospital per day</span>
+    <span class="c1"># lambda_injuries[d,h] = mu_w * effective_events[d,h]</span>
+    <span class="n">lam_injuries</span> <span class="o">=</span> <span class="n">mu_w</span> <span class="o">*</span> <span class="n">effective_events</span>  <span class="c1"># shape (T, H)</span>
+
+    <span class="c1"># Ensure positive rates (add small epsilon for numerical stability)</span>
+    <span class="n">lam_injuries</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">lam_injuries</span><span class="p">,</span> <span class="mf">1e-8</span><span class="p">)</span>
+
+    <span class="c1"># Observe hospital injuries via Poisson likelihood</span>
+    <span class="n">obs_inj</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>
+        <span class="s2">&quot;obs_injuries&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Poisson</span><span class="p">(</span><span class="n">lam_injuries</span><span class="p">)</span><span class="o">.</span><span class="n">to_event</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">obs</span><span class="o">=</span><span class="n">injuries_obs</span>
+    <span class="p">)</span>
+
+    <span class="c1"># ========== Delayed deaths from injuries ==========</span>
+
+    <span class="c1"># Total injuries per day (summing across hospitals)</span>
+    <span class="c1"># Use sampled injuries if obs was None, otherwise use provided injuries</span>
+    <span class="n">injuries_to_use</span> <span class="o">=</span> <span class="n">obs_inj</span> <span class="k">if</span> <span class="n">injuries_obs</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">injuries_obs</span><span class="p">)</span>
+    <span class="n">injuries_total</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">injuries_to_use</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># shape (T,)</span>
+
+    <span class="c1"># Convolve injuries with delay distribution to get expected delayed deaths</span>
+    <span class="n">delay_len</span> <span class="o">=</span> <span class="n">delay_probs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># length of delay distribution support</span>
+    <span class="n">pad</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">injuries_total</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">delay_len</span><span class="p">))</span>  <span class="c1"># pad for convolution</span>
+
+    <span class="c1"># Compute convolution: deaths on day t from injuries on previous days</span>
+    <span class="n">conv_deaths</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_days</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">delay_len</span><span class="p">):</span>
+        <span class="c1"># Deaths occurring k+1 days after injury</span>
+        <span class="n">conv_deaths</span> <span class="o">=</span> <span class="n">conv_deaths</span> <span class="o">+</span> <span class="n">pad</span><span class="p">[</span><span class="n">k</span> <span class="p">:</span> <span class="n">n_days</span> <span class="o">+</span> <span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">delay_probs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+    <span class="c1"># Expected late deaths = p_late * convolved injuries</span>
+    <span class="n">expected_late_deaths</span> <span class="o">=</span> <span class="n">p_late</span> <span class="o">*</span> <span class="n">conv_deaths</span>
+
+    <span class="c1"># ========== Immediate deaths from events ==========</span>
+
+    <span class="n">events_by_day_arr</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">events_by_day</span><span class="p">)</span>
+    <span class="n">expected_immediate_deaths</span> <span class="o">=</span> <span class="n">mu_i</span> <span class="o">*</span> <span class="n">events_by_day_arr</span>
+
+    <span class="c1"># ========== Total deaths likelihood ==========</span>
+
+    <span class="c1"># Total expected deaths = immediate + delayed</span>
+    <span class="n">expected_deaths</span> <span class="o">=</span> <span class="n">expected_immediate_deaths</span> <span class="o">+</span> <span class="n">expected_late_deaths</span>
+
+    <span class="c1"># Ensure positive rates (add small epsilon for numerical stability)</span>
+    <span class="n">expected_deaths</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">expected_deaths</span><span class="p">,</span> <span class="mf">1e-8</span><span class="p">)</span>
+
+    <span class="c1"># Observe national deaths via Poisson likelihood</span>
+    <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;obs_deaths&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Poisson</span><span class="p">(</span><span class="n">expected_deaths</span><span class="p">),</span> <span class="n">obs</span><span class="o">=</span><span class="n">deaths_obs</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="casualty_model_with_covariates">
+<a class="viewcode-back" href="../../api/model.html#trace.model.casualty_model_with_covariates">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">casualty_model_with_covariates</span><span class="p">(</span>
+    <span class="n">events_by_day</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">event_day_index</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">event_coords</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">hospital_coords</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">injuries_obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">deaths_obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">covariates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">delay_probs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extended casualty model with time-varying covariates.</span>
+
+<span class="sd">    This version allows for covariates (e.g., ceasefire indicators, conflict intensity)</span>
+<span class="sd">    to modulate the casualty rates over time.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    covariates : np.ndarray, optional</span>
+<span class="sd">        Array of shape (T, K) with K covariates for each day</span>
+<span class="sd">        Examples: ceasefire indicators, media coverage, intervention events</span>
+
+<span class="sd">    Additional Parameters</span>
+<span class="sd">    ---------------------</span>
+<span class="sd">    beta : np.ndarray</span>
+<span class="sd">        Regression coefficients for each covariate (sampled in model)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Covariates enter the model by modulating mu_w and mu_i:</span>
+<span class="sd">    - mu_w_t = mu_w * exp(sum_k beta_k * X_tk)</span>
+<span class="sd">    - mu_i_t = mu_i * exp(sum_k beta_k * X_tk)</span>
+
+<span class="sd">    This allows modeling intervention effects similar to epidemia&#39;s approach.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n_days</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">events_by_day</span><span class="p">)</span>
+    <span class="n">n_hospitals</span> <span class="o">=</span> <span class="n">hospital_coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">delay_probs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">delay_probs</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">])</span>
+        <span class="n">delay_probs</span> <span class="o">=</span> <span class="n">delay_probs</span> <span class="o">/</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">delay_probs</span><span class="p">)</span>
+
+    <span class="c1"># Base parameters</span>
+    <span class="n">mu_w_base</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;mu_w_base&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Exponential</span><span class="p">(</span><span class="mf">0.3</span><span class="p">))</span>
+    <span class="n">mu_i_base</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;mu_i_base&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Exponential</span><span class="p">(</span><span class="mf">0.3</span><span class="p">))</span>
+    <span class="n">p_late</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;p_late&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Beta</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+    <span class="n">ell</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;ell&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Exponential</span><span class="p">(</span><span class="mf">1.0</span><span class="p">))</span>
+
+    <span class="c1"># Covariate effects</span>
+    <span class="k">if</span> <span class="n">covariates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">n_covariates</span> <span class="o">=</span> <span class="n">covariates</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># Sample regression coefficients for each covariate</span>
+        <span class="n">beta</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;beta&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span><span class="n">n_covariates</span><span class="p">]))</span>
+
+        <span class="c1"># Compute time-varying multipliers</span>
+        <span class="n">log_multiplier</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">covariates</span><span class="p">),</span> <span class="n">beta</span><span class="p">)</span>  <span class="c1"># shape (T,)</span>
+        <span class="n">multiplier</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_multiplier</span><span class="p">)</span>
+
+        <span class="c1"># Time-varying casualty rates</span>
+        <span class="n">mu_w</span> <span class="o">=</span> <span class="n">mu_w_base</span> <span class="o">*</span> <span class="n">multiplier</span>
+        <span class="n">mu_i</span> <span class="o">=</span> <span class="n">mu_i_base</span> <span class="o">*</span> <span class="n">multiplier</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mu_w</span> <span class="o">=</span> <span class="n">mu_w_base</span>
+        <span class="n">mu_i</span> <span class="o">=</span> <span class="n">mu_i_base</span>
+
+    <span class="c1"># Rest of the model follows the same structure as casualty_model</span>
+    <span class="n">norm_weights</span> <span class="o">=</span> <span class="n">spatial_kernel_weights</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">event_coords</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">hospital_coords</span><span class="p">),</span> <span class="n">ell</span><span class="p">)</span>
+
+    <span class="n">effective_events</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_days</span><span class="p">,</span> <span class="n">n_hospitals</span><span class="p">))</span>
+    <span class="n">effective_events</span> <span class="o">=</span> <span class="n">effective_events</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">event_day_index</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">norm_weights</span><span class="p">)</span>
+
+    <span class="c1"># For time-varying mu_w, need to broadcast correctly</span>
+    <span class="k">if</span> <span class="n">covariates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">lam_injuries</span> <span class="o">=</span> <span class="n">mu_w</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">effective_events</span>  <span class="c1"># shape (T, H)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">lam_injuries</span> <span class="o">=</span> <span class="n">mu_w</span> <span class="o">*</span> <span class="n">effective_events</span>
+
+    <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>
+        <span class="s2">&quot;obs_injuries&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Poisson</span><span class="p">(</span><span class="n">lam_injuries</span><span class="p">)</span><span class="o">.</span><span class="n">to_event</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">obs</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">injuries_obs</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">injuries_total</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">injuries_obs</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">delay_len</span> <span class="o">=</span> <span class="n">delay_probs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">pad</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">injuries_total</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">delay_len</span><span class="p">))</span>
+    <span class="n">conv_deaths</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_days</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">delay_len</span><span class="p">):</span>
+        <span class="n">conv_deaths</span> <span class="o">=</span> <span class="n">conv_deaths</span> <span class="o">+</span> <span class="n">pad</span><span class="p">[</span><span class="n">k</span> <span class="p">:</span> <span class="n">n_days</span> <span class="o">+</span> <span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">delay_probs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+    <span class="n">expected_late_deaths</span> <span class="o">=</span> <span class="n">p_late</span> <span class="o">*</span> <span class="n">conv_deaths</span>
+
+    <span class="n">events_by_day_arr</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">events_by_day</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">covariates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">expected_immediate_deaths</span> <span class="o">=</span> <span class="n">mu_i</span> <span class="o">*</span> <span class="n">events_by_day_arr</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">expected_immediate_deaths</span> <span class="o">=</span> <span class="n">mu_i</span> <span class="o">*</span> <span class="n">events_by_day_arr</span>
+
+    <span class="n">expected_deaths</span> <span class="o">=</span> <span class="n">expected_immediate_deaths</span> <span class="o">+</span> <span class="n">expected_late_deaths</span>
+
+    <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;obs_deaths&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Poisson</span><span class="p">(</span><span class="n">expected_deaths</span><span class="p">),</span> <span class="n">obs</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">deaths_obs</span><span class="p">))</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, OJ Watson.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

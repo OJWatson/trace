@@ -1,0 +1,323 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analysis Module &mdash; TRACE 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Contributing" href="../contributing.html" />
+    <link rel="prev" title="Simulate Module" href="simulate.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            TRACE
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Model Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../model/00_overview.html">Model Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../model/01_background.html">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../model/02_description.html">Model Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../model/03_implementation.html">Model Implementation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/01_basic_example.html">Tutorial: Basic Example with Simulated Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/02_gaza_analysis.html">Tutorial: Gaza Conflict Casualty Analysis</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="data.html">Data Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model.html">Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulate.html">Simulate Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Analysis Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#trace.analysis.run_inference"><code class="docutils literal notranslate"><span class="pre">run_inference()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#trace.analysis.posterior_predictive"><code class="docutils literal notranslate"><span class="pre">posterior_predictive()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#trace.analysis.forecast"><code class="docutils literal notranslate"><span class="pre">forecast()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#trace.analysis.plot_fit"><code class="docutils literal notranslate"><span class="pre">plot_fit()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#trace.analysis.plot_forecast"><code class="docutils literal notranslate"><span class="pre">plot_forecast()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#trace.analysis.create_arviz_inference_data"><code class="docutils literal notranslate"><span class="pre">create_arviz_inference_data()</span></code></a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Additional Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">TRACE</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Analysis Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/analysis.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="module-trace.analysis">
+<span id="analysis-module"></span><h1>Analysis Module<a class="headerlink" href="#module-trace.analysis" title="Link to this heading"></a></h1>
+<p>Analysis and inference module for TRACE.</p>
+<p>This module provides functions for Bayesian inference using MCMC,
+posterior predictive checks, forecasting, and visualization.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="trace.analysis.run_inference">
+<span class="sig-prename descclassname"><span class="pre">trace.analysis.</span></span><span class="sig-name descname"><span class="pre">run_inference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">events_by_day</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_day_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hospital_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">injuries_obs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deaths_obs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay_probs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_warmup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_chains</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress_bar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/trace/analysis.html#run_inference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trace.analysis.run_inference" title="Link to this definition"></a></dt>
+<dd><p>Run MCMC inference to fit the casualty model to data.</p>
+<p>Uses the No-U-Turn Sampler (NUTS) for efficient Bayesian inference.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>events_by_day</strong> (<em>np.ndarray</em>) – Array of length T with event counts per day</p></li>
+<li><p><strong>event_day_index</strong> (<em>np.ndarray</em>) – Array of length E with day indices for each event</p></li>
+<li><p><strong>event_coords</strong> (<em>np.ndarray</em>) – Array of shape (E, 2) with event coordinates</p></li>
+<li><p><strong>hospital_coords</strong> (<em>np.ndarray</em>) – Array of shape (H, 2) with hospital coordinates</p></li>
+<li><p><strong>injuries_obs</strong> (<em>np.ndarray</em>) – Array of shape (T, H) with observed hospital injuries</p></li>
+<li><p><strong>deaths_obs</strong> (<em>np.ndarray</em>) – Array of length T with observed deaths</p></li>
+<li><p><strong>delay_probs</strong> (<em>np.ndarray</em><em>, </em><em>optional</em>) – Delay distribution from injury to death</p></li>
+<li><p><strong>num_warmup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default=1000</em>) – Number of warmup (burn-in) iterations</p></li>
+<li><p><strong>num_samples</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default=2000</em>) – Number of posterior samples to draw</p></li>
+<li><p><strong>num_chains</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default=2</em>) – Number of independent MCMC chains</p></li>
+<li><p><strong>rng_seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default=0</em>) – Random seed for reproducibility</p></li>
+<li><p><strong>progress_bar</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>default=True</em>) – Whether to show progress bar during sampling</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">MCMC</span></code>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a>]]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>mcmc</strong> (<em>MCMC</em>) – NumPyro MCMC object containing sampling results</p></li>
+<li><p><strong>samples</strong> (<em>dict</em>) – Dictionary of posterior samples for each parameter</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mcmc</span><span class="p">,</span> <span class="n">samples</span> <span class="o">=</span> <span class="n">run_inference</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">events_by_day</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">event_day_index</span><span class="o">=</span><span class="n">event_days</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">event_coords</span><span class="o">=</span><span class="n">coords</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">hospital_coords</span><span class="o">=</span><span class="n">hosp_coords</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">injuries_obs</span><span class="o">=</span><span class="n">injuries</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">deaths_obs</span><span class="o">=</span><span class="n">deaths</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Posterior mean mu_w: </span><span class="si">{</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;mu_w&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="trace.analysis.posterior_predictive">
+<span class="sig-prename descclassname"><span class="pre">trace.analysis.</span></span><span class="sig-name descname"><span class="pre">posterior_predictive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">events_by_day</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_day_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hospital_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">injuries_obs_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deaths_obs_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay_probs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/trace/analysis.html#posterior_predictive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trace.analysis.posterior_predictive" title="Link to this definition"></a></dt>
+<dd><p>Generate posterior predictive samples for model checking.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>samples</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Posterior samples from MCMC</p></li>
+<li><p><strong>events_by_day</strong> (<em>np.ndarray</em>) – Event counts per day</p></li>
+<li><p><strong>event_day_index</strong> (<em>np.ndarray</em>) – Day indices for events</p></li>
+<li><p><strong>event_coords</strong> (<em>np.ndarray</em>) – Event coordinates</p></li>
+<li><p><strong>hospital_coords</strong> (<em>np.ndarray</em>) – Hospital coordinates</p></li>
+<li><p><strong>injuries_obs_shape</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Shape (T, H) for injuries observations</p></li>
+<li><p><strong>deaths_obs_shape</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Length T for deaths observations</p></li>
+<li><p><strong>delay_probs</strong> (<em>np.ndarray</em><em>, </em><em>optional</em>) – Delay distribution</p></li>
+<li><p><strong>rng_seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default=1</em>) – Random seed</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary with ‘obs_injuries’ and ‘obs_deaths’ posterior predictive samples
+- obs_injuries: shape (num_samples, T, H)
+- obs_deaths: shape (num_samples, T)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="trace.analysis.forecast">
+<span class="sig-prename descclassname"><span class="pre">trace.analysis.</span></span><span class="sig-name descname"><span class="pre">forecast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">future_events_by_day</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay_probs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/trace/analysis.html#forecast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trace.analysis.forecast" title="Link to this definition"></a></dt>
+<dd><p>Forecast future casualties and deaths given posterior samples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>samples</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Posterior samples from MCMC inference</p></li>
+<li><p><strong>future_events_by_day</strong> (<em>np.ndarray</em>) – Array of length H (forecast horizon) with expected events per day</p></li>
+<li><p><strong>delay_probs</strong> (<em>np.ndarray</em><em>, </em><em>optional</em>) – Delay distribution from injury to death</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing:
+- injuries_median: Median forecast for injuries
+- injuries_lower: 2.5th percentile
+- injuries_upper: 97.5th percentile
+- deaths_median: Median forecast for deaths
+- deaths_lower: 2.5th percentile
+- deaths_upper: 97.5th percentile</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Forecast 30 days with 2 events per day</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">future_events</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">forecast_results</span> <span class="o">=</span> <span class="n">forecast</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">future_events</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected deaths day 1: </span><span class="si">{</span><span class="n">forecast_results</span><span class="p">[</span><span class="s1">&#39;deaths_median&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="trace.analysis.plot_fit">
+<span class="sig-prename descclassname"><span class="pre">trace.analysis.</span></span><span class="sig-name descname"><span class="pre">plot_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">injuries_obs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deaths_obs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(12,</span> <span class="pre">8)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/trace/analysis.html#plot_fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trace.analysis.plot_fit" title="Link to this definition"></a></dt>
+<dd><p>Plot model fit against observed data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dates</strong> (<em>np.ndarray</em>) – Array of dates for x-axis</p></li>
+<li><p><strong>injuries_obs</strong> (<em>np.ndarray</em>) – Observed injuries (T, H)</p></li>
+<li><p><strong>deaths_obs</strong> (<em>np.ndarray</em>) – Observed deaths (T,)</p></li>
+<li><p><strong>preds</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>, </em><em>optional</em>) – Posterior predictive samples from posterior_predictive()</p></li>
+<li><p><strong>figsize</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>, </em><em>default=</em><em>(</em><em>12</em><em>, </em><em>8</em><em>)</em>) – Figure size</p></li>
+<li><p><strong>save_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Path to save figure</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The created figure</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>matplotlib.figure.Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="trace.analysis.plot_forecast">
+<span class="sig-prename descclassname"><span class="pre">trace.analysis.</span></span><span class="sig-name descname"><span class="pre">plot_forecast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">forecast_results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(12,</span> <span class="pre">6)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/trace/analysis.html#plot_forecast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trace.analysis.plot_forecast" title="Link to this definition"></a></dt>
+<dd><p>Plot forecasted casualties and deaths.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>forecast_results</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Output from forecast() function</p></li>
+<li><p><strong>start_date</strong> (<em>np.datetime64</em>) – Starting date for forecast</p></li>
+<li><p><strong>figsize</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>, </em><em>default=</em><em>(</em><em>12</em><em>, </em><em>6</em><em>)</em>) – Figure size</p></li>
+<li><p><strong>save_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Path to save figure</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The created figure</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>matplotlib.figure.Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="trace.analysis.create_arviz_inference_data">
+<span class="sig-prename descclassname"><span class="pre">trace.analysis.</span></span><span class="sig-name descname"><span class="pre">create_arviz_inference_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mcmc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coords</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/trace/analysis.html#create_arviz_inference_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trace.analysis.create_arviz_inference_data" title="Link to this definition"></a></dt>
+<dd><p>Convert NumPyro MCMC results to ArviZ InferenceData for diagnostics.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mcmc</strong> (<em>MCMC</em>) – NumPyro MCMC object</p></li>
+<li><p><strong>coords</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>, </em><em>optional</em>) – Coordinate labels for dimensions</p></li>
+<li><p><strong>dims</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>, </em><em>optional</em>) – Dimension names for variables</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ArviZ InferenceData object for diagnostics and visualization</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>az.InferenceData</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">idata</span> <span class="o">=</span> <span class="n">create_arviz_inference_data</span><span class="p">(</span><span class="n">mcmc</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">az</span><span class="o">.</span><span class="n">plot_trace</span><span class="p">(</span><span class="n">idata</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">az</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">idata</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="simulate.html" class="btn btn-neutral float-left" title="Simulate Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../contributing.html" class="btn btn-neutral float-right" title="Contributing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, OJ Watson.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

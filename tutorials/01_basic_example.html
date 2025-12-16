@@ -1,0 +1,709 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorial: Basic Example with Simulated Data &mdash; TRACE 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tutorial: Gaza Conflict Casualty Analysis" href="02_gaza_analysis.html" />
+    <link rel="prev" title="Model Implementation" href="../model/03_implementation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            TRACE
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Model Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../model/00_overview.html">Model Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../model/01_background.html">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../model/02_description.html">Model Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../model/03_implementation.html">Model Implementation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial: Basic Example with Simulated Data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Import-Libraries">Import Libraries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#1.-Data-Simulation">1. Data Simulation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Generate-Synthetic-Data">Generate Synthetic Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Visualize-Simulated-Data">Visualize Simulated Data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#2.-Prepare-Data-for-Modeling">2. Prepare Data for Modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#3.-Model-Fitting-with-MCMC">3. Model Fitting with MCMC</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Parameter-Recovery">Parameter Recovery</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#4.-Posterior-Predictive-Checks">4. Posterior Predictive Checks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Visualize-Model-Fit">Visualize Model Fit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Quantitative-Checks">Quantitative Checks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#5.-Forecasting">5. Forecasting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Baseline-Scenario">Baseline Scenario</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Visualize-Forecast">Visualize Forecast</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Scenario-Comparison">Scenario Comparison</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#Summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="02_gaza_analysis.html">Tutorial: Gaza Conflict Casualty Analysis</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/data.html">Data Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/model.html">Model Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/simulate.html">Simulate Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/analysis.html">Analysis Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Additional Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">TRACE</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Tutorial: Basic Example with Simulated Data</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tutorials/01_basic_example.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Tutorial:-Basic-Example-with-Simulated-Data">
+<h1>Tutorial: Basic Example with Simulated Data<a class="headerlink" href="#Tutorial:-Basic-Example-with-Simulated-Data" title="Link to this heading"></a></h1>
+<p><a class="reference external" href="https://colab.research.google.com/github/imperial-college/trace/blob/main/docs/tutorials/01_basic_example.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+<p>This tutorial demonstrates the complete <strong>TRACE</strong> workflow using synthetically generated data. We cover data simulation, model fitting, diagnostics, posterior predictive checks, and forecasting.</p>
+<section id="Installation">
+<h2>Installation<a class="headerlink" href="#Installation" title="Link to this heading"></a></h2>
+<p>If running in Colab, install TRACE:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Uncomment if running in Colab
+# !pip install git+https://github.com/ojwatson/trace.git
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Import-Libraries">
+<h2>Import Libraries<a class="headerlink" href="#Import-Libraries" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import sys
+sys.path.insert(0, &#39;../../src&#39;)  # For local development
+
+import numpy as np
+import matplotlib.pyplot as plt
+import warnings
+warnings.filterwarnings(&#39;ignore&#39;)
+
+from trace.simulate import simulate_conflict_data
+from trace.analysis import run_inference, posterior_predictive, forecast
+from trace.analysis import plot_fit, plot_forecast
+
+# Set random seed
+np.random.seed(42)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="1.-Data-Simulation">
+<h2>1. Data Simulation<a class="headerlink" href="#1.-Data-Simulation" title="Link to this heading"></a></h2>
+<p>We begin by specifying the “true” parameters and generating synthetic data:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># True model parameters
+TRUE_PARAMS = {
+    &quot;mu_w_true&quot;: 5.0,      # Average wounded per event
+    &quot;mu_i_true&quot;: 2.0,      # Average immediate deaths per event
+    &quot;p_late_true&quot;: 0.20,   # Hospital fatality rate (20%)
+    &quot;ell_true&quot;: 20.0,      # Spatial length scale (degrees)
+}
+
+# Delay distribution (from injury to death)
+delay_probs = np.array([0.5, 0.3, 0.15, 0.05])
+
+print(&quot;True Parameters:&quot;)
+for key, val in TRUE_PARAMS.items():
+    print(f&quot;  {key}: {val}&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+True Parameters:
+  mu_w_true: 5.0
+  mu_i_true: 2.0
+  p_late_true: 0.2
+  ell_true: 20.0
+</pre></div></div>
+</div>
+<section id="Generate-Synthetic-Data">
+<h3>Generate Synthetic Data<a class="headerlink" href="#Generate-Synthetic-Data" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>sim_data = simulate_conflict_data(
+    n_regions=3,
+    n_hospitals=5,
+    T=90,
+    mu_w_true=TRUE_PARAMS[&quot;mu_w_true&quot;],
+    mu_i_true=TRUE_PARAMS[&quot;mu_i_true&quot;],
+    p_late_true=TRUE_PARAMS[&quot;p_late_true&quot;],
+    delay_probs=delay_probs,
+    ell_true=TRUE_PARAMS[&quot;ell_true&quot;],
+    events_rate=2.0,
+    seed=42
+)
+
+print(f&quot;\nSimulated {len(sim_data[&#39;events&#39;])} conflict events&quot;)
+print(f&quot;Total injuries: {sim_data[&#39;hospital_incidence&#39;].sum():.0f}&quot;)
+print(f&quot;Total deaths: {sim_data[&#39;national_deaths&#39;].sum():.0f}&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+Simulated 169 conflict events
+Total injuries: 836
+Total deaths: 483
+</pre></div></div>
+</div>
+</section>
+<section id="Visualize-Simulated-Data">
+<h3>Visualize Simulated Data<a class="headerlink" href="#Visualize-Simulated-Data" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, axes = plt.subplots(3, 1, figsize=(12, 10), sharex=True)
+
+# Daily events
+events_per_day = np.bincount([e[&#39;date&#39;] for e in sim_data[&#39;events&#39;]], minlength=90)
+axes[0].bar(range(90), events_per_day, color=&#39;orange&#39;, alpha=0.7)
+axes[0].set_ylabel(&#39;Events&#39;, fontsize=11)
+axes[0].set_title(&#39;Daily Conflict Events&#39;, fontsize=12, fontweight=&#39;bold&#39;)
+axes[0].grid(True, alpha=0.3)
+
+# Hospital injuries
+total_injuries = sim_data[&#39;hospital_incidence&#39;].sum(axis=1)
+axes[1].plot(range(90), total_injuries, &#39;o-&#39;, color=&#39;blue&#39;, alpha=0.7, markersize=3)
+axes[1].set_ylabel(&#39;Injuries&#39;, fontsize=11)
+axes[1].set_title(&#39;Daily Hospital Admissions&#39;, fontsize=12, fontweight=&#39;bold&#39;)
+axes[1].grid(True, alpha=0.3)
+
+# Deaths
+axes[2].plot(range(90), sim_data[&#39;national_deaths&#39;], &#39;o-&#39;, color=&#39;darkred&#39;, alpha=0.7, markersize=3)
+axes[2].set_ylabel(&#39;Deaths&#39;, fontsize=11)
+axes[2].set_xlabel(&#39;Day&#39;, fontsize=11)
+axes[2].set_title(&#39;Daily Deaths&#39;, fontsize=12, fontweight=&#39;bold&#39;)
+axes[2].grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_01_basic_example_10_0.png" src="../_images/tutorials_01_basic_example_10_0.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="2.-Prepare-Data-for-Modeling">
+<h2>2. Prepare Data for Modeling<a class="headerlink" href="#2.-Prepare-Data-for-Modeling" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Event information
+events_by_day = np.zeros(90)
+event_days = []
+event_coords = []
+
+for event in sim_data[&#39;events&#39;]:
+    day = event[&#39;date&#39;]
+    events_by_day[day] += 1
+    event_days.append(day)
+    event_coords.append([event[&#39;latitude&#39;], event[&#39;longitude&#39;]])
+
+event_days = np.array(event_days)
+event_coords = np.array(event_coords)
+
+# Hospital and death data
+hospital_coords = sim_data[&#39;hospital_coords&#39;]
+injuries_obs = sim_data[&#39;hospital_incidence&#39;]
+deaths_obs = sim_data[&#39;national_deaths&#39;]
+
+print(f&quot;Prepared data for {len(event_days)} events over {len(events_by_day)} days&quot;)
+print(f&quot;Number of hospitals: {hospital_coords.shape[0]}&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Prepared data for 169 events over 90 days
+Number of hospitals: 5
+</pre></div></div>
+</div>
+</section>
+<section id="3.-Model-Fitting-with-MCMC">
+<h2>3. Model Fitting with MCMC<a class="headerlink" href="#3.-Model-Fitting-with-MCMC" title="Link to this heading"></a></h2>
+<p>Fit the Bayesian model using MCMC with the NUTS sampler:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&quot;Running MCMC inference (this may take a few minutes)...\n&quot;)
+
+mcmc, samples = run_inference(
+    events_by_day=events_by_day,
+    event_day_index=event_days,
+    event_coords=event_coords,
+    hospital_coords=hospital_coords,
+    injuries_obs=injuries_obs,
+    deaths_obs=deaths_obs,
+    delay_probs=delay_probs,
+    num_warmup=1000,
+    num_samples=2000,
+    num_chains=2,
+    rng_seed=42
+)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+WARNING:2025-12-16 15:34:51,409:jax._src.xla_bridge:794: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Running MCMC inference (this may take a few minutes)...
+
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+sample: 100%|██████████| 3000/3000 [00:03&lt;00:00, 872.40it/s, 7 steps of size 4.24e-01. acc. prob=0.93]
+sample: 100%|██████████| 3000/3000 [00:03&lt;00:00, 927.82it/s, 3 steps of size 3.58e-01. acc. prob=0.95]
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+                mean       std    median      5.0%     95.0%     n_eff     r_hat
+       ell     18.84      0.87     18.81     17.43     20.24   2764.27      1.00
+      mu_i      1.49      0.23      1.50      1.11      1.87   1611.75      1.00
+      mu_w      4.94      0.17      4.94      4.65      5.21   3204.35      1.00
+    p_late      0.28      0.05      0.27      0.20      0.35   1679.83      1.00
+
+Number of divergences: 0
+</pre></div></div>
+</div>
+<section id="Parameter-Recovery">
+<h3>Parameter Recovery<a class="headerlink" href="#Parameter-Recovery" title="Link to this heading"></a></h3>
+<p>Compare posterior estimates to true values:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&quot;\n&quot; + &quot;=&quot;*60)
+print(&quot;Parameter Recovery: Estimated vs True Values&quot;)
+print(&quot;=&quot;*60)
+
+params = [&#39;mu_w&#39;, &#39;mu_i&#39;, &#39;p_late&#39;, &#39;ell&#39;]
+true_vals = [
+    TRUE_PARAMS[&#39;mu_w_true&#39;],
+    TRUE_PARAMS[&#39;mu_i_true&#39;],
+    TRUE_PARAMS[&#39;p_late_true&#39;],
+    TRUE_PARAMS[&#39;ell_true&#39;]
+]
+
+for param, true_val in zip(params, true_vals):
+    est = samples[param].mean()
+    ci_low = np.percentile(samples[param], 2.5)
+    ci_high = np.percentile(samples[param], 97.5)
+    print(f&quot;{param:8s}: {est:.3f} (95% CI: [{ci_low:.3f}, {ci_high:.3f}])  True: {true_val:.3f}&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+============================================================
+Parameter Recovery: Estimated vs True Values
+============================================================
+mu_w    : 4.943 (95% CI: [4.609, 5.287])  True: 5.000
+mu_i    : 1.491 (95% CI: [1.014, 1.921])  True: 2.000
+p_late  : 0.277 (95% CI: [0.194, 0.375])  True: 0.200
+ell     : 18.842 (95% CI: [17.229, 20.622])  True: 20.000
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>samples
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;ell&#39;: Array([18.51622 , 18.743435, 18.41343 , ..., 20.67629 , 19.740803,
+        19.53592 ], dtype=float32),
+ &#39;mu_i&#39;: Array([1.48434  , 1.5474674, 1.5547805, ..., 1.578316 , 1.9155833,
+        1.7576299], dtype=float32),
+ &#39;mu_w&#39;: Array([4.974957 , 5.015768 , 4.799225 , ..., 4.774626 , 5.0377254,
+        5.034482 ], dtype=float32),
+ &#39;p_late&#39;: Array([0.31139043, 0.28347778, 0.26887852, ..., 0.24549496, 0.19958483,
+        0.19899397], dtype=float32)}
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="4.-Posterior-Predictive-Checks">
+<h2>4. Posterior Predictive Checks<a class="headerlink" href="#4.-Posterior-Predictive-Checks" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&quot;\nGenerating posterior predictive samples...&quot;)
+
+preds = posterior_predictive(
+    samples=samples,
+    events_by_day=events_by_day,
+    event_day_index=event_days,
+    event_coords=event_coords,
+    hospital_coords=hospital_coords,
+    injuries_obs_shape=injuries_obs.shape,
+    deaths_obs_shape=len(deaths_obs),
+    delay_probs=delay_probs,
+    rng_seed=1
+)
+
+print(f&quot;Generated {preds[&#39;obs_deaths&#39;].shape[0]} posterior predictive samples&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+Generating posterior predictive samples...
+Generated 4000 posterior predictive samples
+</pre></div></div>
+</div>
+<section id="Visualize-Model-Fit">
+<h3>Visualize Model Fit<a class="headerlink" href="#Visualize-Model-Fit" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dates = np.arange(90)
+
+fig = plot_fit(
+    dates=dates,
+    injuries_obs=injuries_obs,
+    deaths_obs=deaths_obs,
+    preds=preds
+)
+plt.show()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_01_basic_example_21_0.png" src="../_images/tutorials_01_basic_example_21_0.png" />
+</div>
+</div>
+</section>
+<section id="Quantitative-Checks">
+<h3>Quantitative Checks<a class="headerlink" href="#Quantitative-Checks" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Coverage probability for deaths
+deaths_lower = np.percentile(preds[&#39;obs_deaths&#39;], 2.5, axis=0)
+deaths_upper = np.percentile(preds[&#39;obs_deaths&#39;], 97.5, axis=0)
+coverage = np.mean((deaths_obs &gt;= deaths_lower) &amp; (deaths_obs &lt;= deaths_upper))
+
+print(f&quot;\nPosterior Predictive Check:&quot;)
+print(f&quot;Death observations within 95% CI: {coverage*100:.1f}%&quot;)
+
+# Mean absolute error
+pred_median = np.median(preds[&#39;obs_deaths&#39;], axis=0)
+mae = np.mean(np.abs(deaths_obs - pred_median))
+print(f&quot;Median absolute error: {mae:.2f} deaths/day&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+Posterior Predictive Check:
+Death observations within 95% CI: 97.8%
+Median absolute error: 1.91 deaths/day
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="5.-Forecasting">
+<h2>5. Forecasting<a class="headerlink" href="#5.-Forecasting" title="Link to this heading"></a></h2>
+<section id="Baseline-Scenario">
+<h3>Baseline Scenario<a class="headerlink" href="#Baseline-Scenario" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Estimate recent event rate
+recent_rate = events_by_day[-30:].mean()
+print(f&quot;Recent event rate: {recent_rate:.2f} events/day&quot;)
+
+# 30-day forecast
+future_events = np.full(30, recent_rate)
+
+forecast_results = forecast(
+    samples=samples,
+    future_events_by_day=future_events,
+    delay_probs=delay_probs
+)
+
+print(f&quot;\n30-day forecast total deaths: {forecast_results[&#39;deaths_median&#39;].sum():.0f}&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Recent event rate: 2.20 events/day
+
+30-day forecast total deaths: 146
+</pre></div></div>
+</div>
+</section>
+<section id="Visualize-Forecast">
+<h3>Visualize Forecast<a class="headerlink" href="#Visualize-Forecast" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig = plot_forecast(
+    forecast_results=forecast_results,
+    start_date=np.datetime64(&#39;2024-01-01&#39;)
+)
+plt.show()
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_01_basic_example_27_0.png" src="../_images/tutorials_01_basic_example_27_0.png" />
+</div>
+</div>
+</section>
+<section id="Scenario-Comparison">
+<h3>Scenario Comparison<a class="headerlink" href="#Scenario-Comparison" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>scenarios = {
+    &#39;Baseline&#39;: np.full(30, recent_rate),
+    &#39;Ceasefire (90% reduction)&#39;: np.full(30, recent_rate * 0.1),
+    &#39;Escalation (2x events)&#39;: np.full(30, recent_rate * 2.0),
+}
+
+print(&quot;\n&quot; + &quot;=&quot;*60)
+print(&quot;Scenario Analysis: 30-Day Forecasts&quot;)
+print(&quot;=&quot;*60)
+
+results = {}
+for name, events in scenarios.items():
+    forecast_res = forecast(samples, events, delay_probs)
+    total_deaths = forecast_res[&#39;deaths_median&#39;].sum()
+    results[name] = total_deaths
+    print(f&quot;{name:30s}: {total_deaths:6.0f} deaths&quot;)
+
+# Quantify impact
+baseline = results[&#39;Baseline&#39;]
+ceasefire = results[&#39;Ceasefire (90% reduction)&#39;]
+lives_saved = baseline - ceasefire
+
+print(f&quot;\nLives saved by ceasefire: {lives_saved:.0f} ({lives_saved/baseline*100:.1f}% reduction)&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+============================================================
+Scenario Analysis: 30-Day Forecasts
+============================================================
+Baseline                      :    146 deaths
+Ceasefire (90% reduction)     :      0 deaths
+Escalation (2x events)        :    269 deaths
+
+Lives saved by ceasefire: 146 (100.0% reduction)
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="Summary">
+<h2>Summary<a class="headerlink" href="#Summary" title="Link to this heading"></a></h2>
+<p>This tutorial demonstrated:</p>
+<ol class="arabic simple">
+<li><p>✓ Simulating realistic conflict casualty data</p></li>
+<li><p>✓ Fitting a Bayesian model with MCMC</p></li>
+<li><p>✓ Diagnosing convergence and assessing fit</p></li>
+<li><p>✓ Posterior predictive checking</p></li>
+<li><p>✓ Scenario-based forecasting</p></li>
+<li><p>✓ Parameter recovery validation</p></li>
+</ol>
+<p><strong>Key Takeaways</strong>:</p>
+<ul class="simple">
+<li><p>Simulated data provides ground truth for validation</p></li>
+<li><p>MCMC diagnostics are essential (check R-hat and ESS)</p></li>
+<li><p>Posterior predictive checks reveal model adequacy</p></li>
+<li><p>Scenario analysis quantifies intervention impacts</p></li>
+</ul>
+<p><strong>Next Steps</strong>: See <a class="reference internal" href="02_gaza_analysis.html"><span class="doc">Gaza Analysis Tutorial</span></a> to apply these methods to real conflict data.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../model/03_implementation.html" class="btn btn-neutral float-left" title="Model Implementation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="02_gaza_analysis.html" class="btn btn-neutral float-right" title="Tutorial: Gaza Conflict Casualty Analysis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, OJ Watson.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

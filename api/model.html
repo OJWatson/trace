@@ -1,0 +1,249 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Model Module &mdash; TRACE 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Simulate Module" href="simulate.html" />
+    <link rel="prev" title="Data Module" href="data.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            TRACE
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Model Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../model/00_overview.html">Model Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../model/01_background.html">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../model/02_description.html">Model Description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../model/03_implementation.html">Model Implementation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/01_basic_example.html">Tutorial: Basic Example with Simulated Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/02_gaza_analysis.html">Tutorial: Gaza Conflict Casualty Analysis</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="data.html">Data Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Model Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#trace.model.spatial_kernel_weights"><code class="docutils literal notranslate"><span class="pre">spatial_kernel_weights()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#trace.model.casualty_model"><code class="docutils literal notranslate"><span class="pre">casualty_model()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#trace.model.casualty_model_with_covariates"><code class="docutils literal notranslate"><span class="pre">casualty_model_with_covariates()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="simulate.html">Simulate Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">Analysis Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Additional Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">TRACE</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Model Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/model.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="module-trace.model">
+<span id="model-module"></span><h1>Model Module<a class="headerlink" href="#module-trace.model" title="Link to this heading"></a></h1>
+<p>Bayesian hierarchical model for conflict casualties using NumPyro.</p>
+<p>This module implements the core probabilistic model that integrates conflict events,
+hospital admissions, and mortality data with spatial and temporal dynamics.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="trace.model.spatial_kernel_weights">
+<span class="sig-prename descclassname"><span class="pre">trace.model.</span></span><span class="sig-name descname"><span class="pre">spatial_kernel_weights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hospital_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ell</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/trace/model.html#spatial_kernel_weights"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trace.model.spatial_kernel_weights" title="Link to this definition"></a></dt>
+<dd><p>Compute normalized spatial kernel weights for event-hospital allocation.</p>
+<p>Uses an exponential decay kernel to model how casualties from a conflict event
+are distributed among hospitals based on distance. Closer hospitals receive
+more casualties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>event_coords</strong> (<em>jnp.ndarray</em>) – Array of shape (E, 2) with (latitude, longitude) for each event</p></li>
+<li><p><strong>hospital_coords</strong> (<em>jnp.ndarray</em>) – Array of shape (H, 2) with (latitude, longitude) for each hospital</p></li>
+<li><p><strong>ell</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Length scale parameter controlling spatial decay (in coordinate units)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Array of shape (E, H) where each row sums to 1, representing the
+fraction of casualties from each event allocated to each hospital</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>jnp.ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The kernel uses exponential decay: weight ∝ exp(-distance/ell)
+For small regions, Euclidean distance on lat/lon is acceptable.
+For larger regions, consider using haversine distance.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="trace.model.casualty_model">
+<span class="sig-prename descclassname"><span class="pre">trace.model.</span></span><span class="sig-name descname"><span class="pre">casualty_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">events_by_day</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_day_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hospital_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">injuries_obs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deaths_obs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay_probs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/trace/model.html#casualty_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trace.model.casualty_model" title="Link to this definition"></a></dt>
+<dd><p>Bayesian hierarchical model for conflict casualties.</p>
+<p>This model integrates three data streams:
+1. ACLED conflict events (exogenous input)
+2. Hospital casualty admissions (observed)
+3. National mortality data (observed)</p>
+<p>The model uses spatial kernels to allocate casualties to hospitals and
+delay distributions to model the time from injury to death.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>events_by_day</strong> (<em>np.ndarray</em>) – 1D array of length T with count of events per day</p></li>
+<li><p><strong>event_day_index</strong> (<em>np.ndarray</em>) – 1D array of length E listing the day index (0..T-1) of each event</p></li>
+<li><p><strong>event_coords</strong> (<em>np.ndarray</em>) – Array of shape (E, 2) with (lat, lon) for each event</p></li>
+<li><p><strong>hospital_coords</strong> (<em>np.ndarray</em>) – Array of shape (H, 2) with (lat, lon) for each hospital</p></li>
+<li><p><strong>injuries_obs</strong> (<em>np.ndarray</em>) – Array of shape (T, H) with observed daily injured counts at each hospital</p></li>
+<li><p><strong>deaths_obs</strong> (<em>np.ndarray</em>) – 1D array of length T with observed daily death counts (national)</p></li>
+<li><p><strong>delay_probs</strong> (<em>np.ndarray</em><em>, </em><em>optional</em>) – 1D array for distribution of delay from injury to death.
+If None, uses default [0.5, 0.3, 0.15, 0.05] for 1-4 day delays</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>None</em> – This is a NumPyro model function that defines the probabilistic model.
+It samples from priors and conditions on observed data.</p></li>
+<li><p><em>Model Parameters (Inferred)</em></p></li>
+<li><p><em>—————————</em></p></li>
+<li><p><strong>mu_w</strong> (<em>float</em>) – Average number of wounded (hospitalized) per conflict event</p></li>
+<li><p><strong>mu_i</strong> (<em>float</em>) – Average number of immediate fatalities per event</p></li>
+<li><p><strong>p_late</strong> (<em>float</em>) – Probability an injured person eventually dies (hospital fatality rate)</p></li>
+<li><p><strong>ell</strong> (<em>float</em>) – Spatial length scale for hospital allocation kernel</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The model assumes:
+- Casualties from events are allocated to hospitals via spatial kernel
+- Immediate deaths occur on the event day
+- Injured individuals may die later according to delay distribution
+- All observations follow Poisson distributions (can be extended to Negative Binomial)</p>
+<p class="rubric">Examples</p>
+<p>This function is used with NumPyro’s MCMC inference:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">numpyro.infer</span><span class="w"> </span><span class="kn">import</span> <span class="n">MCMC</span><span class="p">,</span> <span class="n">NUTS</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kernel</span> <span class="o">=</span> <span class="n">NUTS</span><span class="p">(</span><span class="n">casualty_model</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mcmc</span> <span class="o">=</span> <span class="n">MCMC</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="n">num_warmup</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mcmc</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">rng_key</span><span class="p">,</span> <span class="n">events_by_day</span><span class="p">,</span> <span class="n">event_day_index</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="trace.model.casualty_model_with_covariates">
+<span class="sig-prename descclassname"><span class="pre">trace.model.</span></span><span class="sig-name descname"><span class="pre">casualty_model_with_covariates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">events_by_day</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_day_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hospital_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">injuries_obs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deaths_obs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">covariates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay_probs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/trace/model.html#casualty_model_with_covariates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trace.model.casualty_model_with_covariates" title="Link to this definition"></a></dt>
+<dd><p>Extended casualty model with time-varying covariates.</p>
+<p>This version allows for covariates (e.g., ceasefire indicators, conflict intensity)
+to modulate the casualty rates over time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>covariates</strong> (<em>np.ndarray</em><em>, </em><em>optional</em>) – Array of shape (T, K) with K covariates for each day
+Examples: ceasefire indicators, media coverage, intervention events</p></li>
+<li><p><strong>Parameters</strong> (<em>Additional</em>)</p></li>
+<li><p><strong>---------------------</strong></p></li>
+<li><p><strong>beta</strong> (<em>np.ndarray</em>) – Regression coefficients for each covariate (sampled in model)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Covariates enter the model by modulating mu_w and mu_i:
+- mu_w_t = mu_w * exp(sum_k beta_k * X_tk)
+- mu_i_t = mu_i * exp(sum_k beta_k * X_tk)</p>
+<p>This allows modeling intervention effects similar to epidemia’s approach.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="data.html" class="btn btn-neutral float-left" title="Data Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="simulate.html" class="btn btn-neutral float-right" title="Simulate Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, OJ Watson.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
