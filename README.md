@@ -88,7 +88,7 @@ TRACE implements a hierarchical Bayesian model that:
 
 ## Documentation
 
-Full documentation is available at [https://imperial-college.github.io/trace](https://imperial-college.github.io/trace)
+Full documentation is available at [https://ojwatson.github.io/trace](https://ojwatson.github.io/trace)
 
 ## Examples
 
@@ -106,7 +106,7 @@ If you use TRACE in your research, please cite:
 ```bibtex
 @software{trace2024,
   title = {TRACE: Conflict Casualty Modeling with Bayesian Hierarchical Models},
-  author = {{Imperial College London}},
+  author = {{OJWatson}},
   year = {2024},
   url = {https://github.com/OJWatson/trace}
 }
