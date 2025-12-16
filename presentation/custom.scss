@@ -1,0 +1,144 @@
+/*-- scss:defaults --*/
+
+$imperial-blue: #002147;
+$imperial-light: #0066b3;
+$accent-red: #c0392b;
+$accent-green: #27ae60;
+$accent-orange: #e67e22;
+
+$presentation-heading-color: $imperial-blue;
+$link-color: $imperial-light;
+$code-block-bg: #f8f9fa;
+
+/*-- scss:rules --*/
+
+.reveal h1, .reveal h2, .reveal h3 {
+  color: $imperial-blue;
+  font-weight: 600;
+}
+
+.reveal h1 {
+  font-size: 2.2em;
+}
+
+.reveal h2 {
+  font-size: 1.5em;
+  border-bottom: 2px solid $imperial-light;
+  padding-bottom: 0.3em;
+  margin-bottom: 0.8em;
+}
+
+.reveal .slide-background-content {
+  background-color: white;
+}
+
+.reveal section {
+  text-align: left;
+}
+
+.reveal .center {
+  text-align: center;
+}
+
+.reveal ul, .reveal ol {
+  margin-left: 0.5em;
+}
+
+.reveal li {
+  margin-bottom: 0.4em;
+  line-height: 1.5;
+}
+
+.reveal .callout {
+  margin: 0.8em 0;
+}
+
+.reveal .callout-note {
+  border-left-color: $imperial-light;
+}
+
+.reveal .callout-tip {
+  border-left-color: $accent-green;
+}
+
+.reveal .callout-important {
+  border-left-color: $accent-red;
+}
+
+.reveal .callout-warning {
+  border-left-color: $accent-orange;
+}
+
+.reveal table {
+  font-size: 0.85em;
+  margin: 0.8em auto;
+}
+
+.reveal th {
+  background-color: $imperial-blue;
+  color: white;
+  padding: 0.5em 1em;
+  font-weight: 600;
+}
+
+.reveal td {
+  padding: 0.4em 1em;
+  border-bottom: 1px solid #ddd;
+}
+
+.reveal code {
+  background: #f0f4f8;
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+.reveal pre {
+  box-shadow: none;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+}
+
+.reveal .footer {
+  font-size: 0.6em;
+  color: #666;
+}
+
+.reveal .slide-number {
+  color: $imperial-blue;
+  font-size: 0.8em;
+}
+
+/* Columns */
+.reveal .columns {
+  display: flex;
+  gap: 2em;
+}
+
+/* Math styling */
+.reveal .MathJax {
+  font-size: 0.95em;
+}
+
+/* Fragment animations */
+.reveal .fragment.fade-in-then-out {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Small text class */
+.reveal .smaller {
+  font-size: 0.9em;
+}
+
+.reveal .small {
+  font-size: 0.75em;
+  color: #666;
+}
+
+/* R-fit-text for title slides */
+.reveal .r-fit-text {
+  font-size: 3em;
+  font-weight: bold;
+  color: white;
+}

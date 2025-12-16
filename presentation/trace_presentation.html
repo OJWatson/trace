@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRACE: Temporal and Regional Analysis of Conflict Events</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/theme/white.css">
+    <style>
+        :root {
+            --imperial-blue: #002147;
+            --imperial-light: #0066b3;
+            --accent-red: #c41e3a;
+        }
+        .reveal h1, .reveal h2, .reveal h3 {
+            color: var(--imperial-blue);
+            font-weight: 600;
+        }
+        .reveal h1 { font-size: 2.2em; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.3em; }
+        .reveal {
+            font-size: 28px;
+        }
+        .reveal section {
+            text-align: left;
+        }
+        .reveal .center-text {
+            text-align: center;
+        }
+        .reveal .title-slide {
+            text-align: center;
+        }
+        .reveal .title-slide h1 {
+            font-size: 2.4em;
+            margin-bottom: 0.3em;
+        }
+        .reveal .subtitle {
+            font-size: 1.3em;
+            color: var(--imperial-light);
+            margin-bottom: 1em;
+        }
+        .reveal .author {
+            font-size: 1.1em;
+            color: #555;
+        }
+        .reveal .institution {
+            font-size: 0.95em;
+            color: #777;
+        }
+        .reveal ul {
+            margin-left: 0.5em;
+        }
+        .reveal li {
+            margin-bottom: 0.4em;
+            line-height: 1.4;
+        }
+        .reveal .highlight {
+            color: var(--imperial-light);
+            font-weight: 600;
+        }
+        .reveal .accent {
+            color: var(--accent-red);
+            font-weight: 600;
+        }
+        .reveal .two-column {
+            display: flex;
+            gap: 2em;
+        }
+        .reveal .two-column > div {
+            flex: 1;
+        }
+        .reveal .equation-box {
+            background: #f5f5f5;
+            padding: 1em;
+            border-radius: 8px;
+            margin: 0.5em 0;
+            font-family: 'Times New Roman', serif;
+            text-align: center;
+        }
+        .reveal .key-point {
+            background: linear-gradient(135deg, #e8f4fc 0%, #f0f8ff 100%);
+            border-left: 4px solid var(--imperial-light);
+            padding: 0.8em 1em;
+            margin: 0.5em 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .reveal .challenge-box {
+            background: #fff5f5;
+            border-left: 4px solid var(--accent-red);
+            padding: 0.8em 1em;
+            margin: 0.5em 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .reveal .small {
+            font-size: 0.75em;
+            color: #666;
+        }
+        .reveal .diagram {
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1em;
+            margin: 0.5em 0;
+            text-align: center;
+        }
+        .reveal .flow-arrow {
+            font-size: 1.5em;
+            color: var(--imperial-light);
+        }
+        .reveal table {
+            font-size: 0.85em;
+            margin: 0.5em auto;
+        }
+        .reveal th {
+            background: var(--imperial-blue);
+            color: white;
+            padding: 0.5em 1em;
+        }
+        .reveal td {
+            padding: 0.4em 1em;
+            border-bottom: 1px solid #ddd;
+        }
+        .reveal .footer {
+            position: absolute;
+            bottom: 1em;
+            left: 1em;
+            font-size: 0.6em;
+            color: #999;
+        }
+        .reveal code {
+            background: #f0f0f0;
+            padding: 0.1em 0.3em;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Slide 1: Title -->
+            <section class="title-slide">
+                <h1>TRACE</h1>
+                <div class="subtitle">Temporal and Regional Analysis of Conflict Events</div>
+                <p style="font-size: 1.1em; margin-bottom: 1.5em;">
+                    Semi-Mechanistic Bayesian Models for Conflict Casualty Analysis
+                </p>
+                <div class="author">Imperial College London</div>
+                <div class="institution" style="margin-top: 2em;">
+                    <img src="https://www.imperial.ac.uk/ImageCropToolT4/imageTool/uploaded-images/Blue-on-white--tojpeg_1495792235526_x1.jpg" 
+                         alt="Imperial College London" style="height: 60px; opacity: 0.8;">
+                </div>
+            </section>
+
+            <!-- Slide 2: Motivation -->
+            <section>
+                <h2>The Challenge</h2>
+                <div class="challenge-box">
+                    <strong>During active conflicts, reliable casualty data is critical for humanitarian response—but often unavailable or incomplete.</strong>
+                </div>
+                <ul style="margin-top: 1em;">
+                    <li><span class="highlight">Under-reporting</span>: True tolls often exceed official figures</li>
+                    <li><span class="highlight">Multiple data streams</span>: Events, hospital records, mortality reports</li>
+                    <li><span class="highlight">Spatial complexity</span>: Casualties distributed across hospitals</li>
+                    <li><span class="highlight">Temporal delays</span>: Deaths occur days/weeks after injury</li>
+                    <li><span class="highlight">Uncertainty</span>: Need principled quantification for decision-making</li>
+                </ul>
+                <div class="key-point" style="margin-top: 1em;">
+                    <strong>Goal:</strong> Integrate multiple data sources to estimate casualties and forecast under scenarios
+                </div>
+            </section>
+
+            <!-- Slide 3: Existing Approaches -->
+            <section>
+                <h2>Existing Approaches</h2>
+                <div class="two-column">
+                    <div>
+                        <h3>Mechanistic Models</h3>
+                        <ul>
+                            <li>Lanchester equations</li>
+                            <li>Agent-based simulations</li>
+                            <li>Network models</li>
+                        </ul>
+                        <p class="small" style="margin-top: 0.5em;">
+                            ✓ Interpretable<br>
+                            ✗ Hard to fit to data<br>
+                            ✗ Unrealistic assumptions
+                        </p>
+                    </div>
+                    <div>
+                        <h3>Statistical Models</h3>
+                        <ul>
+                            <li>ARIMA, GLMs</li>
+                            <li>Machine learning</li>
+                            <li>Time series forecasting</li>
+                        </ul>
+                        <p class="small" style="margin-top: 0.5em;">
+                            ✓ Flexible, good short-term<br>
+                            ✗ No mechanistic insight<br>
+                            ✗ Poor extrapolation
+                        </p>
+                    </div>
+                </div>
+                <div class="key-point" style="margin-top: 1.5em;">
+                    <strong>TRACE:</strong> Semi-mechanistic approach—explicit casualty generation process + statistical inference
+                </div>
+            </section>
+
+            <!-- Slide 4: Inspiration from Epidemiology -->
+            <section>
+                <h2>Inspiration: Epidemic Modeling</h2>
+                <p>TRACE adapts methods from COVID-19 modeling (Flaxman et al., 2020):</p>
+                <div class="diagram">
+                    <table style="width: 100%;">
+                        <tr>
+                            <th>Epidemiology</th>
+                            <th>Conflict</th>
+                        </tr>
+                        <tr>
+                            <td>Susceptible population</td>
+                            <td>Population at risk</td>
+                        </tr>
+                        <tr>
+                            <td>Infections (R<sub>t</sub>)</td>
+                            <td>Conflict events (intensity)</td>
+                        </tr>
+                        <tr>
+                            <td>Hospitalizations</td>
+                            <td>Hospital admissions</td>
+                        </tr>
+                        <tr>
+                            <td>Deaths (with delays)</td>
+                            <td>Deaths (immediate + delayed)</td>
+                        </tr>
+                        <tr>
+                            <td>Age-stratified contacts</td>
+                            <td>Spatial allocation to hospitals</td>
+                        </tr>
+                    </table>
+                </div>
+                <p class="small" style="margin-top: 0.5em;">
+                    Key difference: Conflict events are <em>exogenous</em> (driven by military operations), not self-propagating like infections
+                </p>
+            </section>
+
+            <!-- Slide 5: The TRACE Framework -->
+            <section>
+                <h2>The TRACE Framework</h2>
+                <div class="diagram">
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 0.5em; flex-wrap: wrap;">
+                        <div style="background: #e8f4fc; padding: 0.8em; border-radius: 8px; border: 2px solid var(--imperial-light);">
+                            <strong>Conflict Events</strong><br>
+                            <span class="small">(ACLED data)</span>
+                        </div>
+                        <span class="flow-arrow">→</span>
+                        <div style="background: #fff5e6; padding: 0.8em; border-radius: 8px; border: 2px solid #e6a23c;">
+                            <strong>Spatial Allocation</strong><br>
+                            <span class="small">(distance kernels)</span>
+                        </div>
+                        <span class="flow-arrow">→</span>
+                        <div style="background: #e6ffe6; padding: 0.8em; border-radius: 8px; border: 2px solid #67c23a;">
+                            <strong>Hospital Injuries</strong><br>
+                            <span class="small">(observed)</span>
+                        </div>
+                        <span class="flow-arrow">→</span>
+                        <div style="background: #ffe6e6; padding: 0.8em; border-radius: 8px; border: 2px solid var(--accent-red);">
+                            <strong>Deaths</strong><br>
+                            <span class="small">(immediate + delayed)</span>
+                        </div>
+                    </div>
+                </div>
+                <h3 style="margin-top: 1em;">Three Components:</h3>
+                <ol>
+                    <li><strong>Conflict Event Process</strong> — Discrete events with locations & times</li>
+                    <li><strong>Spatial Allocation</strong> — Casualties distributed to hospitals by distance</li>
+                    <li><strong>Temporal Dynamics</strong> — Delay from injury to death</li>
+                </ol>
+            </section>
+
+            <!-- Slide 6: Spatial Allocation -->
+            <section>
+                <h2>Component 1: Spatial Allocation</h2>
+                <p>Casualties from event <em>e</em> allocated to hospital <em>h</em> based on distance:</p>
+                <div class="equation-box">
+                    w<sub>e,h</sub> = exp(−d<sub>e,h</sub> / ℓ) / Σ<sub>h'</sub> exp(−d<sub>e,h'</sub> / ℓ)
+                </div>
+                <ul style="margin-top: 1em;">
+                    <li><strong>ℓ</strong> = spatial length scale (inferred from data)</li>
+                    <li>Closer hospitals receive more casualties</li>
+                    <li>Accounts for accessibility, infrastructure, security</li>
+                </ul>
+                <div class="key-point" style="margin-top: 1em;">
+                    <strong>Enables:</strong> Hospital-specific forecasting, identifying underserved areas, optimizing mobile medical unit placement
+                </div>
+            </section>
+
+            <!-- Slide 7: Temporal Dynamics -->
+            <section>
+                <h2>Component 2: Temporal Dynamics</h2>
+                <p>Deaths combine immediate and delayed components:</p>
+                <div class="equation-box">
+                    δ<sub>t</sub> = μ<sub>i</sub> · |E<sub>t</sub>| + p<sub>late</sub> · Σ<sub>k</sub> I<sub>t−k</sub> · f<sub>k</sub>
+                </div>
+                <div class="two-column" style="margin-top: 1em;">
+                    <div>
+                        <h3>Parameters</h3>
+                        <ul>
+                            <li><strong>μ<sub>i</sub></strong>: Immediate deaths per event</li>
+                            <li><strong>p<sub>late</sub></strong>: Hospital fatality rate</li>
+                            <li><strong>f<sub>k</sub></strong>: Delay distribution</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>Delay Distribution</h3>
+                        <p class="small">Based on trauma literature:</p>
+                        <ul class="small">
+                            <li>Day 1: 50%</li>
+                            <li>Day 2: 30%</li>
+                            <li>Day 3: 15%</li>
+                            <li>Day 4+: 5%</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 8: Observation Model -->
+            <section>
+                <h2>Component 3: Observation Model</h2>
+                <p>Hospital injuries and deaths modeled as Poisson random variables:</p>
+                <div class="equation-box">
+                    H<sub>t,h</sub> ~ Poisson(λ<sub>t,h</sub>)<br><br>
+                    D<sub>t</sub> ~ Poisson(δ<sub>t</sub>)
+                </div>
+                <p style="margin-top: 1em;">Where expected injuries depend on events and spatial weights:</p>
+                <div class="equation-box">
+                    λ<sub>t,h</sub> = μ<sub>w</sub> · Σ<sub>e∈E<sub>t</sub></sub> w<sub>e,h</sub>
+                </div>
+                <p class="small" style="margin-top: 0.5em;">
+                    <strong>μ<sub>w</sub></strong> = average wounded per event (varies by conflict type: airstrikes vs. ground combat)
+                </p>
+            </section>
+
+            <!-- Slide 9: Bayesian Inference -->
+            <section>
+                <h2>Why Bayesian?</h2>
+                <div class="two-column">
+                    <div>
+                        <h3>Challenges</h3>
+                        <ul>
+                            <li><span class="accent">Under-reporting</span>: Unknown ascertainment rates</li>
+                            <li><span class="accent">Attribution</span>: Which injuries caused which deaths?</li>
+                            <li><span class="accent">Confounding</span>: Multiple interventions</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>Bayesian Advantages</h3>
+                        <ul>
+                            <li><span class="highlight">Regularization</span>: Informative priors</li>
+                            <li><span class="highlight">Uncertainty</span>: Full posteriors</li>
+                            <li><span class="highlight">Hierarchical</span>: Partial pooling</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="key-point" style="margin-top: 1.5em;">
+                    <strong>Implementation:</strong> NumPyro + JAX for fast, GPU-accelerated MCMC (NUTS sampler)
+                </div>
+            </section>
+
+            <!-- Slide 10: Key Parameters -->
+            <section>
+                <h2>Model Parameters</h2>
+                <table>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Meaning</th>
+                        <th>Prior</th>
+                    </tr>
+                    <tr>
+                        <td><strong>μ<sub>w</sub></strong></td>
+                        <td>Wounded per event</td>
+                        <td>Exp(0.3) → mean ~3.3</td>
+                    </tr>
+                    <tr>
+                        <td><strong>μ<sub>i</sub></strong></td>
+                        <td>Immediate deaths per event</td>
+                        <td>Exp(0.3) → mean ~3.3</td>
+                    </tr>
+                    <tr>
+                        <td><strong>p<sub>late</sub></strong></td>
+                        <td>Hospital fatality rate</td>
+                        <td>Beta(2, 10) → mean ~17%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ℓ</strong></td>
+                        <td>Spatial length scale</td>
+                        <td>Exp(1.0) → mean ~1°</td>
+                    </tr>
+                </table>
+                <p class="small" style="margin-top: 1em;">
+                    Priors are weakly informative, informed by conflict literature. Can be adjusted based on context.
+                </p>
+            </section>
+
+            <!-- Slide 11: Data Sources -->
+            <section>
+                <h2>Data Integration</h2>
+                <div class="two-column">
+                    <div>
+                        <h3>Input Data Streams</h3>
+                        <ul>
+                            <li><strong>ACLED</strong>: Geo-coded conflict events<br>
+                                <span class="small">Date, location, type, reported fatalities</span></li>
+                            <li><strong>Hospital Records</strong>: Daily injury counts<br>
+                                <span class="small">By facility, conflict-related</span></li>
+                            <li><strong>Mortality Data</strong>: National/regional deaths<br>
+                                <span class="small">Ministry of Health reports</span></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>Gaza Example</h3>
+                        <ul>
+                            <li>27,815 ACLED events<br>
+                                <span class="small">(Sept 2023 – Dec 2024)</span></li>
+                            <li>Daily mortality from<br>Tech for Palestine API</li>
+                            <li>5 major hospitals<br>
+                                <span class="small">(simulated admissions)</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 12: Use Cases -->
+            <section>
+                <h2>Applications</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1em;">
+                    <div class="key-point">
+                        <strong>1. Parameter Estimation</strong><br>
+                        Estimate casualties per event, hospital fatality rates, spatial patterns
+                    </div>
+                    <div class="key-point">
+                        <strong>2. Model Assessment</strong><br>
+                        Posterior predictive checks, identify model misspecification
+                    </div>
+                    <div class="key-point">
+                        <strong>3. Forecasting</strong><br>
+                        Short-term (resource allocation) and long-term (policy) projections
+                    </div>
+                    <div class="key-point">
+                        <strong>4. Scenario Analysis</strong><br>
+                        Ceasefire, escalation, intervention effects
+                    </div>
+                    <div class="key-point">
+                        <strong>5. In-Silico Experiments</strong><br>
+                        Sensitivity analysis, study design, validation
+                    </div>
+                    <div class="key-point">
+                        <strong>6. Humanitarian Planning</strong><br>
+                        Hospital capacity, supply distribution, evacuation planning
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 13: Scenario Analysis Example -->
+            <section>
+                <h2>Example: Scenario Analysis</h2>
+                <p>Comparing 30-day forecasts under different assumptions:</p>
+                <div class="diagram">
+                    <table style="width: 80%;">
+                        <tr>
+                            <th>Scenario</th>
+                            <th>Event Rate</th>
+                            <th>Projected Deaths</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Baseline</strong></td>
+                            <td>Current rate</td>
+                            <td style="color: var(--accent-red);">~X deaths</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Ceasefire</strong></td>
+                            <td>90% reduction</td>
+                            <td style="color: #67c23a;">~Y deaths</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Escalation</strong></td>
+                            <td>50% increase</td>
+                            <td style="color: var(--accent-red);">~Z deaths</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="key-point" style="margin-top: 1em;">
+                    <strong>Output:</strong> Full posterior predictive distributions with credible intervals—not just point estimates
+                </div>
+            </section>
+
+            <!-- Slide 14: Technical Implementation -->
+            <section>
+                <h2>Implementation</h2>
+                <div class="two-column">
+                    <div>
+                        <h3>Tech Stack</h3>
+                        <ul>
+                            <li><strong>JAX</strong>: GPU-accelerated arrays, autodiff</li>
+                            <li><strong>NumPyro</strong>: Probabilistic programming</li>
+                            <li><strong>ArviZ</strong>: Diagnostics & visualization</li>
+                            <li><strong>Python</strong>: Open-source package</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>Features</h3>
+                        <ul>
+                            <li>NUTS sampler (HMC)</li>
+                            <li>Variational inference option</li>
+                            <li>Hierarchical extensions</li>
+                            <li>Synthetic data generation</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="diagram" style="margin-top: 1em;">
+                    <code style="font-size: 0.8em;">
+                        pip install trace-conflict
+                    </code>
+                </div>
+            </section>
+
+            <!-- Slide 15: Extensions & Future Work -->
+            <section>
+                <h2>Extensions & Future Work</h2>
+                <ul>
+                    <li><strong>Time-varying parameters</strong>: Allow μ<sub>w</sub>, μ<sub>i</sub> to change (weapon changes, medical improvements)</li>
+                    <li><strong>Covariates</strong>: Intervention indicators, conflict type effects</li>
+                    <li><strong>Hierarchical structure</strong>: Partial pooling across regions/conflicts</li>
+                    <li><strong>Overdispersion</strong>: Negative Binomial for extra-Poisson variation</li>
+                    <li><strong>Missing data</strong>: Imputation within model structure</li>
+                    <li><strong>Population displacement</strong>: Dynamic population at risk</li>
+                    <li><strong>Self-exciting events</strong>: Endogenous event generation</li>
+                </ul>
+            </section>
+
+            <!-- Slide 16: Summary -->
+            <section class="title-slide">
+                <h2>Summary</h2>
+                <div style="text-align: left; max-width: 800px; margin: 0 auto;">
+                    <div class="key-point">
+                        <strong>TRACE</strong> provides a principled framework for conflict casualty analysis:
+                    </div>
+                    <ul style="margin-top: 1em;">
+                        <li><span class="highlight">Semi-mechanistic</span>: Explicit casualty generation + statistical inference</li>
+                        <li><span class="highlight">Multi-stream</span>: Integrates events, hospital, and mortality data</li>
+                        <li><span class="highlight">Spatial</span>: Distance-based allocation to hospitals</li>
+                        <li><span class="highlight">Temporal</span>: Delay distributions from injury to death</li>
+                        <li><span class="highlight">Bayesian</span>: Full uncertainty quantification</li>
+                        <li><span class="highlight">Actionable</span>: Scenario-based forecasting for policy</li>
+                    </ul>
+                </div>
+                <div style="margin-top: 2em;">
+                    <p><strong>Thank you</strong></p>
+                    <p class="small">
+                        GitHub: github.com/imperial-college/trace<br>
+                        Contact: trace@imperial.ac.uk
+                    </p>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: true,
+            transition: 'slide',
+            width: 1200,
+            height: 700,
+            margin: 0.1,
+        });
+    </script>
+</body>
+</html>

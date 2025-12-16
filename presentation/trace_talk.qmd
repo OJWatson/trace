@@ -1,0 +1,959 @@
+---
+title: "TRACE"
+subtitle: "Temporal and Regional Analysis of Conflict Events"
+author: "Imperial College London"
+institute: "In partnership with Médecins Sans Frontières"
+date: today
+format:
+  revealjs:
+    theme: [default, custom.scss]
+    slide-number: true
+    chalkboard: false
+    preview-links: auto
+    footer: "TRACE: Semi-Mechanistic Bayesian Models for Conflict Casualty Analysis"
+    logo: https://www.imperial.ac.uk/ImageCropToolT4/imageTool/uploaded-images/Blue-on-white--tojpeg_1495792235526_x1.jpg
+    width: 1200
+    height: 700
+    transition: slide
+    code-fold: true
+    code-summary: "Show code"
+    highlight-style: github
+execute:
+  echo: true
+  warning: false
+  cache: false
+jupyter: python3
+bibliography: references.bib
+---
+
+```{python}
+#| echo: false
+#| output: false
+import sys
+sys.path.insert(0, '../src')
+
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
+import pandas as pd
+
+# Set style
+plt.style.use('seaborn-v0_8-whitegrid')
+plt.rcParams['figure.figsize'] = (10, 5)
+plt.rcParams['font.size'] = 12
+np.random.seed(42)
+```
+
+## The Problem {.smaller}
+
+::: {.callout-note icon=false}
+## Partnership with Médecins Sans Frontières
+
+**MSF Gaza approached us with a critical operational question:**
+
+> *"During active conflict, can we produce short-term forecasts of hospital patient volumes and their typology of needs, so we can stock and staff in preparation?"*
+:::
+
+### Challenges in conflict settings:
+
+:::: {.columns}
+::: {.column width="50%"}
+- **Under-reporting**: True tolls often exceed official figures
+- **Multiple incomplete data streams**: Events, hospitals, mortality
+- **Spatial complexity**: Casualties distributed across hospitals
+:::
+::: {.column width="50%"}
+- **Temporal delays**: Deaths occur days/weeks after injury
+- **Uncertainty quantification**: Critical for resource planning
+- **Real-time needs**: Operational decisions can't wait
+:::
+::::
+
+::: {.callout-important}
+**Fitting targets available:** National death toll, hospital patient volumes and needs over time
+:::
+
+---
+
+## Existing Approaches {.smaller}
+
+:::: {.columns}
+::: {.column width="50%"}
+### Mechanistic Models
+
+- **Lanchester equations**: $\frac{dN_1}{dt} = -\alpha_2 N_2$
+- Agent-based simulations
+- Network models
+
+::: {.fragment}
+✓ Interpretable  
+✗ Hard to fit to data  
+✗ Require unknown force sizes  
+✗ No spatial structure
+:::
+:::
+
+::: {.column width="50%"}
+### Statistical Models
+
+- ARIMA, GLMs
+- Machine learning / neural networks
+- Time series forecasting
+
+::: {.fragment}
+✓ Flexible, good short-term  
+✗ No mechanistic insight  
+✗ Poor extrapolation  
+✗ Can't encode scenarios
+:::
+:::
+::::
+
+::: {.callout-tip}
+**TRACE**: Semi-mechanistic approach—explicit casualty generation process combined with principled statistical inference
+:::
+
+---
+
+## Inspiration: COVID-19 Epidemic Models {.smaller}
+
+TRACE adapts the semi-mechanistic framework from Flaxman et al. (2020):
+
+| Epidemiology | Conflict (TRACE) |
+|--------------|------------------|
+| Susceptible population | Population at risk |
+| Infections ($R_t$) | Conflict events (intensity) |
+| Hospitalizations | Hospital admissions |
+| Deaths (with delays) | Deaths (immediate + delayed) |
+| Age-stratified contacts | **Spatial allocation to hospitals** |
+
+::: {.fragment}
+::: {.callout-warning}
+**Key difference:** Conflict events are *exogenous* (driven by military operations), not self-propagating like infections. This simplifies the model—no renewal equation needed.
+:::
+:::
+
+---
+
+## The TRACE Framework {.smaller}
+
+```{python}
+#| echo: false
+#| fig-align: center
+
+fig, ax = plt.subplots(1, 1, figsize=(12, 5))
+ax.set_xlim(0, 12)
+ax.set_ylim(0, 5)
+ax.axis('off')
+
+# Color scheme
+colors = {'events': '#3498db', 'spatial': '#e67e22', 'injuries': '#27ae60', 
+          'deaths': '#c0392b', 'params': '#9b59b6'}
+
+# Box data
+boxes = [
+    {'pos': (0.5, 2), 'w': 2.2, 'h': 2.2, 'color': colors['events'], 
+     'title': 'Conflict Events', 'sub': '(ACLED data)', 'eq': r'$E_t, (x_e, y_e)$'},
+    {'pos': (3.3, 2), 'w': 2.2, 'h': 2.2, 'color': colors['spatial'], 
+     'title': 'Spatial\nAllocation', 'sub': '(kernels)', 'eq': r'$w_{e,j} \propto e^{-d/\ell}$'},
+    {'pos': (6.1, 2), 'w': 2.2, 'h': 2.2, 'color': colors['injuries'], 
+     'title': 'Hospital\nInjuries', 'sub': '(observed)', 'eq': r'$H_{t,j} \sim \mathrm{Pois}(\lambda_{t,j})$'},
+    {'pos': (8.9, 2), 'w': 2.2, 'h': 2.2, 'color': colors['deaths'], 
+     'title': 'Deaths', 'sub': '(observed)', 'eq': r'$D_t \sim \mathrm{Pois}(\delta_t)$'},
+]
+
+for box in boxes:
+    rect = mpatches.FancyBboxPatch(box['pos'], box['w'], box['h'],
+                                   boxstyle="round,pad=0.05,rounding_size=0.2",
+                                   facecolor=box['color'], alpha=0.15,
+                                   edgecolor=box['color'], linewidth=2)
+    ax.add_patch(rect)
+    cx, cy = box['pos'][0] + box['w']/2, box['pos'][1] + box['h']/2
+    ax.text(cx, cy + 0.5, box['title'], ha='center', va='center', fontsize=12, fontweight='bold', color=box['color'])
+    ax.text(cx, cy, box['sub'], ha='center', va='center', fontsize=9, color='#666')
+    ax.text(cx, cy - 0.6, box['eq'], ha='center', va='center', fontsize=10, color=box['color'], fontstyle='italic')
+
+# Arrows between boxes
+for i in range(3):
+    x1 = boxes[i]['pos'][0] + boxes[i]['w']
+    x2 = boxes[i+1]['pos'][0]
+    y = boxes[i]['pos'][1] + boxes[i]['h']/2 + 0.5
+    ax.annotate('', xy=(x2-0.05, y), xytext=(x1+0.05, y),
+                arrowprops=dict(arrowstyle='->', color='#555', lw=2))
+
+# Delay arrow (curved)
+ax.annotate('', xy=(9.0, 2.3), xytext=(7.2, 2.3),
+            arrowprops=dict(arrowstyle='->', color=colors['deaths'], lw=1.5, 
+                          connectionstyle='arc3,rad=-0.3', linestyle='--'))
+ax.text(8.1, 1.5, r'$p_{\mathrm{late}}, f_k$'+'\n(delay)', ha='center', va='center', 
+        fontsize=9, color=colors['deaths'], fontstyle='italic')
+
+# Parameters box
+param_rect = mpatches.FancyBboxPatch((4.5, 0.2), 3.5, 1.2,
+                                     boxstyle="round,pad=0.05,rounding_size=0.1",
+                                     facecolor=colors['params'], alpha=0.1,
+                                     edgecolor=colors['params'], linewidth=1.5, linestyle='--')
+ax.add_patch(param_rect)
+ax.text(6.25, 0.8, r'**Inferred:** $\mu_w$, $\mu_i$, $p_{\mathrm{late}}$, $\ell$', 
+        ha='center', va='center', fontsize=10, color=colors['params'])
+
+plt.tight_layout()
+plt.show()
+```
+
+::: {.fragment}
+**Three coupled components:** Events → Spatial Allocation → Injuries ⇄ Deaths
+:::
+
+---
+
+## Mathematical Formulation {.smaller}
+
+### Observation Models
+
+Hospital injuries $H_{t,j}$ at hospital $j$ on day $t$, and national deaths $D_t$:
+
+$$
+H_{t,j} \sim \text{Poisson}(\lambda_{t,j}), \quad D_t \sim \text{Poisson}(\delta_t)
+$$
+
+### Expected Injuries (Spatial Allocation)
+
+$$
+\lambda_{t,j} = \mu_w \sum_{e \in E_t} w_{e,j}, \quad \text{where } w_{e,j} = \frac{\exp(-d_{e,j}/\ell)}{\sum_{j'} \exp(-d_{e,j'}/\ell)}
+$$
+
+- $\mu_w > 0$: average wounded per event
+- $d_{e,j}$: distance from event $e$ to hospital $j$  
+- $\ell > 0$: spatial length scale (inferred)
+
+### Expected Deaths (Immediate + Delayed)
+
+$$
+\delta_t = \underbrace{\mu_i |E_t|}_{\text{immediate}} + \underbrace{p_{\text{late}} \sum_{k=1}^L I_{t-k} f_k}_{\text{delayed hospital deaths}}
+$$
+
+---
+
+## The Delay Distribution {.smaller}
+
+Deaths don't occur immediately after injury—this temporal structure is critical:
+
+```{python}
+#| echo: false
+#| fig-align: center
+
+fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+
+# Left: Delay distribution
+delay_probs = np.array([0.5, 0.3, 0.15, 0.05])
+days = np.arange(1, len(delay_probs) + 1)
+
+ax = axes[0]
+bars = ax.bar(days, delay_probs, color='#c0392b', alpha=0.7, edgecolor='#c0392b', linewidth=2)
+ax.set_xlabel('Days after injury', fontsize=12)
+ax.set_ylabel('Probability of death $f_k$', fontsize=12)
+ax.set_title('Injury-to-Death Delay Distribution', fontsize=13, fontweight='bold')
+ax.set_xticks(days)
+ax.set_ylim(0, 0.6)
+for i, (d, p) in enumerate(zip(days, delay_probs)):
+    ax.text(d, p + 0.02, f'{p:.0%}', ha='center', va='bottom', fontsize=11)
+
+# Right: Convolution illustration
+ax = axes[1]
+t = np.arange(30)
+injuries = np.zeros(30)
+injuries[5] = 100  # Mass injury event on day 5
+injuries[12] = 60
+injuries[18] = 80
+
+# Compute delayed deaths
+delayed_deaths = np.zeros(30)
+p_late = 0.2
+for i in range(30):
+    for k, f_k in enumerate(delay_probs):
+        if i - k - 1 >= 0:
+            delayed_deaths[i] += p_late * injuries[i - k - 1] * f_k
+
+ax.bar(t, injuries, alpha=0.5, label='Injuries $I_t$', color='#27ae60', width=0.8)
+ax.plot(t, delayed_deaths, 'o-', color='#c0392b', linewidth=2, markersize=4, label='Delayed deaths')
+ax.set_xlabel('Day $t$', fontsize=12)
+ax.set_ylabel('Count', fontsize=12)
+ax.set_title('Convolution: Injuries → Delayed Deaths', fontsize=13, fontweight='bold')
+ax.legend(loc='upper right')
+ax.set_xlim(-1, 30)
+
+plt.tight_layout()
+plt.show()
+```
+
+$$
+\text{Delayed deaths on day } t = p_{\text{late}} \sum_{k=1}^L I_{t-k} f_k
+$$
+
+Based on trauma literature: ~50% of hospital deaths within 24h, tail extends to weeks.
+
+---
+
+## Prior Specifications {.smaller}
+
+Weakly informative priors balance regularization with data-driven inference:
+
+| Parameter | Prior | Interpretation |
+|-----------|-------|----------------|
+| $\mu_w$ | $\text{Exp}(0.3)$ | Mean ~3.3 wounded per event |
+| $\mu_i$ | $\text{Exp}(0.3)$ | Mean ~3.3 immediate deaths per event |
+| $p_{\text{late}}$ | $\text{Beta}(2, 10)$ | Mean ~17% hospital fatality rate |
+| $\ell$ | $\text{Exp}(1.0)$ | Mean ~1° (~100 km) spatial scale |
+
+::: {.fragment}
+```{python}
+#| echo: false
+#| fig-align: center
+
+fig, axes = plt.subplots(1, 4, figsize=(12, 2.5))
+
+# mu_w, mu_i
+x = np.linspace(0, 15, 200)
+ax = axes[0]
+ax.fill_between(x, 0.3 * np.exp(-0.3 * x), alpha=0.5, color='#3498db')
+ax.plot(x, 0.3 * np.exp(-0.3 * x), color='#3498db', linewidth=2)
+ax.set_title('$\\mu_w, \\mu_i \\sim \\mathrm{Exp}(0.3)$', fontsize=11)
+ax.set_xlabel('Casualties/event')
+ax.axvline(3.33, color='red', linestyle='--', alpha=0.7, label='Mean')
+ax.set_xlim(0, 15)
+
+# p_late
+from scipy.stats import beta as beta_dist
+x = np.linspace(0, 0.6, 200)
+ax = axes[1]
+y = beta_dist.pdf(x, 2, 10)
+ax.fill_between(x, y, alpha=0.5, color='#c0392b')
+ax.plot(x, y, color='#c0392b', linewidth=2)
+ax.set_title('$p_{\\mathrm{late}} \\sim \\mathrm{Beta}(2, 10)$', fontsize=11)
+ax.set_xlabel('Hospital fatality rate')
+ax.axvline(2/12, color='red', linestyle='--', alpha=0.7)
+
+# ell
+x = np.linspace(0, 5, 200)
+ax = axes[2]
+ax.fill_between(x, np.exp(-x), alpha=0.5, color='#e67e22')
+ax.plot(x, np.exp(-x), color='#e67e22', linewidth=2)
+ax.set_title('$\\ell \\sim \\mathrm{Exp}(1.0)$', fontsize=11)
+ax.set_xlabel('Spatial scale (°)')
+ax.axvline(1, color='red', linestyle='--', alpha=0.7)
+
+# delay probs
+ax = axes[3]
+ax.bar([1,2,3,4], [0.5, 0.3, 0.15, 0.05], color='#9b59b6', alpha=0.6)
+ax.set_title('$f_k$ (fixed from literature)', fontsize=11)
+ax.set_xlabel('Delay (days)')
+ax.set_xticks([1,2,3,4])
+
+for a in axes:
+    a.set_yticks([])
+    
+plt.tight_layout()
+plt.show()
+```
+:::
+
+---
+
+## Simulating Conflict Data {.smaller}
+
+Let's simulate a realistic 90-day conflict scenario:
+
+```{python}
+#| code-fold: false
+from trace.simulate import simulate_conflict_data
+
+# True parameters
+TRUE_PARAMS = {
+    'mu_w': 5.0,      # Wounded per event
+    'mu_i': 1.5,      # Immediate deaths per event  
+    'p_late': 0.20,   # 20% hospital fatality rate
+    'ell': 15.0,      # Spatial length scale
+}
+delay_probs = np.array([0.5, 0.3, 0.15, 0.05])
+
+# Simulate data
+sim_data = simulate_conflict_data(
+    n_regions=3, n_hospitals=5, T=90,
+    mu_w_true=TRUE_PARAMS['mu_w'],
+    mu_i_true=TRUE_PARAMS['mu_i'],
+    p_late_true=TRUE_PARAMS['p_late'],
+    delay_probs=delay_probs,
+    ell_true=TRUE_PARAMS['ell'],
+    events_rate=3.0,  # 3 events per day on average
+    seed=42
+)
+
+print(f"Simulated {len(sim_data['events'])} events over 90 days")
+print(f"Total injuries: {sim_data['hospital_incidence'].sum()}")
+print(f"Total deaths: {sim_data['national_deaths'].sum()}")
+```
+
+---
+
+## Visualizing Simulated Data {.smaller}
+
+```{python}
+#| echo: false
+#| fig-align: center
+
+fig, axes = plt.subplots(2, 2, figsize=(12, 7))
+
+# Events per day
+ax = axes[0, 0]
+events_per_day = np.zeros(90)
+for e in sim_data['events']:
+    events_per_day[e['date']] += 1
+ax.bar(range(90), events_per_day, color='#3498db', alpha=0.7)
+ax.set_xlabel('Day')
+ax.set_ylabel('Events')
+ax.set_title('Daily Conflict Events', fontweight='bold')
+
+# Hospital injuries  
+ax = axes[0, 1]
+for h in range(5):
+    ax.plot(sim_data['hospital_incidence'][:, h], alpha=0.7, label=f'Hospital {h+1}')
+ax.set_xlabel('Day')
+ax.set_ylabel('Injuries')
+ax.set_title('Hospital Admissions', fontweight='bold')
+ax.legend(loc='upper right', fontsize=8)
+
+# National deaths
+ax = axes[1, 0]
+ax.bar(range(90), sim_data['national_deaths'], color='#c0392b', alpha=0.7)
+ax.set_xlabel('Day')
+ax.set_ylabel('Deaths')
+ax.set_title('Daily Deaths (National)', fontweight='bold')
+
+# Spatial layout
+ax = axes[1, 1]
+for h, (hx, hy) in enumerate(sim_data['hospital_coords']):
+    ax.scatter(hx, hy, s=200, c='#27ae60', marker='H', zorder=5, edgecolors='white', linewidths=2)
+    ax.annotate(f'H{h+1}', (hx+2, hy+2), fontsize=9)
+
+# Plot event locations (sample)
+sample_events = sim_data['events'][::5]  # Every 5th event
+ex = [e['longitude'] for e in sample_events]
+ey = [e['latitude'] for e in sample_events]
+ax.scatter(ex, ey, s=30, c='#c0392b', alpha=0.5, marker='x')
+
+ax.set_xlabel('Longitude')
+ax.set_ylabel('Latitude')
+ax.set_title('Spatial Layout: Hospitals (H) and Events (×)', fontweight='bold')
+ax.set_xlim(-5, 105)
+ax.set_ylim(-5, 105)
+
+plt.tight_layout()
+plt.show()
+```
+
+---
+
+## Running Bayesian Inference {.smaller}
+
+```{python}
+#| code-fold: false
+#| output: false
+from trace.analysis import run_inference
+
+# Prepare data for inference
+events_by_day = np.array([sum(1 for e in sim_data['events'] if e['date'] == d) for d in range(90)])
+event_day_index = np.array([e['date'] for e in sim_data['events']])
+event_coords = np.array([[e['latitude'], e['longitude']] for e in sim_data['events']])
+
+# Run MCMC (reduced samples for demo)
+mcmc, samples = run_inference(
+    events_by_day=events_by_day,
+    event_day_index=event_day_index,
+    event_coords=event_coords,
+    hospital_coords=sim_data['hospital_coords'],
+    injuries_obs=sim_data['hospital_incidence'],
+    deaths_obs=sim_data['national_deaths'],
+    delay_probs=delay_probs,
+    num_warmup=500,
+    num_samples=1000,
+    num_chains=2,
+    rng_seed=0,
+    progress_bar=False
+)
+```
+
+```{python}
+#| echo: false
+print("MCMC completed. Checking parameter recovery...")
+```
+
+---
+
+## Parameter Recovery {.smaller}
+
+Can we recover the true parameters from the simulated data?
+
+```{python}
+#| echo: false
+#| fig-align: center
+
+fig, axes = plt.subplots(1, 4, figsize=(12, 3))
+
+params = ['mu_w', 'mu_i', 'p_late', 'ell']
+true_vals = [TRUE_PARAMS['mu_w'], TRUE_PARAMS['mu_i'], TRUE_PARAMS['p_late'], TRUE_PARAMS['ell']]
+labels = ['$\\mu_w$ (wounded/event)', '$\\mu_i$ (immed. deaths)', '$p_{\\mathrm{late}}$ (hosp. fatality)', '$\\ell$ (spatial scale)']
+
+for ax, param, true_val, label in zip(axes, params, true_vals, labels):
+    post_samples = samples[param]
+    ax.hist(post_samples, bins=30, density=True, alpha=0.7, color='#3498db', edgecolor='white')
+    ax.axvline(true_val, color='#c0392b', linewidth=2.5, linestyle='--', label=f'True = {true_val}')
+    ax.axvline(np.mean(post_samples), color='#27ae60', linewidth=2, label=f'Post. mean = {np.mean(post_samples):.2f}')
+    ax.set_xlabel(label, fontsize=10)
+    ax.set_title(f'{param}', fontweight='bold')
+    ax.legend(fontsize=7, loc='upper right')
+    ax.set_yticks([])
+
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+#| echo: false
+print("Parameter Recovery Summary:")
+print("-" * 50)
+for param, true_val in zip(params, true_vals):
+    post = samples[param]
+    ci_low, ci_high = np.percentile(post, [2.5, 97.5])
+    covered = "✓" if ci_low <= true_val <= ci_high else "✗"
+    print(f"{param:10s}: True = {true_val:.2f}, Post. mean = {np.mean(post):.2f} "
+          f"[{ci_low:.2f}, {ci_high:.2f}] {covered}")
+```
+
+---
+
+## Posterior Predictive Check {.smaller}
+
+Does the model reproduce the observed data?
+
+```{python}
+#| echo: false
+#| fig-align: center
+from trace.analysis import posterior_predictive
+
+preds = posterior_predictive(
+    samples=samples,
+    events_by_day=events_by_day,
+    event_day_index=event_day_index,
+    event_coords=event_coords,
+    hospital_coords=sim_data['hospital_coords'],
+    injuries_obs_shape=sim_data['hospital_incidence'].shape,
+    deaths_obs_shape=len(sim_data['national_deaths']),
+    delay_probs=delay_probs,
+)
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+
+# Deaths
+ax = axes[0]
+deaths_median = np.median(preds['obs_deaths'], axis=0)
+deaths_low = np.percentile(preds['obs_deaths'], 2.5, axis=0)
+deaths_high = np.percentile(preds['obs_deaths'], 97.5, axis=0)
+
+ax.fill_between(range(90), deaths_low, deaths_high, alpha=0.3, color='#3498db', label='95% CI')
+ax.plot(range(90), deaths_median, color='#3498db', linewidth=2, label='Posterior median')
+ax.scatter(range(90), sim_data['national_deaths'], color='#c0392b', s=20, zorder=5, label='Observed', alpha=0.7)
+ax.set_xlabel('Day')
+ax.set_ylabel('Deaths')
+ax.set_title('Posterior Predictive: Deaths', fontweight='bold')
+ax.legend()
+
+# Total injuries
+ax = axes[1]
+injuries_total = preds['obs_injuries'].sum(axis=-1)  # Sum over hospitals
+inj_median = np.median(injuries_total, axis=0)
+inj_low = np.percentile(injuries_total, 2.5, axis=0)
+inj_high = np.percentile(injuries_total, 97.5, axis=0)
+
+obs_inj = sim_data['hospital_incidence'].sum(axis=1)
+
+ax.fill_between(range(90), inj_low, inj_high, alpha=0.3, color='#27ae60', label='95% CI')
+ax.plot(range(90), inj_median, color='#27ae60', linewidth=2, label='Posterior median')
+ax.scatter(range(90), obs_inj, color='#c0392b', s=20, zorder=5, label='Observed', alpha=0.7)
+ax.set_xlabel('Day')
+ax.set_ylabel('Total Injuries')
+ax.set_title('Posterior Predictive: Hospital Injuries', fontweight='bold')
+ax.legend()
+
+plt.tight_layout()
+plt.show()
+```
+
+---
+
+## Scenario-Based Forecasting {.smaller}
+
+What if we project 30 days under different scenarios?
+
+```{python}
+#| code-fold: false
+from trace.analysis import forecast
+
+recent_rate = np.mean(events_by_day[-30:])  # Recent average events/day
+
+# Scenario 1: Baseline (continue current rate)
+baseline = forecast(samples, np.full(30, recent_rate), delay_probs)
+
+# Scenario 2: Ceasefire (90% reduction)
+ceasefire = forecast(samples, np.full(30, recent_rate * 0.1), delay_probs)
+
+# Scenario 3: Escalation (50% increase)
+escalation = forecast(samples, np.full(30, recent_rate * 1.5), delay_probs)
+
+print(f"30-Day Projections (median deaths):")
+print(f"  Baseline:   {baseline['deaths_median'].sum():.0f}")
+print(f"  Ceasefire:  {ceasefire['deaths_median'].sum():.0f}")
+print(f"  Escalation: {escalation['deaths_median'].sum():.0f}")
+print(f"\nLives saved by ceasefire: {baseline['deaths_median'].sum() - ceasefire['deaths_median'].sum():.0f}")
+```
+
+---
+
+## Forecast Comparison {.smaller}
+
+```{python}
+#| echo: false
+#| fig-align: center
+
+fig, ax = plt.subplots(1, 1, figsize=(11, 5))
+
+days = np.arange(30)
+
+# Escalation
+ax.fill_between(days, escalation['deaths_lower'], escalation['deaths_upper'], 
+                alpha=0.2, color='#c0392b')
+ax.plot(days, escalation['deaths_median'], color='#c0392b', linewidth=2, 
+        label='Escalation (+50%)')
+
+# Baseline
+ax.fill_between(days, baseline['deaths_lower'], baseline['deaths_upper'], 
+                alpha=0.2, color='#3498db')
+ax.plot(days, baseline['deaths_median'], color='#3498db', linewidth=2, 
+        label='Baseline')
+
+# Ceasefire
+ax.fill_between(days, ceasefire['deaths_lower'], ceasefire['deaths_upper'], 
+                alpha=0.2, color='#27ae60')
+ax.plot(days, ceasefire['deaths_median'], color='#27ae60', linewidth=2, 
+        label='Ceasefire (-90%)')
+
+ax.set_xlabel('Days into forecast', fontsize=12)
+ax.set_ylabel('Daily deaths', fontsize=12)
+ax.set_title('30-Day Forecast Under Different Scenarios', fontsize=14, fontweight='bold')
+ax.legend(loc='upper right', fontsize=11)
+
+# Add annotation
+ax.annotate(f'Lives saved\nby ceasefire:\n~{baseline["deaths_median"].sum() - ceasefire["deaths_median"].sum():.0f}', 
+            xy=(25, (baseline['deaths_median'][-5] + ceasefire['deaths_median'][-5])/2),
+            fontsize=11, ha='center',
+            bbox=dict(boxstyle='round', facecolor='#f0f0f0', alpha=0.8))
+
+plt.tight_layout()
+plt.show()
+```
+
+---
+
+## Hierarchical Extension {.smaller}
+
+For multi-region analysis, we can partially pool parameters:
+
+$$
+\begin{aligned}
+\mu_{w,r} &= \bar{\mu}_w \cdot \exp(\eta_r), \quad \eta_r \sim \mathcal{N}(0, \sigma_\mu^2) \\
+\mu_{i,r} &= \bar{\mu}_i \cdot \exp(\xi_r), \quad \xi_r \sim \mathcal{N}(0, \sigma_i^2) \\
+p_{\text{late},r} &\sim \text{Beta}(\alpha_0 + \gamma_r, \beta_0)
+\end{aligned}
+$$
+
+where $r$ indexes regions/conflict zones.
+
+```{python}
+#| echo: false
+#| fig-align: center
+
+fig, ax = plt.subplots(1, 1, figsize=(8, 4))
+
+# Simulate hierarchical shrinkage
+np.random.seed(123)
+n_regions = 6
+global_mean = 5.0
+region_true = global_mean + np.random.randn(n_regions) * 2
+region_obs = region_true + np.random.randn(n_regions) * 1.5
+region_shrunk = 0.6 * region_obs + 0.4 * global_mean
+
+regions = np.arange(n_regions)
+width = 0.25
+
+ax.bar(regions - width, region_obs, width, label='Unpooled (region-specific)', alpha=0.7, color='#e74c3c')
+ax.bar(regions, region_shrunk, width, label='Partial pooling (hierarchical)', alpha=0.7, color='#3498db')
+ax.bar(regions + width, [global_mean]*n_regions, width, label='Complete pooling (global)', alpha=0.7, color='#95a5a6')
+ax.axhline(global_mean, color='#2c3e50', linestyle='--', alpha=0.5)
+
+ax.set_xlabel('Region', fontsize=12)
+ax.set_ylabel('$\\mu_w$ (wounded/event)', fontsize=12)
+ax.set_title('Hierarchical Shrinkage: Borrowing Strength Across Regions', fontsize=13, fontweight='bold')
+ax.legend(loc='upper right')
+ax.set_xticks(regions)
+ax.set_xticklabels([f'R{i+1}' for i in regions])
+
+plt.tight_layout()
+plt.show()
+```
+
+::: {.callout-note}
+**Benefit:** Regions with sparse data borrow strength from data-rich regions.
+:::
+
+---
+
+## Extension: Event Types → Injury Types {.smaller}
+
+ACLED encodes event types (airstrikes, shelling, armed clashes, etc.). Can these predict **injury typology**?
+
+$$
+\mu_{w,t} = \sum_{c \in \mathcal{C}} \beta_c \cdot \mathbb{1}[\text{event type} = c]
+$$
+
+::: {.callout-tip}
+### MSF Operational Need
+Different event types may predict different patient needs:
+
+| Event Type | Expected Injuries | Typology |
+|------------|-------------------|----------|
+| Airstrike | High casualty mass events | Burns, blast trauma, amputations |
+| Shelling | Moderate, clustered | Shrapnel wounds, crush injuries |
+| Armed clash | Variable, combatants | Gunshot wounds |
+| Explosion | High severity | Blast injuries, TBI |
+:::
+
+::: {.fragment}
+**Research question:** Is reported event type predictive of injury types after controlling for event intensity?
+:::
+
+---
+
+## ACLED Event Type Distribution {.smaller}
+
+```{python}
+#| echo: false
+#| fig-align: center
+
+# Simulated ACLED-like event type distribution
+event_types = ['Shelling/artillery', 'Air/drone strike', 'Armed clash', 
+               'Explosion/Remote violence', 'Attack', 'Other']
+counts = [1250, 890, 420, 380, 210, 165]
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+
+ax = axes[0]
+colors = plt.cm.Reds(np.linspace(0.3, 0.9, len(event_types)))
+bars = ax.barh(event_types, counts, color=colors)
+ax.set_xlabel('Number of Events', fontsize=11)
+ax.set_title('ACLED Event Types (Gaza example)', fontsize=12, fontweight='bold')
+ax.invert_yaxis()
+for bar, count in zip(bars, counts):
+    ax.text(count + 20, bar.get_y() + bar.get_height()/2, f'{count}', va='center', fontsize=10)
+
+# Effect sizes (hypothetical)
+ax = axes[1]
+effects = {'Shelling': (5.2, 1.1), 'Air/drone': (8.5, 2.3), 'Armed clash': (2.1, 0.8),
+           'Explosion': (6.1, 1.8), 'Attack': (3.2, 0.9)}
+names = list(effects.keys())
+means = [v[0] for v in effects.values()]
+sds = [v[1] for v in effects.values()]
+
+y_pos = np.arange(len(names))
+ax.barh(y_pos, means, xerr=sds, color='#3498db', alpha=0.7, capsize=3)
+ax.set_yticks(y_pos)
+ax.set_yticklabels(names)
+ax.set_xlabel('$\\beta_c$ (casualties per event)', fontsize=11)
+ax.set_title('Event-Type Effects (hypothetical)', fontsize=12, fontweight='bold')
+ax.axvline(0, color='black', linewidth=0.5)
+
+plt.tight_layout()
+plt.show()
+```
+
+**Extension:** Fit $\beta_c$ for each event type to predict casualty counts and types.
+
+---
+
+## Data Sources {.smaller}
+
+:::: {.columns}
+::: {.column width="50%"}
+### Input Data Streams
+
+1. **ACLED** ([acleddata.com](https://acleddata.com))
+   - Geo-coded conflict events
+   - Date, location, type, actors
+   - Reported fatalities
+   
+2. **Hospital Records** (MSF, MoH)
+   - Patient volumes over time
+   - Injury types and severity
+   
+3. **Mortality Data** (MoH, Tech for Palestine)
+   - Daily/cumulative death tolls
+   - Breakdown by demographics
+:::
+
+::: {.column width="50%"}
+### Gaza Context
+
+- **ACLED**: 27,815+ events (Oct 2023–present)
+- **Tech for Palestine API**: Daily mortality
+- **MSF Hospital Data**: 
+  - Patient volumes
+  - Surgical cases
+  - Typology of needs
+  
+::: {.callout-important}
+Real hospital data enables fitting—this is what MSF provides that makes the model operationally useful.
+:::
+:::
+::::
+
+---
+
+## Implementation Stack {.smaller}
+
+:::: {.columns}
+::: {.column width="50%"}
+### Core Technologies
+
+- **JAX**: GPU-accelerated arrays, autodiff
+- **NumPyro**: Probabilistic programming, NUTS
+- **ArviZ**: Diagnostics & visualization
+- **Python**: Open-source package
+
+```bash
+pip install trace-conflict
+```
+:::
+
+::: {.column width="50%"}
+### Key Features
+
+- NUTS sampler (adaptive HMC)
+- GPU acceleration via JAX
+- Hierarchical model support
+- Synthetic data generation
+- Scenario-based forecasting
+- Posterior predictive checks
+
+::: {.fragment}
+```python
+from trace.analysis import run_inference
+mcmc, samples = run_inference(
+    events_by_day, event_coords,
+    hospital_coords, injuries_obs,
+    deaths_obs, delay_probs
+)
+```
+:::
+:::
+::::
+
+---
+
+## Applications for MSF {.smaller}
+
+::: {.incremental}
+1. **Short-term forecasting (1-7 days)**
+   - Predict patient volumes at specific hospitals
+   - Plan surgical team deployment
+   - Pre-position medical supplies
+
+2. **Typology prediction** (extension)
+   - Anticipate injury types from event patterns
+   - Stock appropriate supplies (burn kits vs. trauma kits)
+
+3. **Scenario planning**
+   - Quantify impact of ceasefire/escalation
+   - Inform advocacy with uncertainty-quantified projections
+
+4. **Resource optimization**
+   - Optimal allocation across facilities
+   - Identify underserved geographic areas
+
+5. **Retrospective analysis**
+   - Estimate true casualty burdens
+   - Evaluate intervention effectiveness
+:::
+
+---
+
+## Limitations & Future Work {.smaller}
+
+### Current Limitations
+
+- **Data quality**: All inference conditional on reporting accuracy
+- **Identifiability**: Some parameters confounded (e.g., $\mu_i$ vs. $p_{\text{late}}$)
+- **Indirect deaths**: Model captures only direct casualties
+- **Static spatial structure**: Doesn't model hospital damage/closure
+
+### Planned Extensions
+
+- **Time-varying parameters**: $\mu_{w,t}$ with random walk priors
+- **Event-type regression**: $\beta_c$ for injury type prediction
+- **Population displacement**: Dynamic population at risk
+- **Self-exciting events**: Endogenous conflict propagation
+- **Missing data imputation**: Within model structure
+
+---
+
+## Summary {.smaller}
+
+::: {.callout-note icon=false}
+## TRACE provides a principled framework for conflict casualty analysis
+
+- **Semi-mechanistic**: Explicit casualty generation + statistical inference
+- **Multi-stream**: Integrates events, hospital admissions, mortality
+- **Spatial**: Distance-based allocation to hospitals
+- **Temporal**: Delay distributions from injury to death
+- **Bayesian**: Full uncertainty quantification
+- **Actionable**: Scenario-based forecasting for operational planning
+:::
+
+### Acknowledgments
+
+- **Médecins Sans Frontières** — partnership and operational context
+- **ACLED & Tech for Palestine** — open data access
+- **Imperial College London** — research support
+
+::: {.fragment}
+::: {.callout-tip}
+**Contact:** trace@imperial.ac.uk | **Code:** github.com/imperial-college/trace
+:::
+:::
+
+---
+
+## {background-color="#002147"}
+
+::: {.r-fit-text .center}
+**Thank You**
+:::
+
+::: {.center style="color: white; margin-top: 2em;"}
+Questions?
+
+<br>
+
+*TRACE: Temporal and Regional Analysis of Conflict Events*
+
+Imperial College London × Médecins Sans Frontières
+:::
