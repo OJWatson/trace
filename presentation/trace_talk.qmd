@@ -936,7 +936,7 @@ mcmc, samples = run_inference(
 
 ::: {.fragment}
 ::: {.callout-tip}
-**Contact:** trace@imperial.ac.uk | **Code:** github.com/imperial-college/trace
+**Contact:** https://github.com/OJWatson/trace/issues | **Code:** github.com/OJWatson/trace
 :::
 :::
 

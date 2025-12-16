@@ -5,7 +5,7 @@ This module provides functions for Bayesian inference using MCMC,
 posterior predictive checks, forecasting, and visualization.
 """
 
-from typing import Optional
+from typing import Callable, Optional
 
 import arviz as az
 import jax
@@ -16,6 +16,9 @@ from numpyro.infer import MCMC, NUTS, Predictive
 from trace.model import casualty_model
 
 
+ModelFn = Callable[..., None]
+
+
 def run_inference(
     events_by_day: np.ndarray,
     event_day_index: np.ndarray,
@@ -24,6 +27,7 @@ def run_inference(
     injuries_obs: np.ndarray,
     deaths_obs: np.ndarray,
     delay_probs: Optional[np.ndarray] = None,
+    model: ModelFn = casualty_model,
     num_warmup: int = 1000,
     num_samples: int = 2000,
     num_chains: int = 2,
@@ -82,7 +86,7 @@ def run_inference(
     >>> print(f"Posterior mean mu_w: {samples['mu_w'].mean():.2f}")
     """
     # Set up NUTS sampler
-    kernel = NUTS(casualty_model)
+    kernel = NUTS(model)
     mcmc = MCMC(
         kernel,
         num_warmup=num_warmup,
@@ -96,7 +100,8 @@ def run_inference(
         jax.random.PRNGKey(rng_seed),
         events_by_day=np.array(events_by_day),
         event_day_index=np.array(event_day_index),
-        event_coords=np.array(event_coords) if event_coords is not None else np.zeros((0, 2)),
+        event_coords=np.array(
+            event_coords) if event_coords is not None else np.zeros((0, 2)),
         hospital_coords=np.array(hospital_coords),
         injuries_obs=np.array(injuries_obs),
         deaths_obs=np.array(deaths_obs),
@@ -121,6 +126,7 @@ def posterior_predictive(
     injuries_obs_shape: tuple[int, int],
     deaths_obs_shape: int,
     delay_probs: Optional[np.ndarray] = None,
+    model: ModelFn = casualty_model,
     rng_seed: int = 1,
 ) -> dict[str, np.ndarray]:
     """
@@ -156,13 +162,15 @@ def posterior_predictive(
     """
     # Don't pass observations - let model sample them
     # NumPyro's Predictive will automatically sample from the likelihood when obs=None
-    predictive = Predictive(casualty_model, samples, return_sites=["obs_injuries", "obs_deaths"])
+    predictive = Predictive(model, samples, return_sites=[
+                            "obs_injuries", "obs_deaths"])
 
     preds = predictive(
         jax.random.PRNGKey(rng_seed),
         events_by_day=np.array(events_by_day),
         event_day_index=np.array(event_day_index),
-        event_coords=np.array(event_coords) if event_coords is not None else np.zeros((0, 2)),
+        event_coords=np.array(
+            event_coords) if event_coords is not None else np.zeros((0, 2)),
         hospital_coords=np.array(hospital_coords),
         injuries_obs=None,  # None triggers sampling
         deaths_obs=None,  # None triggers sampling
@@ -211,7 +219,19 @@ def forecast(
         delay_probs = np.array([0.5, 0.3, 0.15, 0.05])
         delay_probs = delay_probs / delay_probs.sum()
 
-    n_samples = samples["mu_w"].shape[0]  # number of posterior samples
+    def _get_last_by_sample(x: np.ndarray) -> np.ndarray:
+        # Backwards compatible with scalar parameters:
+        # - (S,) -> (S,)
+        # - (S, T) -> (S,)
+        if x.ndim == 1:
+            return x
+        if x.ndim == 2:
+            return x[:, -1]
+        raise ValueError(f"Unsupported parameter array shape: {x.shape}")
+
+    mu_w_last = _get_last_by_sample(np.asarray(samples["mu_w"]))
+    mu_i_last = _get_last_by_sample(np.asarray(samples["mu_i"]))
+    n_samples = mu_w_last.shape[0]  # number of posterior samples
     horizon = len(future_events_by_day)  # forecast horizon
 
     sim_deaths = np.zeros((n_samples, horizon))
@@ -221,19 +241,32 @@ def forecast(
 
     # Simulate forward for each posterior sample
     for i in range(n_samples):
-        mu_w = samples["mu_w"][i]
-        mu_i = samples["mu_i"][i]
+        # Start at last inferred day and optionally continue the random walk forward.
+        log_mu_w_t = float(np.log(mu_w_last[i] + 1e-12))
+        log_mu_i_t = float(np.log(mu_i_last[i] + 1e-12))
+        sigma_mu_w = float(np.asarray(samples.get("sigma_mu_w", 0.0))[
+                           i]) if "sigma_mu_w" in samples else 0.0
+        sigma_mu_i = float(np.asarray(samples.get("sigma_mu_i", 0.0))[
+                           i]) if "sigma_mu_i" in samples else 0.0
+
         p_late = samples["p_late"][i]
 
         # Queue for delayed deaths
         death_queue = [0] * delay_len
 
         for t in range(horizon):
+            if sigma_mu_w > 0:
+                log_mu_w_t += np.random.normal(0.0, sigma_mu_w)
+            if sigma_mu_i > 0:
+                log_mu_i_t += np.random.normal(0.0, sigma_mu_i)
+
+            mu_w_t = float(np.exp(log_mu_w_t))
+            mu_i_t = float(np.exp(log_mu_i_t))
             events_t = future_events_by_day[t]
 
             # Sample injuries and immediate deaths
-            injuries_t = np.random.poisson(mu_w * events_t)
-            immediate_deaths_t = np.random.poisson(mu_i * events_t)
+            injuries_t = np.random.poisson(mu_w_t * events_t)
+            immediate_deaths_t = np.random.poisson(mu_i_t * events_t)
 
             # Add delayed deaths from queue
             delayed_deaths_t = death_queue[0] if len(death_queue) > 0 else 0
@@ -242,7 +275,8 @@ def forecast(
             if injuries_t > 0:
                 late_deaths_t = np.random.binomial(injuries_t, p_late)
                 if late_deaths_t > 0:
-                    delays_draw = np.random.multinomial(late_deaths_t, delay_probs)
+                    delays_draw = np.random.multinomial(
+                        late_deaths_t, delay_probs)
                     for j in range(delay_len):
                         if j < len(death_queue):
                             death_queue[j] += delays_draw[j]
@@ -302,7 +336,8 @@ def plot_fit(
     fig, axes = plt.subplots(2, 1, figsize=figsize, sharex=True)
 
     # Plot deaths
-    axes[0].plot(dates, deaths_obs, "o-", label="Observed deaths", color="darkred", alpha=0.7)
+    axes[0].plot(dates, deaths_obs, "o-", label="Observed deaths",
+                 color="darkred", alpha=0.7)
 
     if preds is not None and "obs_deaths" in preds:
         pred_deaths = np.array(preds["obs_deaths"])
@@ -313,16 +348,19 @@ def plot_fit(
         axes[0].fill_between(
             dates, low_pred, high_pred, color="red", alpha=0.2, label="95% credible interval"
         )
-        axes[0].plot(dates, median_pred, "-", color="red", label="Posterior median", linewidth=2)
+        axes[0].plot(dates, median_pred, "-", color="red",
+                     label="Posterior median", linewidth=2)
 
     axes[0].set_ylabel("Daily Deaths", fontsize=12)
     axes[0].legend(loc="best")
-    axes[0].set_title("National Deaths: Observed vs Model Fit", fontsize=14, fontweight="bold")
+    axes[0].set_title("National Deaths: Observed vs Model Fit",
+                      fontsize=14, fontweight="bold")
     axes[0].grid(True, alpha=0.3)
 
     # Plot total injuries
     total_inj_obs = np.nansum(injuries_obs, axis=1)
-    axes[1].plot(dates, total_inj_obs, "o-", label="Observed injured", color="darkblue", alpha=0.7)
+    axes[1].plot(dates, total_inj_obs, "o-",
+                 label="Observed injured", color="darkblue", alpha=0.7)
 
     if preds is not None and "obs_injuries" in preds:
         pred_inj = np.array(preds["obs_injuries"])
@@ -334,12 +372,14 @@ def plot_fit(
         axes[1].fill_between(
             dates, low_inj, high_inj, color="blue", alpha=0.2, label="95% credible interval"
         )
-        axes[1].plot(dates, median_inj, "-", color="blue", label="Posterior median", linewidth=2)
+        axes[1].plot(dates, median_inj, "-", color="blue",
+                     label="Posterior median", linewidth=2)
 
     axes[1].set_ylabel("Daily Injured (Total)", fontsize=12)
     axes[1].set_xlabel("Date", fontsize=12)
     axes[1].legend(loc="best")
-    axes[1].set_title("Hospital Injuries: Observed vs Model Fit", fontsize=14, fontweight="bold")
+    axes[1].set_title("Hospital Injuries: Observed vs Model Fit",
+                      fontsize=14, fontweight="bold")
     axes[1].grid(True, alpha=0.3)
 
     plt.tight_layout()
@@ -393,7 +433,8 @@ def plot_forecast(
         label="95% forecast interval",
     )
     axes[0].set_ylabel("Daily Deaths", fontsize=12)
-    axes[0].set_title("Forecast - Daily Deaths", fontsize=14, fontweight="bold")
+    axes[0].set_title("Forecast - Daily Deaths",
+                      fontsize=14, fontweight="bold")
     axes[0].legend(loc="best")
     axes[0].grid(True, alpha=0.3)
 
@@ -411,7 +452,8 @@ def plot_forecast(
     )
     axes[1].set_ylabel("Daily Injured", fontsize=12)
     axes[1].set_xlabel("Date", fontsize=12)
-    axes[1].set_title("Forecast - Daily Hospital Injuries", fontsize=14, fontweight="bold")
+    axes[1].set_title("Forecast - Daily Hospital Injuries",
+                      fontsize=14, fontweight="bold")
     axes[1].legend(loc="best")
     axes[1].grid(True, alpha=0.3)
 
