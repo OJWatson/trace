@@ -70,8 +70,10 @@ def test_simulate_reproducibility():
     )
 
     # Should produce identical results
-    np.testing.assert_array_equal(data1["hospital_incidence"], data2["hospital_incidence"])
-    np.testing.assert_array_equal(data1["national_deaths"], data2["national_deaths"])
+    np.testing.assert_array_equal(
+        data1["hospital_incidence"], data2["hospital_incidence"])
+    np.testing.assert_array_equal(
+        data1["national_deaths"], data2["national_deaths"])
 
 
 def test_generate_scenario_events():
@@ -83,12 +85,12 @@ def test_generate_scenario_events():
 
     # With intervention
     events_with_intervention = generate_scenario_events(
-        T=100, baseline_rate=2.0, interventions=[(30, 60, 0.1)]
+        T=100, baseline_rate=2.0, interventions=[(30, 60, 0.0)]
     )
     assert len(events_with_intervention) == 100
 
-    # Events during intervention should be lower on average
-    assert events_with_intervention[30:60].mean() < events_with_intervention[:30].mean()
+    # With 0.0x rate during intervention, all draws must be zero in that window
+    assert np.all(events_with_intervention[30:60] == 0)
 
 
 def test_simulate_zero_events():
