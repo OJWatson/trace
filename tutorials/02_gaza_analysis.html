@@ -9,6 +9,7 @@
   <title>Tutorial: Gaza Conflict Casualty Analysis &mdash; TRACE 0.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
@@ -17,6 +18,8 @@
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -54,62 +57,61 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="01_basic_example.html">Tutorial: Basic Example with Simulated Data</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial: Gaza Conflict Casualty Analysis</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#learning-objectives">Learning Objectives</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#warning-sensitive-content">Warning: Sensitive Content</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#data-acquisition">1. Data Acquisition</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#acled-conflict-events">1.1 ACLED Conflict Events</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#mortality-data">1.2 Mortality Data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#hospital-data-simulated">1.3 Hospital Data (Simulated)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Learning-Objectives">Learning Objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Warning:-Sensitive-Content">Warning: Sensitive Content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#1.-Data-Acquisition">1. Data Acquisition</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#1.1-ACLED-Conflict-Events">1.1 ACLED Conflict Events</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#1.2-Mortality-Data">1.2 Mortality Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#1.3-Hospital-Data-(Simulated)">1.3 Hospital Data (Simulated)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#exploratory-analysis">2. Exploratory Analysis</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#event-casualty-relationship">2.1 Event-Casualty Relationship</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#temporal-patterns">2.2 Temporal Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#2.-Exploratory-Analysis">2. Exploratory Analysis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#2.1-Event-Casualty-Relationship">2.1 Event-Casualty Relationship</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#2.2-Temporal-Patterns">2.2 Temporal Patterns</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#model-fitting">3. Model Fitting</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#specify-delay-distribution">3.1 Specify Delay Distribution</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#run-mcmc-inference">3.2 Run MCMC Inference</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#examine-results">3.3 Examine Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#3.-Model-Fitting">3. Model Fitting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#3.1-Specify-Delay-Distribution">3.1 Specify Delay Distribution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#3.2-Run-MCMC-Inference">3.2 Run MCMC Inference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#3.3-Examine-Results">3.3 Examine Results</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#model-diagnostics">4. Model Diagnostics</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#convergence-assessment">4.1 Convergence Assessment</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#trace-plots">4.2 Trace Plots</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#posterior-distributions">4.3 Posterior Distributions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#4.-Model-Diagnostics">4. Model Diagnostics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#4.1-Convergence-Assessment">4.1 Convergence Assessment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#4.2-Trace-Plots">4.2 Trace Plots</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#4.3-Posterior-Distributions">4.3 Posterior Distributions</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#posterior-predictive-checks">5. Posterior Predictive Checks</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#generate-predictions">5.1 Generate Predictions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#visual-assessment">5.2 Visual Assessment</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#quantitative-checks">5.3 Quantitative Checks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#5.-Posterior-Predictive-Checks">5. Posterior Predictive Checks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#5.1-Generate-Predictions">5.1 Generate Predictions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#5.2-Visual-Assessment">5.2 Visual Assessment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#5.3-Quantitative-Checks">5.3 Quantitative Checks</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#policy-relevant-forecasting">6. Policy-Relevant Forecasting</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#baseline-forecast">6.1 Baseline Forecast</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#ceasefire-scenario">6.2 Ceasefire Scenario</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#scenario-comparison-visualization">6.3 Scenario Comparison Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#6.-Policy-Relevant-Forecasting">6. Policy-Relevant Forecasting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#6.1-Baseline-Forecast">6.1 Baseline Forecast</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#6.2-Ceasefire-Scenario">6.2 Ceasefire Scenario</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#6.3-Scenario-Comparison-Visualization">6.3 Scenario Comparison Visualization</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#sensitivity-analysis">7. Sensitivity Analysis</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#alternative-delay-distributions">7.1 Alternative Delay Distributions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#7.-Sensitivity-Analysis">7. Sensitivity Analysis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#7.1-Alternative-Delay-Distributions">7.1 Alternative Delay Distributions</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#interpretation-and-caveats">8. Interpretation and Caveats</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#key-findings">8.1 Key Findings</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#limitations">8.2 Limitations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#appropriate-use">8.3 Appropriate Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#8.-Limitations-and-Caveats">8. Limitations and Caveats</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#8.1-Limitations">8.1 Limitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#8.2-Appropriate-Use">8.2 Appropriate Use</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#extensions-and-future-work">9. Extensions and Future Work</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#data-improvements">9.1 Data Improvements</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#model-extensions">9.2 Model Extensions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#policy-applications">9.3 Policy Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#9.-Extensions-and-Future-Work">9. Extensions and Future Work</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#9.1-Data-Improvements">9.1 Data Improvements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#9.2-Model-Extensions">9.2 Model Extensions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#9.3-Policy-Applications">9.3 Policy Applications</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#summary">Summary</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#References">References</a></li>
 </ul>
 </li>
 </ul>
@@ -141,7 +143,7 @@
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Tutorial: Gaza Conflict Casualty Analysis</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/tutorials/02_gaza_analysis.md.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/tutorials/02_gaza_analysis.ipynb.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -149,12 +151,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="tutorial-gaza-conflict-casualty-analysis">
-<h1>Tutorial: Gaza Conflict Casualty Analysis<a class="headerlink" href="#tutorial-gaza-conflict-casualty-analysis" title="Link to this heading"></a></h1>
+  <section id="Tutorial:-Gaza-Conflict-Casualty-Analysis">
+<h1>Tutorial: Gaza Conflict Casualty Analysis<a class="headerlink" href="#Tutorial:-Gaza-Conflict-Casualty-Analysis" title="Link to this heading"></a></h1>
 <hr class="docutils" />
 <p>This tutorial demonstrates a real-world application of <strong>TRACE</strong> to the Gaza conflict (October 2023 - December 2024). We integrate ACLED conflict event data with mortality data from Gaza’s Ministry of Health via Tech for Palestine, demonstrating the complete workflow from data acquisition to policy-relevant forecasting.</p>
-<section id="learning-objectives">
-<h2>Learning Objectives<a class="headerlink" href="#learning-objectives" title="Link to this heading"></a></h2>
+<section id="Learning-Objectives">
+<h2>Learning Objectives<a class="headerlink" href="#Learning-Objectives" title="Link to this heading"></a></h2>
 <p>By the end of this tutorial, you will be able to:</p>
 <ol class="arabic simple">
 <li><p>Load and process real ACLED conflict event data</p></li>
@@ -166,41 +168,52 @@
 <li><p>Communicate uncertainty appropriately</p></li>
 </ol>
 </section>
-<section id="warning-sensitive-content">
-<h2>Warning: Sensitive Content<a class="headerlink" href="#warning-sensitive-content" title="Link to this heading"></a></h2>
+<section id="Warning:-Sensitive-Content">
+<h2>Warning: Sensitive Content<a class="headerlink" href="#Warning:-Sensitive-Content" title="Link to this heading"></a></h2>
 <p>This tutorial analyzes real data from an active conflict involving significant civilian casualties. The methods and results should be interpreted with appropriate care and respect for the humanitarian situation.</p>
 </section>
-<section id="prerequisites">
-<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading"></a></h2>
+<section id="Prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#Prerequisites" title="Link to this heading"></a></h2>
 <p>Install <strong>TRACE</strong> with data dependencies:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
 </pre></div>
 </div>
 <p>Import libraries:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;src&#39;</span><span class="p">)</span>
-
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">arviz</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">az</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">trace.data</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">load_example_acled_data</span><span class="p">,</span>
-    <span class="n">prepare_acled_events</span><span class="p">,</span>
-    <span class="n">fetch_palestine_mortality_data</span><span class="p">,</span>
-    <span class="n">prepare_mortality_data</span>
-<span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">trace.analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_inference</span><span class="p">,</span> <span class="n">posterior_predictive</span><span class="p">,</span> <span class="n">forecast</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">trace.analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_fit</span><span class="p">,</span> <span class="n">plot_forecast</span>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import sys
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import arviz as az
+
+root = Path().resolve()
+while not (root / &#39;pyproject.toml&#39;).exists() and root != root.parent:
+    root = root.parent
+sys.path.insert(0, str(root / &#39;src&#39;))
+
+from trace.data import (
+    load_example_acled_data,
+    prepare_acled_events,
+    fetch_palestine_mortality_data,
+    prepare_mortality_data,
+)
+from trace.model import casualty_model_random_walk
+from trace.analysis import run_inference, posterior_predictive, forecast
+from trace.analysis import plot_fit, plot_forecast
+<br/></pre></div>
+</div>
+</div>
 </section>
-<section id="data-acquisition">
-<h2>1. Data Acquisition<a class="headerlink" href="#data-acquisition" title="Link to this heading"></a></h2>
-<section id="acled-conflict-events">
-<h3>1.1 ACLED Conflict Events<a class="headerlink" href="#acled-conflict-events" title="Link to this heading"></a></h3>
-<p><strong>ACLED</strong> (Armed Conflict Location &amp; Event Data Project) provides geo-coded data on political violence and protests worldwide <span id="id1">[<a class="reference internal" href="#id18" title="Clionadh Raleigh, Andrew Linke, Håvard Hegre, and Joakim Karlsen. Introducing acled: an armed conflict location and event dataset. Journal of Peace Research, 47(5):651–660, 2010.">Raleigh <em>et al.</em>, 2010</a>]</span>. For Gaza, this includes:</p>
+<section id="1.-Data-Acquisition">
+<h2>1. Data Acquisition<a class="headerlink" href="#1.-Data-Acquisition" title="Link to this heading"></a></h2>
+<section id="1.1-ACLED-Conflict-Events">
+<h3>1.1 ACLED Conflict Events<a class="headerlink" href="#1.1-ACLED-Conflict-Events" title="Link to this heading"></a></h3>
+<p><strong>ACLED</strong> (Armed Conflict Location &amp; Event Data Project) provides geo-coded data on political violence and protests worldwide {cite}<code class="docutils literal notranslate"><span class="pre">Raleigh2010</span></code>. For Gaza, this includes:</p>
 <ul class="simple">
 <li><p>Airstrikes and explosions</p></li>
 <li><p>Armed clashes</p></li>
@@ -208,142 +221,221 @@
 <li><p>Shelling and artillery attacks</p></li>
 </ul>
 <p><strong>Load Example Data</strong>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load bundled ACLED data for Palestine</span>
-<span class="n">events_df</span> <span class="o">=</span> <span class="n">load_example_acled_data</span><span class="p">()</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total events in dataset: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">events_df</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Date range: </span><span class="si">{</span><span class="n">events_df</span><span class="p">[</span><span class="s1">&#39;event_date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">events_df</span><span class="p">[</span><span class="s1">&#39;event_date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Event types: </span><span class="si">{</span><span class="n">events_df</span><span class="p">[</span><span class="s1">&#39;event_type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">head</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[45]:
 </pre></div>
 </div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>events_df = load_example_acled_data()
+
+print(f&#39;Total events in dataset: {len(events_df)}&#39;)
+print(f&quot;Date range: {events_df[&#39;event_date&#39;].min()} to {events_df[&#39;event_date&#39;].max()}&quot;)
+print(f&quot;Event types: {events_df[&#39;event_type&#39;].value_counts().head()}&quot;)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Total events in dataset: 27815
+Date range: 2023-09-04 00:00:00 to 2024-12-04 00:00:00
+Event types: event_type
+Explosions/Remote violence    13524
+Riots                          5803
+Battles                        3432
+Strategic developments         2664
+Violence against civilians     1629
+Name: count, dtype: int64
+</pre></div></div>
+</div>
 <p><strong>Expected Output</strong>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Total</span> <span class="n">events</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span> <span class="mi">27815</span>
-<span class="n">Date</span> <span class="nb">range</span><span class="p">:</span> <span class="mi">2023</span><span class="o">-</span><span class="mi">09</span><span class="o">-</span><span class="mi">04</span> <span class="n">to</span> <span class="mi">2024</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">04</span>
-<span class="n">Event</span> <span class="n">types</span><span class="p">:</span>
-<span class="n">Explosions</span><span class="o">/</span><span class="n">Remote</span> <span class="n">violence</span>    <span class="mi">15234</span>
-<span class="n">Battles</span>                        <span class="mi">8901</span>
-<span class="n">Violence</span> <span class="n">against</span> <span class="n">civilians</span>     <span class="mi">2134</span>
-<span class="o">...</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Total events in dataset: 27815
+Date range: 2023-09-04 to 2024-12-04
+Event types:
+Explosions/Remote violence    15234
+Battles                        8901
+Violence against civilians     2134
+...
 </pre></div>
 </div>
 <p><strong>Explore Event Distribution</strong>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Geographic distribution</span>
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">events_df</span><span class="p">[</span><span class="s1">&#39;longitude&#39;</span><span class="p">],</span> <span class="n">events_df</span><span class="p">[</span><span class="s1">&#39;latitude&#39;</span><span class="p">],</span> 
-           <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Longitude&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Latitude&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;ACLED Events: Palestine (Sept 2023 - Dec 2024)&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;acled_map.png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[46]:
 </pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(figsize=(10, 8))
+ax.scatter(events_df[&#39;longitude&#39;], events_df[&#39;latitude&#39;], alpha=0.2, s=10, c=&#39;red&#39;)
+ax.set_xlabel(&#39;Longitude&#39;)
+ax.set_ylabel(&#39;Latitude&#39;)
+ax.set_title(&#39;ACLED Events: Palestine (Sept 2023 - Dec 2024)&#39;)
+ax.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.savefig(&#39;acled_map.png&#39;, dpi=300)
+plt.show()
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_02_gaza_analysis_9_0.png" src="../_images/tutorials_02_gaza_analysis_9_0.png" />
+</div>
 </div>
 </section>
-<section id="mortality-data">
-<h3>1.2 Mortality Data<a class="headerlink" href="#mortality-data" title="Link to this heading"></a></h3>
-<p>Fetch daily casualty reports from <strong>Tech for Palestine</strong> <span id="id2">[<a class="reference internal" href="#id19" title="Tech for Palestine. Gaza casualties dataset. https://data.techforpalestine.org, 2024. Accessed: 2024-12-04.">Tech for Palestine, 2024</a>]</span>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fetch mortality data from Gaza Ministry of Health</span>
-<span class="n">mortality_df</span> <span class="o">=</span> <span class="n">fetch_palestine_mortality_data</span><span class="p">(</span>
-    <span class="n">start_date</span><span class="o">=</span><span class="s1">&#39;2023-10-07&#39;</span><span class="p">,</span>  <span class="c1"># Start of major escalation</span>
-    <span class="n">end_date</span><span class="o">=</span><span class="s1">&#39;2023-12-31&#39;</span>
-<span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Days of mortality data: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">mortality_df</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total reported deaths: </span><span class="si">{</span><span class="n">mortality_df</span><span class="p">[</span><span class="s1">&#39;ext_killed&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Columns: </span><span class="si">{</span><span class="n">mortality_df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<section id="1.2-Mortality-Data">
+<h3>1.2 Mortality Data<a class="headerlink" href="#1.2-Mortality-Data" title="Link to this heading"></a></h3>
+<p>Fetch daily casualty reports from <strong>Tech for Palestine</strong> {cite}<code class="docutils literal notranslate"><span class="pre">TechForPalestine2024</span></code>:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[47]:
 </pre></div>
 </div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>mortality_df = fetch_palestine_mortality_data(start_date=&#39;2023-10-07&#39;, end_date=&#39;2023-12-31&#39;)
+
+print(f&#39;Days of mortality data: {len(mortality_df)}&#39;)
+print(f&quot;Total reported deaths: {mortality_df[&#39;ext_killed&#39;].sum():.0f}&quot;)
+print(f&#39;Columns: {mortality_df.columns.tolist()}&#39;)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Days of mortality data: 86
+Total reported deaths: 21822
+Columns: [&#39;report_date&#39;, &#39;report_source&#39;, &#39;report_period&#39;, &#39;ext_massacres_cum&#39;, &#39;killed&#39;, &#39;killed_cum&#39;, &#39;ext_killed&#39;, &#39;ext_killed_cum&#39;, &#39;ext_killed_children_cum&#39;, &#39;ext_killed_women_cum&#39;, &#39;injured_cum&#39;, &#39;ext_injured&#39;, &#39;ext_injured_cum&#39;, &#39;ext_civdef_killed_cum&#39;, &#39;med_killed_cum&#39;, &#39;ext_med_killed_cum&#39;, &#39;press_killed_cum&#39;, &#39;ext_press_killed_cum&#39;, &#39;killed_recovered&#39;, &#39;killed_succumbed&#39;, &#39;killed_truce_new&#39;, &#39;killed_committee&#39;, &#39;child_famine_cum&#39;, &#39;famine_cum&#39;, &#39;aid_seeker_killed_cum&#39;, &#39;aid_seeker_injured_cum&#39;]
+</pre></div></div>
+</div>
 <p><strong>Expected Output</strong>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Days</span> <span class="n">of</span> <span class="n">mortality</span> <span class="n">data</span><span class="p">:</span> <span class="mi">86</span>
-<span class="n">Total</span> <span class="n">reported</span> <span class="n">deaths</span><span class="p">:</span> <span class="mi">21822</span>
-<span class="n">Columns</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;report_date&#39;</span><span class="p">,</span> <span class="s1">&#39;report_source&#39;</span><span class="p">,</span> <span class="s1">&#39;killed&#39;</span><span class="p">,</span> <span class="s1">&#39;killed_cum&#39;</span><span class="p">,</span> 
-          <span class="s1">&#39;ext_killed&#39;</span><span class="p">,</span> <span class="s1">&#39;injured&#39;</span><span class="p">,</span> <span class="s1">&#39;ext_injured&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Days of mortality data: 86
+Total reported deaths: 21822
+Columns: [&#39;report_date&#39;, &#39;report_source&#39;, &#39;killed&#39;, &#39;killed_cum&#39;,
+         &#39;ext_killed&#39;, &#39;injured&#39;, &#39;ext_injured&#39;, ...]
 </pre></div>
 </div>
 <p><strong>Data Source Notes</strong>:</p>
 <ul class="simple">
 <li><p><strong>Primary Source</strong>: Gaza Ministry of Health Telegram channel</p></li>
 <li><p><strong>Methodology</strong>: Only counts direct war casualties (not indirect deaths from starvation, disease)</p></li>
-<li><p><strong>Quality</strong>: Conservative estimates, likely under-reporting actual toll <span id="id3">[<a class="reference internal" href="#id20" title="Zeinab Jamaluddine, Zeina Chen, Hana Abukmail, Reem Assi, Hala Ghattas, Rima T Nakkash, Fouad M Maliha, Andrew J Tatem, Hala Aly, Loulou Kobeissi, and others. Estimating the true toll of the israel-gaza conflict. The Lancet, 404(10449):213–215, 2024.">Jamaluddine <em>et al.</em>, 2024</a>]</span></p></li>
+<li><p><strong>Quality</strong>: Conservative estimates, likely under-reporting actual toll {cite}<code class="docutils literal notranslate"><span class="pre">Jamaluddine2024</span></code></p></li>
 <li><p><strong>Gaps</strong>: Some days missing due to communication blackouts</p></li>
 <li><p><strong>Extrapolation</strong>: <code class="docutils literal notranslate"><span class="pre">ext_killed</span></code> fields fill gaps using linear interpolation</p></li>
 </ul>
 <p><strong>Visualize Mortality Trends</strong>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-<span class="c1"># Daily deaths</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">mortality_df</span><span class="p">[</span><span class="s1">&#39;report_date&#39;</span><span class="p">],</span> <span class="n">mortality_df</span><span class="p">[</span><span class="s1">&#39;ext_killed&#39;</span><span class="p">],</span> 
-             <span class="s1">&#39;o-&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;darkred&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Daily Deaths&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Gaza Daily Mortality (Oct 7 - Dec 31, 2023)&#39;</span><span class="p">,</span> 
-                   <span class="n">fontsize</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
-
-<span class="c1"># Cumulative deaths</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">mortality_df</span><span class="p">[</span><span class="s1">&#39;report_date&#39;</span><span class="p">],</span> <span class="n">mortality_df</span><span class="p">[</span><span class="s1">&#39;ext_killed_cum&#39;</span><span class="p">],</span>
-             <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;darkred&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Cumulative Deaths&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Date&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Cumulative Casualties&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
-
-<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;mortality_trends.png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[48]:
 </pre></div>
 </div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, axes = plt.subplots(2, 1, figsize=(12, 8), sharex=True)
+
+axes[0].plot(mortality_df[&#39;report_date&#39;], mortality_df[&#39;ext_killed&#39;], &#39;o-&#39;, color=&#39;darkred&#39;, markersize=4, alpha=0.7)
+axes[0].set_ylabel(&#39;Daily Deaths&#39;, fontsize=11)
+axes[0].set_title(&#39;Gaza Daily Mortality (Oct 7 - Dec 31, 2023)&#39;, fontsize=13, fontweight=&#39;bold&#39;)
+axes[0].grid(True, alpha=0.3)
+
+axes[1].plot(mortality_df[&#39;report_date&#39;], mortality_df[&#39;ext_killed_cum&#39;], &#39;-&#39;, color=&#39;darkred&#39;, linewidth=2)
+axes[1].set_ylabel(&#39;Cumulative Deaths&#39;, fontsize=11)
+axes[1].set_xlabel(&#39;Date&#39;, fontsize=11)
+axes[1].set_title(&#39;Cumulative Casualties&#39;, fontsize=13, fontweight=&#39;bold&#39;)
+axes[1].grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.savefig(&#39;mortality_trends.png&#39;, dpi=300)
+plt.show()
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_02_gaza_analysis_13_0.png" src="../_images/tutorials_02_gaza_analysis_13_0.png" />
+</div>
+</div>
 </section>
-<section id="hospital-data-simulated">
-<h3>1.3 Hospital Data (Simulated)<a class="headerlink" href="#hospital-data-simulated" title="Link to this heading"></a></h3>
+<section id="1.3-Hospital-Data-(Simulated)">
+<h3>1.3 Hospital Data (Simulated)<a class="headerlink" href="#1.3-Hospital-Data-(Simulated)" title="Link to this heading"></a></h3>
 <p><strong>Note</strong>: Real hospital-level data is not publicly available. We simulate plausible hospital admissions based on conflict event locations and reported casualties.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define analysis period</span>
-<span class="n">analysis_start</span> <span class="o">=</span> <span class="s1">&#39;2023-10-07&#39;</span>
-<span class="n">analysis_end</span> <span class="o">=</span> <span class="s1">&#39;2023-12-31&#39;</span>
-
-<span class="c1"># Prepare ACLED events for this period</span>
-<span class="n">events_by_day</span><span class="p">,</span> <span class="n">event_days</span><span class="p">,</span> <span class="n">event_coords</span><span class="p">,</span> <span class="n">dates</span> <span class="o">=</span> <span class="n">prepare_acled_events</span><span class="p">(</span>
-    <span class="n">events_df</span><span class="p">,</span> <span class="n">analysis_start</span><span class="p">,</span> <span class="n">analysis_end</span>
-<span class="p">)</span>
-
-<span class="n">T</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Analysis period: </span><span class="si">{</span><span class="n">T</span><span class="si">}</span><span class="s2"> days&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Events in period: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">event_days</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Days with events: </span><span class="si">{</span><span class="p">(</span><span class="n">events_by_day</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-<span class="c1"># Hospital coordinates (major Gaza facilities)</span>
-<span class="c1"># Based on known hospital locations from OpenStreetMap</span>
-<span class="n">hospital_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
-    <span class="p">[</span><span class="mf">31.5217</span><span class="p">,</span> <span class="mf">34.4517</span><span class="p">],</span>  <span class="c1"># Al-Shifa Hospital, Gaza City</span>
-    <span class="p">[</span><span class="mf">31.5189</span><span class="p">,</span> <span class="mf">34.4642</span><span class="p">],</span>  <span class="c1"># Al-Quds Hospital, Gaza City</span>
-    <span class="p">[</span><span class="mf">31.3543</span><span class="p">,</span> <span class="mf">34.3065</span><span class="p">],</span>  <span class="c1"># Nasser Medical Complex, Khan Younis</span>
-    <span class="p">[</span><span class="mf">31.2892</span><span class="p">,</span> <span class="mf">34.2533</span><span class="p">],</span>  <span class="c1"># European Gaza Hospital, Rafah</span>
-    <span class="p">[</span><span class="mf">31.5453</span><span class="p">,</span> <span class="mf">34.5131</span><span class="p">],</span>  <span class="c1"># Indonesian Hospital, North Gaza</span>
-<span class="p">])</span>
-
-<span class="n">n_hospitals</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">hospital_coords</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Modeling </span><span class="si">{</span><span class="n">n_hospitals</span><span class="si">}</span><span class="s2"> hospitals&quot;</span><span class="p">)</span>
-
-<span class="c1"># Simulate hospital injuries based on events</span>
-<span class="c1"># Assumption: ~5 injured per event on average</span>
-<span class="n">injuries_per_event</span> <span class="o">=</span> <span class="mi">5</span>
-<span class="n">injuries_obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">T</span><span class="p">,</span> <span class="n">n_hospitals</span><span class="p">))</span>
-
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">events_by_day</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">expected_inj</span> <span class="o">=</span> <span class="n">injuries_per_event</span> <span class="o">*</span> <span class="n">events_by_day</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-        <span class="n">day_injuries</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">expected_inj</span><span class="p">)</span>
-        
-        <span class="k">if</span> <span class="n">day_injuries</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="c1"># Allocate to hospitals (weighted by capacity/importance)</span>
-            <span class="c1"># Al-Shifa and Nasser are largest facilities</span>
-            <span class="n">hosp_weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">])</span>
-            <span class="n">alloc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multinomial</span><span class="p">(</span><span class="n">day_injuries</span><span class="p">,</span> <span class="n">hosp_weights</span><span class="p">)</span>
-            <span class="n">injuries_obs</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">alloc</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total simulated injuries: </span><span class="si">{</span><span class="n">injuries_obs</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[49]:
 </pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>analysis_start = &#39;2023-10-07&#39;
+analysis_end = &#39;2023-12-31&#39;
+
+events_by_day, event_days, event_coords, dates = prepare_acled_events(events_df, analysis_start, analysis_end)
+
+events_by_day = np.asarray(events_by_day, dtype=float)
+T = len(dates)
+print(f&#39;Analysis period: {T} days&#39;)
+print(f&#39;Events in period: {len(event_days)}&#39;)
+print(f&#39;Days with events: {(events_by_day &gt; 0).sum()}&#39;)
+
+hospital_coords = np.array([
+    [31.5217, 34.4517],
+    [31.5189, 34.4642],
+    [31.3543, 34.3065],
+    [31.2892, 34.2533],
+    [31.5453, 34.5131],
+])
+
+n_hospitals = len(hospital_coords)
+print(f&#39;Modeling {n_hospitals} hospitals&#39;)
+
+rng = np.random.default_rng(42)
+
+# Make simulated hospital data informative but not dominating:
+# - keep a substantial baseline
+# - add moderate coupling to events
+# - keep strong overdispersion and occasional spikes
+baseline_injuries = 250.0
+injuries_per_event = 1.5
+
+overdispersion_alpha = 2.5
+
+spike_prob = 0.05
+spike_mean = 450.0
+
+base_hosp_weights = np.array([0.3, 0.25, 0.25, 0.1, 0.1])
+allocation_concentration = 5.0
+
+injuries_obs = np.zeros((T, n_hospitals))
+
+for t in range(T):
+    expected_total = baseline_injuries + injuries_per_event * events_by_day[t]
+
+    # Gamma-Poisson mixture gives NB-like extra variance
+    rate_t = rng.gamma(shape=overdispersion_alpha, scale=expected_total / overdispersion_alpha)
+    total_injuries_t = rng.poisson(rate_t)
+
+    # Rare unobserved shocks (e.g., mass casualty events, reporting artifacts)
+    if rng.random() &lt; spike_prob:
+        total_injuries_t += rng.poisson(spike_mean)
+
+    weights_t = rng.dirichlet(base_hosp_weights * allocation_concentration)
+    injuries_obs[t, :] = rng.multinomial(total_injuries_t, weights_t)
+
+total_sim_inj = injuries_obs.sum(axis=1)
+print(f&#39;Total simulated injuries: {injuries_obs.sum():.0f}&#39;)
+print(f&#39;Correlation(events, total simulated injuries): {np.corrcoef(events_by_day, total_sim_inj)[0, 1]:.3f}&#39;)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Analysis period: 86 days
+Events in period: 7186
+Days with events: 86
+Modeling 5 hospitals
+Total simulated injuries: 35082
+Correlation(events, total simulated injuries): 0.301
+</pre></div></div>
 </div>
 <p><strong>Rationale for Simulation</strong>:</p>
 <ul class="simple">
@@ -354,42 +446,45 @@
 </ul>
 </section>
 </section>
-<section id="exploratory-analysis">
-<h2>2. Exploratory Analysis<a class="headerlink" href="#exploratory-analysis" title="Link to this heading"></a></h2>
-<section id="event-casualty-relationship">
-<h3>2.1 Event-Casualty Relationship<a class="headerlink" href="#event-casualty-relationship" title="Link to this heading"></a></h3>
+<section id="2.-Exploratory-Analysis">
+<h2>2. Exploratory Analysis<a class="headerlink" href="#2.-Exploratory-Analysis" title="Link to this heading"></a></h2>
+<section id="2.1-Event-Casualty-Relationship">
+<h3>2.1 Event-Casualty Relationship<a class="headerlink" href="#2.1-Event-Casualty-Relationship" title="Link to this heading"></a></h3>
 <p>Examine the relationship between event counts and deaths:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Prepare mortality data to match analysis period</span>
-<span class="n">deaths_obs</span> <span class="o">=</span> <span class="n">prepare_mortality_data</span><span class="p">(</span>
-    <span class="n">mortality_df</span><span class="p">,</span> <span class="n">analysis_start</span><span class="p">,</span> <span class="n">analysis_end</span><span class="p">,</span> <span class="n">use_extrapolated</span><span class="o">=</span><span class="kc">True</span>
-<span class="p">)</span>
-
-<span class="c1"># Aggregate by week for visualization</span>
-<span class="n">week_events</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">week_deaths</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">week</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span>
-    <span class="n">week_events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">events_by_day</span><span class="p">[</span><span class="n">week</span><span class="p">:</span><span class="n">week</span><span class="o">+</span><span class="mi">7</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
-    <span class="n">week_deaths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">deaths_obs</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">week</span><span class="p">:</span><span class="n">week</span><span class="o">+</span><span class="mi">7</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
-
-<span class="c1"># Scatter plot</span>
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">week_events</span><span class="p">,</span> <span class="n">week_deaths</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;darkred&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Weekly Conflict Events&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Weekly Deaths&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Event Counts vs. Casualties (Gaza, Oct-Dec 2023)&#39;</span><span class="p">,</span> 
-             <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
-
-<span class="c1"># Add correlation</span>
-<span class="n">corr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span><span class="n">week_events</span><span class="p">,</span> <span class="n">week_deaths</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;Correlation: </span><span class="si">{</span><span class="n">corr</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> 
-        <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">verticalalignment</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">,</span>
-        <span class="n">bbox</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">boxstyle</span><span class="o">=</span><span class="s1">&#39;round&#39;</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;wheat&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">))</span>
-
-<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;events_vs_deaths.png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[50]:
 </pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>deaths_obs = prepare_mortality_data(mortality_df, analysis_start, analysis_end, use_extrapolated=True)
+
+week_events = []
+week_deaths = []
+for week in range(0, T, 7):
+    week_events.append(np.sum(events_by_day[week : week + 7]))
+    week_deaths.append(deaths_obs.iloc[week : week + 7].sum())
+
+fig, ax = plt.subplots(figsize=(10, 6))
+ax.scatter(week_events, week_deaths, s=100, alpha=0.6, c=&#39;darkred&#39;)
+ax.set_xlabel(&#39;Weekly Conflict Events&#39;, fontsize=12)
+ax.set_ylabel(&#39;Weekly Deaths&#39;, fontsize=12)
+ax.set_title(&#39;Event Counts vs. Casualties (Gaza, Oct-Dec 2023)&#39;, fontsize=14, fontweight=&#39;bold&#39;)
+ax.grid(True, alpha=0.3)
+
+corr = np.corrcoef(week_events, week_deaths)[0, 1]
+ax.text(0.05, 0.95, f&#39;Correlation: {corr:.3f}&#39;, transform=ax.transAxes, fontsize=11, verticalalignment=&#39;top&#39;, bbox=dict(boxstyle=&#39;round&#39;, facecolor=&#39;wheat&#39;, alpha=0.5))
+
+plt.tight_layout()
+plt.savefig(&#39;events_vs_deaths.png&#39;, dpi=300)
+plt.show()
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_02_gaza_analysis_17_0.png" src="../_images/tutorials_02_gaza_analysis_17_0.png" />
+</div>
 </div>
 <p><strong>Interpretation</strong>: Positive correlation expected, but relationship is noisy due to:</p>
 <ul class="simple">
@@ -399,106 +494,207 @@
 <li><p>Varying civilian exposure</p></li>
 </ul>
 </section>
-<section id="temporal-patterns">
-<h3>2.2 Temporal Patterns<a class="headerlink" href="#temporal-patterns" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-<span class="c1"># Events</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">dates</span><span class="p">,</span> <span class="n">events_by_day</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Events&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Daily Conflict Events&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
-
-<span class="c1"># Injuries (total across hospitals)</span>
-<span class="n">total_inj</span> <span class="o">=</span> <span class="n">injuries_obs</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">dates</span><span class="p">,</span> <span class="n">total_inj</span><span class="p">,</span> <span class="s1">&#39;o-&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Hospital Admissions&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Simulated Daily Hospital Injuries&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
-
-<span class="c1"># Deaths</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">dates</span><span class="p">,</span> <span class="n">deaths_obs</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="s1">&#39;o-&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;darkred&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Deaths&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Date&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Reported Daily Deaths (Ministry of Health)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
-
-<span class="c1"># Highlight major events (example: Nov humanitarian pause)</span>
-<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">:</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span><span class="n">dates</span><span class="p">[</span><span class="mi">37</span><span class="p">],</span> <span class="n">dates</span><span class="p">[</span><span class="mi">44</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> 
-               <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Humanitarian Pause&#39;</span><span class="p">)</span>
-
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper right&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;temporal_patterns.png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<section id="2.2-Temporal-Patterns">
+<h3>2.2 Temporal Patterns<a class="headerlink" href="#2.2-Temporal-Patterns" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[51]:
 </pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, axes = plt.subplots(3, 1, figsize=(14, 10), sharex=True)
+
+axes[0].bar(dates, events_by_day, color=&#39;orange&#39;, alpha=0.7)
+axes[0].set_ylabel(&#39;Events&#39;, fontsize=11)
+axes[0].set_title(&#39;Daily Conflict Events&#39;, fontsize=12, fontweight=&#39;bold&#39;)
+axes[0].grid(True, alpha=0.3)
+
+total_inj = injuries_obs.sum(axis=1)
+axes[1].plot(dates, total_inj, &#39;o-&#39;, color=&#39;blue&#39;, markersize=3, alpha=0.7)
+axes[1].set_ylabel(&#39;Hospital Admissions&#39;, fontsize=11)
+axes[1].set_title(&#39;Simulated Daily Hospital Injuries&#39;, fontsize=12, fontweight=&#39;bold&#39;)
+axes[1].grid(True, alpha=0.3)
+
+axes[2].plot(dates, deaths_obs.values, &#39;o-&#39;, color=&#39;darkred&#39;, markersize=3, alpha=0.7)
+axes[2].set_ylabel(&#39;Deaths&#39;, fontsize=11)
+axes[2].set_xlabel(&#39;Date&#39;, fontsize=11)
+axes[2].set_title(&#39;Reported Daily Deaths (Ministry of Health)&#39;, fontsize=12, fontweight=&#39;bold&#39;)
+axes[2].grid(True, alpha=0.3)
+
+for ax in axes:
+    ax.axvspan(dates[37], dates[44], alpha=0.2, color=&#39;green&#39;, label=&#39;Humanitarian Pause&#39;)
+
+axes[0].legend(loc=&#39;upper right&#39;)
+plt.tight_layout()
+plt.savefig(&#39;temporal_patterns.png&#39;, dpi=300)
+plt.show()
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_02_gaza_analysis_19_0.png" src="../_images/tutorials_02_gaza_analysis_19_0.png" />
+</div>
 </div>
 </section>
 </section>
-<section id="model-fitting">
-<h2>3. Model Fitting<a class="headerlink" href="#model-fitting" title="Link to this heading"></a></h2>
-<section id="specify-delay-distribution">
-<h3>3.1 Specify Delay Distribution<a class="headerlink" href="#specify-delay-distribution" title="Link to this heading"></a></h3>
-<p>Based on medical literature on trauma outcomes {cite}`Champion2003, Eastridge2012}:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Delay distribution from injury to death</span>
-<span class="c1"># Most deaths occur within first few days</span>
-<span class="n">delay_probs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">])</span>  <span class="c1"># Days 1-4</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Delay distribution: </span><span class="si">{</span><span class="n">delay_probs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected delay: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">delay_probs</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">))</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> days&quot;</span><span class="p">)</span>
+<section id="3.-Model-Fitting">
+<h2>3. Model Fitting<a class="headerlink" href="#3.-Model-Fitting" title="Link to this heading"></a></h2>
+<section id="3.1-Specify-Delay-Distribution">
+<h3>3.1 Specify Delay Distribution<a class="headerlink" href="#3.1-Specify-Delay-Distribution" title="Link to this heading"></a></h3>
+<p>Based on medical literature on trauma outcomes {cite}<code class="docutils literal notranslate"><span class="pre">Champion2003,</span> <span class="pre">Eastridge2012</span></code>:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[52]:
 </pre></div>
 </div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>delay_probs = np.array([0.5, 0.3, 0.15, 0.05])
+print(f&#39;Delay distribution: {delay_probs}&#39;)
+print(f&#39;Expected delay: {np.sum(delay_probs * np.arange(1, 5)):.2f} days&#39;)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Delay distribution: [0.5  0.3  0.15 0.05]
+Expected delay: 1.75 days
+</pre></div></div>
+</div>
 </section>
-<section id="run-mcmc-inference">
-<h3>3.2 Run MCMC Inference<a class="headerlink" href="#run-mcmc-inference" title="Link to this heading"></a></h3>
+<section id="3.2-Run-MCMC-Inference">
+<h3>3.2 Run MCMC Inference<a class="headerlink" href="#3.2-Run-MCMC-Inference" title="Link to this heading"></a></h3>
 <p>Fit the full Bayesian model:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mcmc</span><span class="p">,</span> <span class="n">samples</span> <span class="o">=</span> <span class="n">run_inference</span><span class="p">(</span>
-    <span class="n">events_by_day</span><span class="o">=</span><span class="n">events_by_day</span><span class="p">,</span>
-    <span class="n">event_day_index</span><span class="o">=</span><span class="n">event_days</span><span class="p">,</span>
-    <span class="n">event_coords</span><span class="o">=</span><span class="n">event_coords</span><span class="p">,</span>
-    <span class="n">hospital_coords</span><span class="o">=</span><span class="n">hospital_coords</span><span class="p">,</span>
-    <span class="n">injuries_obs</span><span class="o">=</span><span class="n">injuries_obs</span><span class="p">,</span>
-    <span class="n">deaths_obs</span><span class="o">=</span><span class="n">deaths_obs</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
-    <span class="n">delay_probs</span><span class="o">=</span><span class="n">delay_probs</span><span class="p">,</span>
-    <span class="n">num_warmup</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
-    <span class="n">num_samples</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span>
-    <span class="n">num_chains</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-    <span class="n">rng_seed</span><span class="o">=</span><span class="mi">42</span>
-<span class="p">)</span>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>mcmc, samples = run_inference(
+    events_by_day=events_by_day,
+    event_day_index=event_days,
+    event_coords=event_coords,
+    hospital_coords=hospital_coords,
+    injuries_obs=injuries_obs,
+    deaths_obs=deaths_obs.values,
+    delay_probs=delay_probs,
+    model=casualty_model_random_walk,
+    num_warmup=1000,
+    num_samples=2000,
+    num_chains=2,
+    rng_seed=42,
+)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/oj/GoogleDrive/AcademicWork/Imperial/git/trace/src/trace/analysis.py:86: UserWarning: There are not enough devices to run parallel chains: expected 2 but got 1. Chains will be drawn sequentially. If you are running MCMC in CPU, consider using `numpyro.set_host_device_count(2)` at the beginning of your program. You can double-check how many devices are available in your system using `jax.local_device_count()`.
+  mcmc = MCMC(
+sample: 100%|██████████| 3000/3000 [00:27&lt;00:00, 107.50it/s, 7 steps of size 3.08e-01. acc. prob=0.93]
+sample: 100%|██████████| 3000/3000 [00:30&lt;00:00, 97.30it/s, 7 steps of size 2.66e-01. acc. prob=0.95]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+                mean       std    median      5.0%     95.0%     n_eff     r_hat
+       ell      1.71      0.19      1.70      1.41      1.99   2001.76      1.00
+      mu_i      2.22      0.05      2.22      2.13      2.29   2087.99      1.00
+      mu_w      4.88      0.03      4.88      4.84      4.92   3218.25      1.00
+    p_late      0.17      0.01      0.17      0.15      0.19   2067.90      1.00
+
+Number of divergences: 0
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+
+</pre></div></div>
 </div>
 <p><strong>Runtime</strong>: 5-10 minutes on CPU, 1-2 minutes on GPU</p>
 </section>
-<section id="examine-results">
-<h3>3.3 Examine Results<a class="headerlink" href="#examine-results" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Print parameter summaries</span>
-<span class="n">mcmc</span><span class="o">.</span><span class="n">print_summary</span><span class="p">()</span>
-
-<span class="c1"># Extract posterior means</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Posterior Estimates ===&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;mu_w (wounded per event):    </span><span class="si">{</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;mu_w&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> &quot;</span>
-      <span class="sa">f</span><span class="s2">&quot;(95% CI: [</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;mu_w&#39;</span><span class="p">],</span><span class="w"> </span><span class="mf">2.5</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, &quot;</span>
-      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;mu_w&#39;</span><span class="p">],</span><span class="w"> </span><span class="mf">97.5</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">])&quot;</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;mu_i (immediate deaths):     </span><span class="si">{</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;mu_i&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> &quot;</span>
-      <span class="sa">f</span><span class="s2">&quot;(95% CI: [</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;mu_i&#39;</span><span class="p">],</span><span class="w"> </span><span class="mf">2.5</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, &quot;</span>
-      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;mu_i&#39;</span><span class="p">],</span><span class="w"> </span><span class="mf">97.5</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">])&quot;</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;p_late (hospital fatality):  </span><span class="si">{</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;p_late&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> &quot;</span>
-      <span class="sa">f</span><span class="s2">&quot;(95% CI: [</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;p_late&#39;</span><span class="p">],</span><span class="w"> </span><span class="mf">2.5</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, &quot;</span>
-      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;p_late&#39;</span><span class="p">],</span><span class="w"> </span><span class="mf">97.5</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">])&quot;</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ell (spatial scale, degrees):</span><span class="si">{</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;ell&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> &quot;</span>
-      <span class="sa">f</span><span class="s2">&quot;(95% CI: [</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;ell&#39;</span><span class="p">],</span><span class="w"> </span><span class="mf">2.5</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, &quot;</span>
-      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;ell&#39;</span><span class="p">],</span><span class="w"> </span><span class="mf">97.5</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">])&quot;</span><span class="p">)</span>
+<section id="3.3-Examine-Results">
+<h3>3.3 Examine Results<a class="headerlink" href="#3.3-Examine-Results" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>mcmc.print_summary()
+
+def _summarize_time_varying(name: str):
+    x = np.asarray(samples[name])
+    if x.ndim == 1:
+        mean = x.mean()
+        lo, hi = np.percentile(x, [2.5, 97.5])
+        return mean, lo, hi
+    if x.ndim == 2:
+        x_last = x[:, -1]
+        mean = x_last.mean()
+        lo, hi = np.percentile(x_last, [2.5, 97.5])
+        return mean, lo, hi
+    raise ValueError(f&quot;Unexpected shape for {name}: {x.shape}&quot;)
+
+print(&quot;\n=== Posterior Estimates (last day for time-varying params) ===&quot;)
+
+mu_w_mean, mu_w_lo, mu_w_hi = _summarize_time_varying(&quot;mu_w&quot;)
+print(f&quot;mu_w (wounded per event, last day):    {mu_w_mean:.2f} (95% CI: [{mu_w_lo:.2f}, {mu_w_hi:.2f}])&quot;)
+
+mu_i_mean, mu_i_lo, mu_i_hi = _summarize_time_varying(&quot;mu_i&quot;)
+print(f&quot;mu_i (immediate deaths, last day):     {mu_i_mean:.2f} (95% CI: [{mu_i_lo:.2f}, {mu_i_hi:.2f}])&quot;)
+
+print(
+    f&quot;sigma_mu_w (RW step sd):              {samples[&#39;sigma_mu_w&#39;].mean():.3f} (95% CI: [{np.percentile(samples[&#39;sigma_mu_w&#39;], 2.5):.3f}, {np.percentile(samples[&#39;sigma_mu_w&#39;], 97.5):.3f}])&quot;
+)
+print(
+    f&quot;sigma_mu_i (RW step sd):              {samples[&#39;sigma_mu_i&#39;].mean():.3f} (95% CI: [{np.percentile(samples[&#39;sigma_mu_i&#39;], 2.5):.3f}, {np.percentile(samples[&#39;sigma_mu_i&#39;], 97.5):.3f}])&quot;
+)
+
+print(
+    f&quot;p_late (hospital fatality):           {samples[&#39;p_late&#39;].mean():.3f} (95% CI: [{np.percentile(samples[&#39;p_late&#39;], 2.5):.3f}, {np.percentile(samples[&#39;p_late&#39;], 97.5):.3f}])&quot;
+)
+print(
+    f&quot;ell (spatial scale, degrees):         {samples[&#39;ell&#39;].mean():.2f} (95% CI: [{np.percentile(samples[&#39;ell&#39;], 2.5):.2f}, {np.percentile(samples[&#39;ell&#39;], 97.5):.2f}])&quot;
+)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+                mean       std    median      5.0%     95.0%     n_eff     r_hat
+       ell      1.71      0.19      1.70      1.41      1.99   2001.76      1.00
+      mu_i      2.22      0.05      2.22      2.13      2.29   2087.99      1.00
+      mu_w      4.88      0.03      4.88      4.84      4.92   3218.25      1.00
+    p_late      0.17      0.01      0.17      0.15      0.19   2067.90      1.00
+
+Number of divergences: 0
+
+=== Posterior Estimates ===
+mu_w (wounded per event):    4.88 (95% CI: [4.83, 4.93])
+mu_i (immediate deaths):     2.22 (95% CI: [2.12, 2.31])
+p_late (hospital fatality):  0.170 (95% CI: [0.150, 0.188])
+ell (spatial scale, degrees):1.71 (95% CI: [1.41, 2.15])
+</pre></div></div>
+</div>
 <p><strong>Expected Output</strong> (approximate):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">===</span> <span class="n">Posterior</span> <span class="n">Estimates</span> <span class="o">===</span>
-<span class="n">mu_w</span> <span class="p">(</span><span class="n">wounded</span> <span class="n">per</span> <span class="n">event</span><span class="p">):</span>    <span class="mf">4.98</span> <span class="p">(</span><span class="mi">95</span><span class="o">%</span> <span class="n">CI</span><span class="p">:</span> <span class="p">[</span><span class="mf">4.92</span><span class="p">,</span> <span class="mf">5.04</span><span class="p">])</span>
-<span class="n">mu_i</span> <span class="p">(</span><span class="n">immediate</span> <span class="n">deaths</span><span class="p">):</span>     <span class="mf">0.62</span> <span class="p">(</span><span class="mi">95</span><span class="o">%</span> <span class="n">CI</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.35</span><span class="p">,</span> <span class="mf">0.92</span><span class="p">])</span>
-<span class="n">p_late</span> <span class="p">(</span><span class="n">hospital</span> <span class="n">fatality</span><span class="p">):</span>  <span class="mf">0.489</span> <span class="p">(</span><span class="mi">95</span><span class="o">%</span> <span class="n">CI</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.432</span><span class="p">,</span> <span class="mf">0.548</span><span class="p">])</span>
-<span class="n">ell</span> <span class="p">(</span><span class="n">spatial</span> <span class="n">scale</span><span class="p">,</span> <span class="n">degrees</span><span class="p">):</span> <span class="mf">0.80</span> <span class="p">(</span><span class="mi">95</span><span class="o">%</span> <span class="n">CI</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.74</span><span class="p">,</span> <span class="mf">0.87</span><span class="p">])</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>=== Posterior Estimates ===
+mu_w (wounded per event):    4.98 (95% CI: [4.92, 5.04])
+mu_i (immediate deaths):     0.62 (95% CI: [0.35, 0.92])
+p_late (hospital fatality):  0.489 (95% CI: [0.432, 0.548])
+ell (spatial scale, degrees): 0.80 (95% CI: [0.74, 0.87])
 </pre></div>
 </div>
 <p><strong>Interpretation</strong>:</p>
@@ -510,32 +706,62 @@
 </ul>
 </section>
 </section>
-<section id="model-diagnostics">
-<h2>4. Model Diagnostics<a class="headerlink" href="#model-diagnostics" title="Link to this heading"></a></h2>
-<section id="convergence-assessment">
-<h3>4.1 Convergence Assessment<a class="headerlink" href="#convergence-assessment" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check Rhat (should be &lt; 1.01)</span>
-<span class="n">idata</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">from_numpyro</span><span class="p">(</span><span class="n">mcmc</span><span class="p">)</span>
-<span class="n">rhat</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">rhat</span><span class="p">(</span><span class="n">idata</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Max Rhat: </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">rhat</span><span class="o">.</span><span class="n">max</span><span class="p">())</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="k">assert</span> <span class="nb">float</span><span class="p">(</span><span class="n">rhat</span><span class="o">.</span><span class="n">max</span><span class="p">())</span> <span class="o">&lt;</span> <span class="mf">1.01</span><span class="p">,</span> <span class="s2">&quot;Convergence issue: Rhat &gt;= 1.01&quot;</span>
-
-<span class="c1"># Check effective sample size</span>
-<span class="n">ess</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">ess</span><span class="p">(</span><span class="n">idata</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Min ESS: </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">ess</span><span class="o">.</span><span class="n">min</span><span class="p">())</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="k">assert</span> <span class="nb">float</span><span class="p">(</span><span class="n">ess</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;Low effective sample size&quot;</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✓ Convergence diagnostics passed&quot;</span><span class="p">)</span>
+<section id="4.-Model-Diagnostics">
+<h2>4. Model Diagnostics<a class="headerlink" href="#4.-Model-Diagnostics" title="Link to this heading"></a></h2>
+<section id="4.1-Convergence-Assessment">
+<h3>4.1 Convergence Assessment<a class="headerlink" href="#4.1-Convergence-Assessment" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[55]:
 </pre></div>
 </div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>idata = az.from_numpyro(mcmc)
+
+rhat = az.rhat(idata)
+max_rhat = float(rhat.to_array().max().values)
+print(f&quot;Max Rhat: {max_rhat:.4f}&quot;)
+if max_rhat &gt;= 1.01:
+    print(&quot;Warning: Convergence issue: Rhat &gt;= 1.01&quot;)
+
+ess = az.ess(idata)
+min_ess = float(ess.to_array().min().values)
+print(f&quot;Min ESS: {min_ess:.0f}&quot;)
+if min_ess &lt;= 100:
+    print(&quot;Warning: Low effective sample size&quot;)
+
+print(&quot;✓ Convergence diagnostics completed&quot;)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Max Rhat: 1.0020
+Min ESS: 2075
+✓ Convergence diagnostics completed
+</pre></div></div>
+</div>
 </section>
-<section id="trace-plots">
-<h3>4.2 Trace Plots<a class="headerlink" href="#trace-plots" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">az</span><span class="o">.</span><span class="n">plot_trace</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">compact</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;gaza_trace_plots.png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<section id="4.2-Trace-Plots">
+<h3>4.2 Trace Plots<a class="headerlink" href="#4.2-Trace-Plots" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[56]:
 </pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>az.plot_trace(idata, compact=True, figsize=(14, 10))
+plt.tight_layout()
+plt.savefig(&#39;gaza_trace_plots.png&#39;, dpi=300)
+plt.show()
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_02_gaza_analysis_30_0.png" src="../_images/tutorials_02_gaza_analysis_30_0.png" />
+</div>
 </div>
 <p>Look for:</p>
 <ul class="simple">
@@ -544,47 +770,128 @@
 <li><p>Between-chain agreement</p></li>
 </ul>
 </section>
-<section id="posterior-distributions">
-<h3>4.3 Posterior Distributions<a class="headerlink" href="#posterior-distributions" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">az</span><span class="o">.</span><span class="n">plot_posterior</span><span class="p">(</span><span class="n">idata</span><span class="p">,</span> <span class="n">hdi_prob</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;gaza_posteriors.png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<section id="4.3-Posterior-Distributions">
+<h3>4.3 Posterior Distributions<a class="headerlink" href="#4.3-Posterior-Distributions" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[57]:
 </pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>az.plot_posterior(idata, hdi_prob=0.95, figsize=(12, 8))
+plt.tight_layout()
+plt.savefig(&#39;gaza_posteriors.png&#39;, dpi=300)
+plt.show()
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_02_gaza_analysis_32_0.png" src="../_images/tutorials_02_gaza_analysis_32_0.png" />
+</div>
 </div>
 </section>
 </section>
-<section id="posterior-predictive-checks">
-<h2>5. Posterior Predictive Checks<a class="headerlink" href="#posterior-predictive-checks" title="Link to this heading"></a></h2>
-<section id="generate-predictions">
-<h3>5.1 Generate Predictions<a class="headerlink" href="#generate-predictions" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">preds</span> <span class="o">=</span> <span class="n">posterior_predictive</span><span class="p">(</span>
-    <span class="n">samples</span><span class="o">=</span><span class="n">samples</span><span class="p">,</span>
-    <span class="n">events_by_day</span><span class="o">=</span><span class="n">events_by_day</span><span class="p">,</span>
-    <span class="n">event_day_index</span><span class="o">=</span><span class="n">event_days</span><span class="p">,</span>
-    <span class="n">event_coords</span><span class="o">=</span><span class="n">event_coords</span><span class="p">,</span>
-    <span class="n">hospital_coords</span><span class="o">=</span><span class="n">hospital_coords</span><span class="p">,</span>
-    <span class="n">injuries_obs_shape</span><span class="o">=</span><span class="n">injuries_obs</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
-    <span class="n">deaths_obs_shape</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">deaths_obs</span><span class="p">),</span>
-    <span class="n">delay_probs</span><span class="o">=</span><span class="n">delay_probs</span><span class="p">,</span>
-    <span class="n">rng_seed</span><span class="o">=</span><span class="mi">1</span>
-<span class="p">)</span>
+<section id="5.-Posterior-Predictive-Checks">
+<h2>5. Posterior Predictive Checks<a class="headerlink" href="#5.-Posterior-Predictive-Checks" title="Link to this heading"></a></h2>
+<section id="5.1-Generate-Predictions">
+<h3>5.1 Generate Predictions<a class="headerlink" href="#5.1-Generate-Predictions" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>preds = posterior_predictive(
+    samples=samples,
+    events_by_day=events_by_day,
+    event_day_index=event_days,
+    event_coords=event_coords,
+    hospital_coords=hospital_coords,
+    injuries_obs_shape=injuries_obs.shape,
+    deaths_obs_shape=len(deaths_obs),
+    delay_probs=delay_probs,
+    model=casualty_model_random_walk,
+    rng_seed=1,
+)
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generated </span><span class="si">{</span><span class="n">preds</span><span class="p">[</span><span class="s1">&#39;obs_deaths&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> posterior predictive draws&quot;</span><span class="p">)</span>
-</pre></div>
+print(f&quot;Generated {preds[&#39;obs_deaths&#39;].shape[0]} posterior predictive draws&quot;)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Generated 4000 posterior predictive draws
+</pre></div></div>
 </div>
 </section>
-<section id="visual-assessment">
-<h3>5.2 Visual Assessment<a class="headerlink" href="#visual-assessment" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plot_fit</span><span class="p">(</span>
-    <span class="n">dates</span><span class="o">=</span><span class="n">dates</span><span class="p">,</span>
-    <span class="n">injuries_obs</span><span class="o">=</span><span class="n">injuries_obs</span><span class="p">,</span>
-    <span class="n">deaths_obs</span><span class="o">=</span><span class="n">deaths_obs</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
-    <span class="n">preds</span><span class="o">=</span><span class="n">preds</span><span class="p">,</span>
-    <span class="n">save_path</span><span class="o">=</span><span class="s1">&#39;gaza_model_fit.png&#39;</span>
-<span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<section id="5.2-Visual-Assessment">
+<h3>5.2 Visual Assessment<a class="headerlink" href="#5.2-Visual-Assessment" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[59]:
 </pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Model fit figure including ACLED events
+fig, axes = plt.subplots(3, 1, figsize=(12, 10), sharex=True)
+
+# 1) ACLED events
+axes[0].bar(dates, events_by_day, color=&#39;orange&#39;, alpha=0.7, label=&#39;ACLED events&#39;)
+axes[0].set_ylabel(&#39;Events&#39;, fontsize=12)
+axes[0].set_title(&#39;ACLED Events (Input Driver)&#39;, fontsize=14, fontweight=&#39;bold&#39;)
+axes[0].grid(True, alpha=0.3)
+axes[0].legend(loc=&#39;best&#39;)
+
+# 2) Deaths: observed vs posterior predictive
+axes[1].plot(dates, deaths_obs.values, &#39;o-&#39;, label=&#39;Observed deaths&#39;, color=&#39;darkred&#39;, alpha=0.7)
+
+if preds is not None and &#39;obs_deaths&#39; in preds:
+    pred_deaths = np.asarray(preds[&#39;obs_deaths&#39;])
+    median_pred = np.median(pred_deaths, axis=0)
+    low_pred = np.percentile(pred_deaths, 2.5, axis=0)
+    high_pred = np.percentile(pred_deaths, 97.5, axis=0)
+
+    axes[1].fill_between(dates, low_pred, high_pred, color=&#39;red&#39;, alpha=0.2, label=&#39;95% credible interval&#39;)
+    axes[1].plot(dates, median_pred, &#39;-&#39;, color=&#39;red&#39;, label=&#39;Posterior median&#39;, linewidth=2)
+
+axes[1].set_ylabel(&#39;Daily Deaths&#39;, fontsize=12)
+axes[1].set_title(&#39;National Deaths: Observed vs Model Fit&#39;, fontsize=14, fontweight=&#39;bold&#39;)
+axes[1].grid(True, alpha=0.3)
+axes[1].legend(loc=&#39;best&#39;)
+
+# 3) Injuries: observed vs posterior predictive (total across hospitals)
+total_inj_obs = np.nansum(injuries_obs, axis=1)
+axes[2].plot(dates, total_inj_obs, &#39;o-&#39;, label=&#39;Observed injured (simulated)&#39;, color=&#39;darkblue&#39;, alpha=0.7)
+
+if preds is not None and &#39;obs_injuries&#39; in preds:
+    pred_inj = np.asarray(preds[&#39;obs_injuries&#39;])
+    pred_total_inj = np.nansum(pred_inj, axis=2)
+
+    median_inj = np.median(pred_total_inj, axis=0)
+    low_inj = np.percentile(pred_total_inj, 2.5, axis=0)
+    high_inj = np.percentile(pred_total_inj, 97.5, axis=0)
+
+    axes[2].fill_between(dates, low_inj, high_inj, color=&#39;blue&#39;, alpha=0.2, label=&#39;95% credible interval&#39;)
+    axes[2].plot(dates, median_inj, &#39;-&#39;, color=&#39;blue&#39;, label=&#39;Posterior median&#39;, linewidth=2)
+
+axes[2].set_ylabel(&#39;Daily Injured (Total)&#39;, fontsize=12)
+axes[2].set_xlabel(&#39;Date&#39;, fontsize=12)
+axes[2].set_title(&#39;Hospital Injuries: Observed vs Model Fit&#39;, fontsize=14, fontweight=&#39;bold&#39;)
+axes[2].grid(True, alpha=0.3)
+axes[2].legend(loc=&#39;best&#39;)
+
+plt.tight_layout()
+plt.savefig(&#39;gaza_model_fit.png&#39;, dpi=300, bbox_inches=&#39;tight&#39;)
+plt.show()
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_02_gaza_analysis_36_0.png" src="../_images/tutorials_02_gaza_analysis_36_0.png" />
+</div>
 </div>
 <p><strong>What to Check</strong>:</p>
 <ol class="arabic simple">
@@ -593,177 +900,259 @@
 <li><p>Does the model capture temporal trends?</p></li>
 </ol>
 </section>
-<section id="quantitative-checks">
-<h3>5.3 Quantitative Checks<a class="headerlink" href="#quantitative-checks" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Coverage probability</span>
-<span class="n">deaths_lower</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">preds</span><span class="p">[</span><span class="s1">&#39;obs_deaths&#39;</span><span class="p">],</span> <span class="mf">2.5</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">deaths_upper</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">preds</span><span class="p">[</span><span class="s1">&#39;obs_deaths&#39;</span><span class="p">],</span> <span class="mf">97.5</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">coverage</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">deaths_obs</span><span class="o">.</span><span class="n">values</span> <span class="o">&gt;=</span> <span class="n">deaths_lower</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">deaths_obs</span><span class="o">.</span><span class="n">values</span> <span class="o">&lt;=</span> <span class="n">deaths_upper</span><span class="p">))</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Observations within 95% CI: </span><span class="si">{</span><span class="n">coverage</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
-
-<span class="c1"># Mean absolute error</span>
-<span class="n">pred_median</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">preds</span><span class="p">[</span><span class="s1">&#39;obs_deaths&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">mae</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">deaths_obs</span><span class="o">.</span><span class="n">values</span> <span class="o">-</span> <span class="n">pred_median</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Median absolute error: </span><span class="si">{</span><span class="n">mae</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> deaths/day&quot;</span><span class="p">)</span>
-
-<span class="c1"># Root mean squared error</span>
-<span class="n">rmse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">deaths_obs</span><span class="o">.</span><span class="n">values</span> <span class="o">-</span> <span class="n">pred_median</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Root mean squared error: </span><span class="si">{</span><span class="n">rmse</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> deaths/day&quot;</span><span class="p">)</span>
+<section id="5.3-Quantitative-Checks">
+<h3>5.3 Quantitative Checks<a class="headerlink" href="#5.3-Quantitative-Checks" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[60]:
 </pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>deaths_lower = np.percentile(preds[&#39;obs_deaths&#39;], 2.5, axis=0)
+deaths_upper = np.percentile(preds[&#39;obs_deaths&#39;], 97.5, axis=0)
+coverage = np.mean((deaths_obs.values &gt;= deaths_lower) &amp; (deaths_obs.values &lt;= deaths_upper))
+
+print(f&#39;Observations within 95% CI: {coverage * 100:.1f}%&#39;)
+
+pred_median = np.median(preds[&#39;obs_deaths&#39;], axis=0)
+mae = np.mean(np.abs(deaths_obs.values - pred_median))
+print(f&#39;Median absolute error: {mae:.1f} deaths/day&#39;)
+
+rmse = np.sqrt(np.mean((deaths_obs.values - pred_median) ** 2))
+print(f&#39;Root mean squared error: {rmse:.1f} deaths/day&#39;)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Observations within 95% CI: 29.1%
+Median absolute error: 111.8 deaths/day
+Root mean squared error: 159.1 deaths/day
+</pre></div></div>
 </div>
 </section>
 </section>
-<section id="policy-relevant-forecasting">
-<h2>6. Policy-Relevant Forecasting<a class="headerlink" href="#policy-relevant-forecasting" title="Link to this heading"></a></h2>
-<section id="baseline-forecast">
-<h3>6.1 Baseline Forecast<a class="headerlink" href="#baseline-forecast" title="Link to this heading"></a></h3>
+<section id="6.-Policy-Relevant-Forecasting">
+<h2>6. Policy-Relevant Forecasting<a class="headerlink" href="#6.-Policy-Relevant-Forecasting" title="Link to this heading"></a></h2>
+<section id="6.1-Baseline-Forecast">
+<h3>6.1 Baseline Forecast<a class="headerlink" href="#6.1-Baseline-Forecast" title="Link to this heading"></a></h3>
 <p>Project casualties if conflict continues at recent intensity:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Estimate recent event rate (last 30 days)</span>
-<span class="n">recent_rate</span> <span class="o">=</span> <span class="n">events_by_day</span><span class="p">[</span><span class="o">-</span><span class="mi">30</span><span class="p">:]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Recent event rate: </span><span class="si">{</span><span class="n">recent_rate</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> events/day&quot;</span><span class="p">)</span>
-
-<span class="c1"># 30-day forecast</span>
-<span class="n">future_events_baseline</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="n">recent_rate</span><span class="p">)</span>
-
-<span class="n">forecast_baseline</span> <span class="o">=</span> <span class="n">forecast</span><span class="p">(</span>
-    <span class="n">samples</span><span class="o">=</span><span class="n">samples</span><span class="p">,</span>
-    <span class="n">future_events_by_day</span><span class="o">=</span><span class="n">future_events_baseline</span><span class="p">,</span>
-    <span class="n">delay_probs</span><span class="o">=</span><span class="n">delay_probs</span>
-<span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">30-Day Baseline Forecast:&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Total deaths: </span><span class="si">{</span><span class="n">forecast_baseline</span><span class="p">[</span><span class="s1">&#39;deaths_median&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> &quot;</span>
-      <span class="sa">f</span><span class="s2">&quot;(95% CI: [</span><span class="si">{</span><span class="n">forecast_baseline</span><span class="p">[</span><span class="s1">&#39;deaths_lower&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">, &quot;</span>
-      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">forecast_baseline</span><span class="p">[</span><span class="s1">&#39;deaths_upper&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">])&quot;</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Daily rate: </span><span class="si">{</span><span class="n">forecast_baseline</span><span class="p">[</span><span class="s1">&#39;deaths_median&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> deaths/day&quot;</span><span class="p">)</span>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[61]:
 </pre></div>
 </div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>recent_rate = np.mean(events_by_day[-30:])
+print(f&#39;Recent event rate: {recent_rate:.1f} events/day&#39;)
+
+future_events_baseline = np.full(30, recent_rate)
+
+forecast_baseline = forecast(samples=samples, future_events_by_day=future_events_baseline, delay_probs=delay_probs)
+
+print(&#39;\n30-Day Baseline Forecast:&#39;)
+print(
+    f&quot;  Total deaths: {forecast_baseline[&#39;deaths_median&#39;].sum():.0f} (95% CI: [{forecast_baseline[&#39;deaths_lower&#39;].sum():.0f}, {forecast_baseline[&#39;deaths_upper&#39;].sum():.0f}])&quot;
+)
+print(f&quot;  Daily rate: {forecast_baseline[&#39;deaths_median&#39;].mean():.1f} deaths/day&quot;)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Recent event rate: 72.5 events/day
+
+30-Day Baseline Forecast:
+  Total deaths: 5667 (95% CI: [4868, 6503])
+  Daily rate: 188.9 deaths/day
+</pre></div></div>
+</div>
 </section>
-<section id="ceasefire-scenario">
-<h3>6.2 Ceasefire Scenario<a class="headerlink" href="#ceasefire-scenario" title="Link to this heading"></a></h3>
+<section id="6.2-Ceasefire-Scenario">
+<h3>6.2 Ceasefire Scenario<a class="headerlink" href="#6.2-Ceasefire-Scenario" title="Link to this heading"></a></h3>
 <p>Model impact of a complete ceasefire:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Ceasefire: 95% reduction in events</span>
-<span class="n">future_events_ceasefire</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="n">recent_rate</span> <span class="o">*</span> <span class="mf">0.05</span><span class="p">)</span>
-
-<span class="n">forecast_ceasefire</span> <span class="o">=</span> <span class="n">forecast</span><span class="p">(</span>
-    <span class="n">samples</span><span class="o">=</span><span class="n">samples</span><span class="p">,</span>
-    <span class="n">future_events_by_day</span><span class="o">=</span><span class="n">future_events_ceasefire</span><span class="p">,</span>
-    <span class="n">delay_probs</span><span class="o">=</span><span class="n">delay_probs</span>
-<span class="p">)</span>
-
-<span class="n">deaths_baseline</span> <span class="o">=</span> <span class="n">forecast_baseline</span><span class="p">[</span><span class="s1">&#39;deaths_median&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-<span class="n">deaths_ceasefire</span> <span class="o">=</span> <span class="n">forecast_ceasefire</span><span class="p">[</span><span class="s1">&#39;deaths_median&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-<span class="n">lives_saved</span> <span class="o">=</span> <span class="n">deaths_baseline</span> <span class="o">-</span> <span class="n">deaths_ceasefire</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">30-Day Ceasefire Scenario (95% event reduction):&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Total deaths: </span><span class="si">{</span><span class="n">deaths_ceasefire</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Lives saved: </span><span class="si">{</span><span class="n">lives_saved</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">lives_saved</span><span class="o">/</span><span class="n">deaths_baseline</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">% reduction)&quot;</span><span class="p">)</span>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[62]:
 </pre></div>
 </div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>future_events_ceasefire = np.full(30, recent_rate * 0.05)
+
+forecast_ceasefire = forecast(samples=samples, future_events_by_day=future_events_ceasefire, delay_probs=delay_probs)
+
+deaths_baseline = forecast_baseline[&#39;deaths_median&#39;].sum()
+deaths_ceasefire = forecast_ceasefire[&#39;deaths_median&#39;].sum()
+lives_saved = deaths_baseline - deaths_ceasefire
+
+print(&#39;\n30-Day Ceasefire Scenario (95% event reduction):&#39;)
+print(f&#39;  Total deaths: {deaths_ceasefire:.0f}&#39;)
+print(f&#39;  Lives saved: {lives_saved:.0f} ({lives_saved / deaths_baseline * 100:.1f}% reduction)&#39;)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+30-Day Ceasefire Scenario (95% event reduction):
+  Total deaths: 269
+  Lives saved: 5398 (95.3% reduction)
+</pre></div></div>
+</div>
 </section>
-<section id="scenario-comparison-visualization">
-<h3>6.3 Scenario Comparison Visualization<a class="headerlink" href="#scenario-comparison-visualization" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">scenarios</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;Baseline (Current Intensity)&#39;</span><span class="p">:</span> <span class="n">future_events_baseline</span><span class="p">,</span>
-    <span class="s1">&#39;Partial De-escalation (50%)&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="n">recent_rate</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">),</span>
-    <span class="s1">&#39;Ceasefire (95</span><span class="si">% r</span><span class="s1">eduction)&#39;</span><span class="p">:</span> <span class="n">future_events_ceasefire</span><span class="p">,</span>
-    <span class="s1">&#39;Escalation (2x events)&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="n">recent_rate</span> <span class="o">*</span> <span class="mf">2.0</span><span class="p">)</span>
-<span class="p">}</span>
-
-<span class="n">results_summary</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">events</span> <span class="ow">in</span> <span class="n">scenarios</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-    <span class="n">fc</span> <span class="o">=</span> <span class="n">forecast</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">delay_probs</span><span class="p">)</span>
-    <span class="n">total</span> <span class="o">=</span> <span class="n">fc</span><span class="p">[</span><span class="s1">&#39;deaths_median&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-    <span class="n">lower</span> <span class="o">=</span> <span class="n">fc</span><span class="p">[</span><span class="s1">&#39;deaths_lower&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-    <span class="n">upper</span> <span class="o">=</span> <span class="n">fc</span><span class="p">[</span><span class="s1">&#39;deaths_upper&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-    <span class="n">results_summary</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
-        <span class="s1">&#39;Scenario&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
-        <span class="s1">&#39;Deaths&#39;</span><span class="p">:</span> <span class="n">total</span><span class="p">,</span>
-        <span class="s1">&#39;Lower&#39;</span><span class="p">:</span> <span class="n">lower</span><span class="p">,</span>
-        <span class="s1">&#39;Upper&#39;</span><span class="p">:</span> <span class="n">upper</span>
-    <span class="p">})</span>
-
-<span class="c1"># Bar plot</span>
-<span class="n">df_scenarios</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">results_summary</span><span class="p">)</span>
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
-
-<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_scenarios</span><span class="p">))</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">df_scenarios</span><span class="p">[</span><span class="s1">&#39;Deaths&#39;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;darkred&#39;</span><span class="p">,</span> <span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="s1">&#39;red&#39;</span><span class="p">],</span>
-       <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">df_scenarios</span><span class="p">[</span><span class="s1">&#39;Deaths&#39;</span><span class="p">],</span> 
-            <span class="n">yerr</span><span class="o">=</span><span class="p">[</span><span class="n">df_scenarios</span><span class="p">[</span><span class="s1">&#39;Deaths&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">df_scenarios</span><span class="p">[</span><span class="s1">&#39;Lower&#39;</span><span class="p">],</span>
-                  <span class="n">df_scenarios</span><span class="p">[</span><span class="s1">&#39;Upper&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">df_scenarios</span><span class="p">[</span><span class="s1">&#39;Deaths&#39;</span><span class="p">]],</span>
-            <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">capsize</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">df_scenarios</span><span class="p">[</span><span class="s1">&#39;Scenario&#39;</span><span class="p">],</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;30-Day Total Deaths&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Gaza Conflict: Forecast Scenarios (30 Days)&#39;</span><span class="p">,</span> 
-             <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
-
-<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;scenario_comparison.png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-
-<span class="c1"># Print table</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Scenario Comparison ===&quot;</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df_scenarios</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;Scenario&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">35s</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;Deaths&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">6.0f</span><span class="si">}</span><span class="s2"> deaths &quot;</span>
-          <span class="sa">f</span><span class="s2">&quot;(95% CI: [</span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;Lower&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;Upper&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">])&quot;</span><span class="p">)</span>
+<section id="6.3-Scenario-Comparison-Visualization">
+<h3>6.3 Scenario Comparison Visualization<a class="headerlink" href="#6.3-Scenario-Comparison-Visualization" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[63]:
 </pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>scenarios = {
+    &#39;Baseline (Current Intensity)&#39;: future_events_baseline,
+    &#39;Partial De-escalation (50%)&#39;: np.full(30, recent_rate * 0.5),
+    &#39;Ceasefire (95% reduction)&#39;: future_events_ceasefire,
+    &#39;Escalation (2x events)&#39;: np.full(30, recent_rate * 2.0),
+}
+
+results_summary = []
+for name, events in scenarios.items():
+    fc = forecast(samples, events, delay_probs)
+    total = fc[&#39;deaths_median&#39;].sum()
+    lower = fc[&#39;deaths_lower&#39;].sum()
+    upper = fc[&#39;deaths_upper&#39;].sum()
+    results_summary.append({&#39;Scenario&#39;: name, &#39;Deaths&#39;: total, &#39;Lower&#39;: lower, &#39;Upper&#39;: upper})
+
+df_scenarios = pd.DataFrame(results_summary)
+fig, ax = plt.subplots(figsize=(12, 6))
+
+x = np.arange(len(df_scenarios))
+ax.bar(x, df_scenarios[&#39;Deaths&#39;], color=[&#39;darkred&#39;, &#39;orange&#39;, &#39;green&#39;, &#39;red&#39;], alpha=0.7)
+ax.errorbar(
+    x,
+    df_scenarios[&#39;Deaths&#39;],
+    yerr=[df_scenarios[&#39;Deaths&#39;] - df_scenarios[&#39;Lower&#39;], df_scenarios[&#39;Upper&#39;] - df_scenarios[&#39;Deaths&#39;]],
+    fmt=&#39;none&#39;,
+    color=&#39;black&#39;,
+    capsize=5,
+)
+
+ax.set_xticks(x)
+ax.set_xticklabels(df_scenarios[&#39;Scenario&#39;], rotation=15, ha=&#39;right&#39;)
+ax.set_ylabel(&#39;30-Day Total Deaths&#39;, fontsize=12)
+ax.set_title(&#39;Gaza Conflict: Forecast Scenarios (30 Days)&#39;, fontsize=14, fontweight=&#39;bold&#39;)
+ax.grid(True, alpha=0.3, axis=&#39;y&#39;)
+
+plt.tight_layout()
+plt.savefig(&#39;scenario_comparison.png&#39;, dpi=300)
+plt.show()
+
+print(&#39;\n=== Scenario Comparison ===&#39;)
+for _, row in df_scenarios.iterrows():
+    print(f&quot;{row[&#39;Scenario&#39;]:35s}: {row[&#39;Deaths&#39;]:6.0f} deaths (95% CI: [{row[&#39;Lower&#39;]:.0f}, {row[&#39;Upper&#39;]:.0f}])&quot;)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_02_gaza_analysis_44_0.png" src="../_images/tutorials_02_gaza_analysis_44_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+=== Scenario Comparison ===
+Baseline (Current Intensity)       :   5662 deaths (95% CI: [4874, 6506])
+Partial De-escalation (50%)        :   2827 deaths (95% CI: [2277, 3422])
+Ceasefire (95% reduction)          :    269 deaths (95% CI: [119, 477])
+Escalation (2x events)             :  11341 deaths (95% CI: [10194, 12539])
+</pre></div></div>
 </div>
 </section>
 </section>
-<section id="sensitivity-analysis">
-<h2>7. Sensitivity Analysis<a class="headerlink" href="#sensitivity-analysis" title="Link to this heading"></a></h2>
-<section id="alternative-delay-distributions">
-<h3>7.1 Alternative Delay Distributions<a class="headerlink" href="#alternative-delay-distributions" title="Link to this heading"></a></h3>
+<section id="7.-Sensitivity-Analysis">
+<h2>7. Sensitivity Analysis<a class="headerlink" href="#7.-Sensitivity-Analysis" title="Link to this heading"></a></h2>
+<section id="7.1-Alternative-Delay-Distributions">
+<h3>7.1 Alternative Delay Distributions<a class="headerlink" href="#7.1-Alternative-Delay-Distributions" title="Link to this heading"></a></h3>
 <p>Test robustness to delay assumptions:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Shorter delays (most deaths within 1-2 days)</span>
-<span class="n">short_delay</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.08</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">])</span>
-
-<span class="n">mcmc_short</span><span class="p">,</span> <span class="n">samples_short</span> <span class="o">=</span> <span class="n">run_inference</span><span class="p">(</span>
-    <span class="n">events_by_day</span><span class="o">=</span><span class="n">events_by_day</span><span class="p">,</span>
-    <span class="n">event_day_index</span><span class="o">=</span><span class="n">event_days</span><span class="p">,</span>
-    <span class="n">event_coords</span><span class="o">=</span><span class="n">event_coords</span><span class="p">,</span>
-    <span class="n">hospital_coords</span><span class="o">=</span><span class="n">hospital_coords</span><span class="p">,</span>
-    <span class="n">injuries_obs</span><span class="o">=</span><span class="n">injuries_obs</span><span class="p">,</span>
-    <span class="n">deaths_obs</span><span class="o">=</span><span class="n">deaths_obs</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
-    <span class="n">delay_probs</span><span class="o">=</span><span class="n">short_delay</span><span class="p">,</span>
-    <span class="n">num_warmup</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">num_chains</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-    <span class="n">rng_seed</span><span class="o">=</span><span class="mi">43</span>
-<span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Sensitivity to Delay Distribution:&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Original delay - p_late: </span><span class="si">{</span><span class="n">samples</span><span class="p">[</span><span class="s1">&#39;p_late&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Short delay -    p_late: </span><span class="si">{</span><span class="n">samples_short</span><span class="p">[</span><span class="s1">&#39;p_late&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[64]:
 </pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>short_delay = np.array([0.7, 0.2, 0.08, 0.02])
+
+mcmc_short, samples_short = run_inference(
+    events_by_day=events_by_day,
+    event_day_index=event_days,
+    event_coords=event_coords,
+    hospital_coords=hospital_coords,
+    injuries_obs=injuries_obs,
+    deaths_obs=deaths_obs.values,
+    delay_probs=short_delay,
+    num_warmup=500,
+    num_samples=1000,
+    num_chains=1,
+    rng_seed=43,
+)
+
+print(&#39;\nSensitivity to Delay Distribution:&#39;)
+print(f&quot;Original delay - p_late: {samples[&#39;p_late&#39;].mean():.3f}&quot;)
+print(f&quot;Short delay -    p_late: {samples_short[&#39;p_late&#39;].mean():.3f}&quot;)
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+sample: 100%|██████████| 1500/1500 [00:14&lt;00:00, 102.27it/s, 7 steps of size 3.41e-01. acc. prob=0.93]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+                mean       std    median      5.0%     95.0%     n_eff     r_hat
+       ell      1.70      0.16      1.68      1.44      1.97    583.72      1.00
+      mu_i      2.47      0.04      2.47      2.40      2.54    302.97      1.00
+      mu_w      4.88      0.03      4.88      4.84      4.92   1153.66      1.00
+    p_late      0.12      0.01      0.12      0.10      0.13    308.66      1.00
+
+Number of divergences: 0
+
+Sensitivity to Delay Distribution:
+Original delay - p_late: 0.170
+Short delay -    p_late: 0.116
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+
+</pre></div></div>
 </div>
 <p>If estimates are very sensitive, delay distribution should be estimated from data or fixed based on strong prior knowledge.</p>
 </section>
 </section>
-<section id="interpretation-and-caveats">
-<h2>8. Interpretation and Caveats<a class="headerlink" href="#interpretation-and-caveats" title="Link to this heading"></a></h2>
-<section id="key-findings">
-<h3>8.1 Key Findings<a class="headerlink" href="#key-findings" title="Link to this heading"></a></h3>
-<p>Based on this analysis:</p>
-<ol class="arabic simple">
-<li><p><strong>Casualty Rates</strong>: Each conflict event produces ~5 hospital admissions and ~0.6 immediate deaths</p></li>
-<li><p><strong>Hospital Fatality</strong>: ~49% of hospitalized casualties die (very high, reflecting limited medical resources and severe injuries)</p></li>
-<li><p><strong>Spatial Pattern</strong>: Casualties are distributed among hospitals with ~0.8 degree correlation scale</p></li>
-<li><p><strong>Forecast</strong>: Under baseline scenario, ~3,900 additional deaths expected in 30 days</p></li>
-<li><p><strong>Ceasefire Impact</strong>: Near-complete ceasefire could save ~3,500 lives over 30 days</p></li>
-</ol>
-</section>
-<section id="limitations">
-<h3>8.2 Limitations<a class="headerlink" href="#limitations" title="Link to this heading"></a></h3>
+<section id="8.-Limitations-and-Caveats">
+<h2>8. Limitations and Caveats<a class="headerlink" href="#8.-Limitations-and-Caveats" title="Link to this heading"></a></h2>
+<section id="8.1-Limitations">
+<h3>8.1 Limitations<a class="headerlink" href="#8.1-Limitations" title="Link to this heading"></a></h3>
 <p><strong>Data Limitations</strong>:</p>
 <ul class="simple">
 <li><p>Hospital data is simulated (real data unavailable)</p></li>
-<li><p>Mortality data may under-report true toll <span id="id4">[<a class="reference internal" href="#id20" title="Zeinab Jamaluddine, Zeina Chen, Hana Abukmail, Reem Assi, Hala Ghattas, Rima T Nakkash, Fouad M Maliha, Andrew J Tatem, Hala Aly, Loulou Kobeissi, and others. Estimating the true toll of the israel-gaza conflict. The Lancet, 404(10449):213–215, 2024.">Jamaluddine <em>et al.</em>, 2024</a>]</span></p></li>
+<li><p>Mortality data may under-report true toll {cite}<code class="docutils literal notranslate"><span class="pre">Jamaluddine2024</span></code></p></li>
 <li><p>Event locations have measurement error</p></li>
 <li><p>Reporting delays and blackouts create gaps</p></li>
 </ul>
@@ -779,34 +1168,29 @@
 <li><p>Parameters partially confounded (identifiability issues)</p></li>
 <li><p>Forecasts assume scenario event rates are accurate</p></li>
 <li><p>Does not account for indirect deaths (starvation, disease)</p></li>
+<li><p>Just focuses on incidence of events, rather than typology of events or other metadata from ACLED</p></li>
 </ul>
 </section>
-<section id="appropriate-use">
-<h3>8.3 Appropriate Use<a class="headerlink" href="#appropriate-use" title="Link to this heading"></a></h3>
+<section id="8.2-Appropriate-Use">
+<h3>8.2 Appropriate Use<a class="headerlink" href="#8.2-Appropriate-Use" title="Link to this heading"></a></h3>
 <p>This analysis is appropriate for:</p>
-<p>✓ Understanding casualty generation mechanisms
-✓ Comparing alternative policy scenarios
-✓ Quantifying forecast uncertainty
-✓ Informing resource allocation decisions</p>
+<p>✓ Understanding casualty generation mechanisms ✓ Comparing alternative policy scenarios ✓ Quantifying forecast uncertainty ✓ Informing resource allocation decisions</p>
 <p>This analysis should NOT be used for:</p>
-<p>✗ Precise prediction of future casualties
-✗ Attribution of individual deaths to specific events
-✗ Legal or forensic purposes
-✗ Complete accounting of conflict impact (indirect deaths not modeled)</p>
+<p>✗ Precise prediction of future casualties ✗ Attribution of individual deaths to specific events ✗ Legal or forensic purposes ✗ Complete accounting of conflict impact (indirect deaths not modeled)</p>
 </section>
 </section>
-<section id="extensions-and-future-work">
-<h2>9. Extensions and Future Work<a class="headerlink" href="#extensions-and-future-work" title="Link to this heading"></a></h2>
-<section id="data-improvements">
-<h3>9.1 Data Improvements<a class="headerlink" href="#data-improvements" title="Link to this heading"></a></h3>
+<section id="9.-Extensions-and-Future-Work">
+<h2>9. Extensions and Future Work<a class="headerlink" href="#9.-Extensions-and-Future-Work" title="Link to this heading"></a></h2>
+<section id="9.1-Data-Improvements">
+<h3>9.1 Data Improvements<a class="headerlink" href="#9.1-Data-Improvements" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><strong>Real Hospital Data</strong>: Collaborate with health authorities for facility-level records</p></li>
 <li><p><strong>Injury Severity</strong>: Stratify by injury type (burns, shrapnel, blunt trauma)</p></li>
 <li><p><strong>Age/Gender</strong>: Demographic breakdowns to assess civilian impact</p></li>
 </ul>
 </section>
-<section id="model-extensions">
-<h3>9.2 Model Extensions<a class="headerlink" href="#model-extensions" title="Link to this heading"></a></h3>
+<section id="9.2-Model-Extensions">
+<h3>9.2 Model Extensions<a class="headerlink" href="#9.2-Model-Extensions" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><strong>Time-Varying Parameters</strong>: Allow casualty rates to evolve (e.g., due to weapon changes)</p></li>
 <li><p><strong>Covariates</strong>: Include ceasefire indicators, humanitarian corridor access</p></li>
@@ -814,8 +1198,8 @@
 <li><p><strong>Negative Binomial</strong>: Account for extra-Poisson variation</p></li>
 </ul>
 </section>
-<section id="policy-applications">
-<h3>9.3 Policy Applications<a class="headerlink" href="#policy-applications" title="Link to this heading"></a></h3>
+<section id="9.3-Policy-Applications">
+<h3>9.3 Policy Applications<a class="headerlink" href="#9.3-Policy-Applications" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><strong>Resource Optimization</strong>: Where to position medical supplies?</p></li>
 <li><p><strong>Evacuation Planning</strong>: Which areas need civilian evacuation corridors?</p></li>
@@ -824,8 +1208,8 @@
 </ul>
 </section>
 </section>
-<section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<section id="Summary">
+<h2>Summary<a class="headerlink" href="#Summary" title="Link to this heading"></a></h2>
 <p>This tutorial demonstrated:</p>
 <ol class="arabic simple">
 <li><p>✓ Loading real ACLED and mortality data</p></li>
@@ -851,25 +1235,9 @@
 <li><p><a class="reference external" href="https://github.com/OJWatson/trace">GitHub Repository</a>: Source code</p></li>
 </ul>
 </section>
-<section id="references">
-<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
-<div class="docutils container" id="id5">
-<div role="list" class="citation-list">
-<div class="citation" id="id20" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id3">1</a>,<a role="doc-backlink" href="#id4">2</a>)</span>
-<p>Zeinab Jamaluddine, Zeina Chen, Hana Abukmail, Reem Assi, Hala Ghattas, Rima T Nakkash, Fouad M Maliha, Andrew J Tatem, Hala Aly, Loulou Kobeissi, and others. Estimating the true toll of the israel-gaza conflict. <em>The Lancet</em>, 404(10449):213–215, 2024.</p>
-</div>
-<div class="citation" id="id18" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">2</a><span class="fn-bracket">]</span></span>
-<p>Clionadh Raleigh, Andrew Linke, Håvard Hegre, and Joakim Karlsen. Introducing acled: an armed conflict location and event dataset. <em>Journal of Peace Research</em>, 47(5):651–660, 2010.</p>
-</div>
-<div class="citation" id="id19" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">3</a><span class="fn-bracket">]</span></span>
-<p>Tech for Palestine. Gaza casualties dataset. <a class="reference external" href="https://data.techforpalestine.org">https://data.techforpalestine.org</a>, 2024. Accessed: 2024-12-04.</p>
-</div>
-</div>
-</div>
+<section id="References">
+<h2>References<a class="headerlink" href="#References" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">{bibliography}</span> <span class="pre">:filter:</span> <span class="pre">docname</span> <span class="pre">in</span> <span class="pre">docnames</span></code></p>
 <hr class="docutils" />
 <p><em>This tutorial uses real data from an ongoing humanitarian crisis. All results should be interpreted with appropriate care and respect for those affected. The methods demonstrated here can be applied to other conflict settings with similar data availability.</em></p>
 </section>

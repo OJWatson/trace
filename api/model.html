@@ -61,6 +61,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Model Module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#trace.model.spatial_kernel_weights"><code class="docutils literal notranslate"><span class="pre">spatial_kernel_weights()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#trace.model.casualty_model"><code class="docutils literal notranslate"><span class="pre">casualty_model()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#trace.model.casualty_model_random_walk"><code class="docutils literal notranslate"><span class="pre">casualty_model_random_walk()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#trace.model.casualty_model_with_covariates"><code class="docutils literal notranslate"><span class="pre">casualty_model_with_covariates()</span></code></a></li>
 </ul>
 </li>
@@ -184,6 +185,16 @@ It samples from priors and conditions on observed data.</p></li>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mcmc</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">rng_key</span><span class="p">,</span> <span class="n">events_by_day</span><span class="p">,</span> <span class="n">event_day_index</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="trace.model.casualty_model_random_walk">
+<span class="sig-prename descclassname"><span class="pre">trace.model.</span></span><span class="sig-name descname"><span class="pre">casualty_model_random_walk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">events_by_day</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_day_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hospital_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">injuries_obs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deaths_obs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay_probs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/trace/model.html#casualty_model_random_walk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#trace.model.casualty_model_random_walk" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
