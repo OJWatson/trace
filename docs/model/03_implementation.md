@@ -1,7 +1,5 @@
 # Model Implementation
 
----
-
 This vignette describes the NumPyro implementation of the **TRACE** casualty model. We explain the code structure, demonstrate how to specify models, and provide guidance on computational considerations.
 
 ## 1. NumPyro Primer

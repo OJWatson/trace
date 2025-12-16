@@ -68,19 +68,19 @@ def simulate_conflict_data(
     -------
     dict
         Dictionary containing:
-        - 'events': List of event dictionaries with fields:
-            - date: Day index
-            - region: Region index
-            - latitude: Event latitude
-            - longitude: Event longitude
-            - casualties: Total casualties
-            - immediate_deaths: Immediate fatalities
-            - injured: Number injured
-        - 'hospital_incidence': Array of shape (T, n_hospitals) with daily injured counts
-        - 'national_deaths': Array of length T with daily death counts
-        - 'region_pop': Array of shape (T+1, n_regions) with populations over time
-        - 'hospital_coords': Array of shape (n_hospitals, 2) with hospital locations
-        - 'region_centers': List of (x, y) tuples for region centers
+        events : list[dict]
+            Event dictionaries with keys: date, region, latitude, longitude, casualties,
+            immediate_deaths, injured.
+        hospital_incidence : np.ndarray
+            Array of shape (T, n_hospitals) with daily injured counts.
+        national_deaths : np.ndarray
+            Array of length T with daily death counts.
+        region_pop : np.ndarray
+            Array of shape (T+1, n_regions) with populations over time.
+        hospital_coords : np.ndarray
+            Array of shape (n_hospitals, 2) with hospital locations.
+        region_centers : list[tuple[float, float]]
+            List of (x, y) tuples for region centers.
 
     Examples
     --------

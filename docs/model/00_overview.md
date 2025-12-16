@@ -1,7 +1,5 @@
 # Model Introduction
 
----
-
 The open-source Python package **TRACE** (Temporal and Regional Analysis of Conflict Events) provides a framework for Bayesian, regression-oriented modeling of conflict casualty dynamics. These models are fit to multiple data streams including conflict event data (e.g., from [ACLED](https://acleddata.com)), hospital admission records, and national mortality time series. Casualty dynamics are described through a semi-mechanistic process linking observable data to latent conflict intensity, spatial allocation of casualties to hospitals, and temporal delays from injury to death.
 
 The modeling framework has been motivated by semi-mechanistic epidemic models developed for COVID-19 {cite}`Flaxman2020, Bhatt2020, Mezi_2020`. While traditional conflict modeling has relied on either purely statistical approaches or deterministic agent-based models, **TRACE** occupies a middle ground—explicitly modeling the generative process of casualties while remaining statistically grounded and computationally tractable for Bayesian inference.

@@ -1,7 +1,5 @@
 # Model Description
 
----
-
 This vignette provides a detailed mathematical specification of the **TRACE** casualty model. We describe the basic model for a single region, then discuss extensions for multiple populations and time-varying effects.
 
 ## 1. Basic Model
