@@ -707,8 +707,8 @@ This tutorial demonstrated:
 
 - [ACLED](https://acleddata.com): Conflict event data
 - [Tech for Palestine](https://data.techforpalestine.org): Gaza mortality data
-- [TRACE Documentation](https://imperial-college.github.io/trace): Full package docs
-- [GitHub Repository](https://github.com/imperial-college/trace): Source code
+- [TRACE Documentation](https://ojwatson.github.io/trace): Full package docs
+- [GitHub Repository](https://github.com/OJWatson/trace): Source code
 
 ## References
 

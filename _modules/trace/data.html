@@ -201,7 +201,8 @@
     <span class="n">events</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="p">[])</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">events</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: No events found for </span><span class="si">{</span><span class="n">country</span><span class="si">}</span><span class="s2"> between </span><span class="si">{</span><span class="n">start_date</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">end_date</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Warning: No events found for </span><span class="si">{</span><span class="n">country</span><span class="si">}</span><span class="s2"> between </span><span class="si">{</span><span class="n">start_date</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">end_date</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
 
     <span class="c1"># Convert to DataFrame</span>
@@ -274,11 +275,13 @@
 
     <span class="c1"># Map each event&#39;s date to an index in 0..T-1</span>
     <span class="n">event_days</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">events_df</span><span class="p">[</span><span class="s2">&quot;event_date&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">date_to_index</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">normalize</span><span class="p">(),</span> <span class="kc">None</span><span class="p">))</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">events_df</span><span class="p">[</span><span class="s2">&quot;event_date&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">date_to_index</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">normalize</span><span class="p">(),</span> <span class="kc">None</span><span class="p">))</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
     <span class="p">)</span>
 
     <span class="c1"># Remove any events that fall outside the known date range (None indices)</span>
-    <span class="n">valid_idx</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span> <span class="n">day</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">day</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">event_days</span><span class="p">)</span> <span class="k">if</span> <span class="n">day</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="n">valid_idx</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span> <span class="n">day</span><span class="p">)</span>
+                 <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">day</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">event_days</span><span class="p">)</span> <span class="k">if</span> <span class="n">day</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">valid_idx</span><span class="p">:</span>
         <span class="c1"># If no valid events in range, return empty structures</span>
@@ -289,7 +292,8 @@
 
     <span class="c1"># Extract coordinates for each valid event</span>
     <span class="k">if</span> <span class="s2">&quot;latitude&quot;</span> <span class="ow">in</span> <span class="n">events_df</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="s2">&quot;longitude&quot;</span> <span class="ow">in</span> <span class="n">events_df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-        <span class="n">coords</span> <span class="o">=</span> <span class="n">events_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">events_df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">indices</span><span class="p">)],</span> <span class="p">[</span><span class="s2">&quot;latitude&quot;</span><span class="p">,</span> <span class="s2">&quot;longitude&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="n">events_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">events_df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">indices</span><span class="p">)],</span> <span class="p">[</span>
+            <span class="s2">&quot;latitude&quot;</span><span class="p">,</span> <span class="s2">&quot;longitude&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
@@ -330,7 +334,8 @@
     <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">])</span>
 
     <span class="c1"># Pivot to get each hospital as a column, dates as index</span>
-    <span class="n">df_pivot</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s2">&quot;hospital_id&quot;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s2">&quot;count&quot;</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">df_pivot</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span>
+        <span class="n">index</span><span class="o">=</span><span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s2">&quot;hospital_id&quot;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s2">&quot;count&quot;</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
     <span class="c1"># Ensure sorted by date</span>
     <span class="n">df_pivot</span> <span class="o">=</span> <span class="n">df_pivot</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
@@ -522,8 +527,8 @@
     <span class="k">if</span> <span class="s2">&quot;report_date&quot;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
         <span class="n">df</span><span class="p">[</span><span class="s2">&quot;report_date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;report_date&quot;</span><span class="p">])</span>
     <span class="k">elif</span> <span class="s2">&quot;date&quot;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;report_date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">])</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="s2">&quot;report_date&quot;</span><span class="p">})</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;report_date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;report_date&quot;</span><span class="p">])</span>
 
     <span class="c1"># Filter by date range if specified</span>
     <span class="k">if</span> <span class="n">start_date</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -582,7 +587,8 @@
     <span class="k">elif</span> <span class="s2">&quot;killed&quot;</span> <span class="ow">in</span> <span class="n">mortality_df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
         <span class="n">death_field</span> <span class="o">=</span> <span class="s2">&quot;killed&quot;</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No suitable death count field found in mortality data&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;No suitable death count field found in mortality data&quot;</span><span class="p">)</span>
 
     <span class="c1"># Create series indexed by date</span>
     <span class="n">mortality_df</span> <span class="o">=</span> <span class="n">mortality_df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;report_date&quot;</span><span class="p">)</span>
