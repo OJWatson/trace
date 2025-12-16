@@ -5,10 +5,8 @@ This module provides functions to fetch and prepare conflict event data from ACL
 as well as utilities for loading hospital and mortality data.
 """
 
-import os
-from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -20,7 +18,7 @@ def fetch_acled_data(
     start_date: str,
     end_date: str,
     api_token: Optional[str] = None,
-    fields: Optional[List[str]] = None,
+    fields: Optional[list[str]] = None,
     api_email: Optional[str] = None,
 ) -> pd.DataFrame:
     """
@@ -110,7 +108,8 @@ def fetch_acled_data(
     events = data.get("data", [])
 
     if not events:
-        print(f"Warning: No events found for {country} between {start_date} and {end_date}")
+        print(
+            f"Warning: No events found for {country} between {start_date} and {end_date}")
         return pd.DataFrame()
 
     # Convert to DataFrame
@@ -131,7 +130,7 @@ def fetch_acled_data(
 
 def prepare_acled_events(
     events_df: pd.DataFrame, start_date: str, end_date: str
-) -> Tuple[List[int], List[int], np.ndarray, pd.DatetimeIndex]:
+) -> tuple[list[int], list[int], np.ndarray, pd.DatetimeIndex]:
     """
     Prepare ACLED events DataFrame for modeling.
 
@@ -169,7 +168,7 @@ def prepare_acled_events(
     # Create a date range for the analysis period
     dates = pd.date_range(start_date, end_date, freq="D")
     date_to_index = {d: idx for idx, d in enumerate(dates)}
-    T = len(dates)
+    n_days = len(dates)
 
     # Filter events to within the specified range
     mask = (events_df["event_date"] >= pd.to_datetime(start_date)) & (
@@ -180,27 +179,30 @@ def prepare_acled_events(
 
     # Map each event's date to an index in 0..T-1
     event_days = (
-        events_df["event_date"].map(lambda d: date_to_index.get(d.normalize(), None)).tolist()
+        events_df["event_date"].map(
+            lambda d: date_to_index.get(d.normalize(), None)).tolist()
     )
 
     # Remove any events that fall outside the known date range (None indices)
-    valid_idx = [(i, day) for i, day in enumerate(event_days) if day is not None]
+    valid_idx = [(i, day)
+                 for i, day in enumerate(event_days) if day is not None]
 
     if not valid_idx:
         # If no valid events in range, return empty structures
-        return [0] * T, [], np.array([]).reshape(0, 2), dates
+        return [0] * n_days, [], np.array([]).reshape(0, 2), dates
 
     indices, event_days = zip(*valid_idx)
     event_days = list(event_days)
 
     # Extract coordinates for each valid event
     if "latitude" in events_df.columns and "longitude" in events_df.columns:
-        coords = events_df.loc[events_df.index[list(indices)], ["latitude", "longitude"]].values
+        coords = events_df.loc[events_df.index[list(indices)], [
+            "latitude", "longitude"]].values
     else:
         coords = np.array([]).reshape(0, 2)
 
     # Compute daily event counts
-    events_by_day = [0] * T
+    events_by_day = [0] * n_days
     for day in event_days:
         events_by_day[day] += 1
 
@@ -233,7 +235,8 @@ def load_hospital_data(filepath: str) -> pd.DataFrame:
     df = pd.read_csv(filepath, parse_dates=["date"])
 
     # Pivot to get each hospital as a column, dates as index
-    df_pivot = df.pivot_table(index="date", columns="hospital_id", values="count", fill_value=0)
+    df_pivot = df.pivot_table(
+        index="date", columns="hospital_id", values="count", fill_value=0)
 
     # Ensure sorted by date
     df_pivot = df_pivot.sort_index()
@@ -269,7 +272,7 @@ def load_national_deaths(filepath: str) -> pd.Series:
 
 
 def create_hospital_coordinates(
-    hospital_ids: List[str], locations: Optional[Dict[str, Tuple[float, float]]] = None
+    hospital_ids: list[str], locations: Optional[dict[str, tuple[float, float]]] = None
 ) -> np.ndarray:
     """
     Create hospital coordinate array for spatial modeling.
@@ -470,7 +473,8 @@ def prepare_mortality_data(
     elif "killed" in mortality_df.columns:
         death_field = "killed"
     else:
-        raise ValueError("No suitable death count field found in mortality data")
+        raise ValueError(
+            "No suitable death count field found in mortality data")
 
     # Create series indexed by date
     mortality_df = mortality_df.set_index("report_date")

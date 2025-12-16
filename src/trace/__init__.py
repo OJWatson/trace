@@ -9,6 +9,6 @@ __author__ = "Imperial College London"
 __email__ = "trace@imperial.ac.uk"
 
 # Import submodules
-from . import data, model, simulate, analysis
+from . import analysis, data, model, simulate
 
 __all__ = ["data", "model", "simulate", "analysis", "__version__"]

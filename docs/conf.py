@@ -8,8 +8,8 @@ sys.path.insert(0, os.path.abspath("../src"))
 
 # Project information
 project = "TRACE"
-copyright = "2024, Imperial College London"
-author = "Imperial College London"
+copyright = "2025, OJ Watson"
+author = "OJ Watson"
 release = "0.1.0"
 
 # General configuration

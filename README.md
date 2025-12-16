@@ -108,7 +108,7 @@ If you use TRACE in your research, please cite:
   title = {TRACE: Conflict Casualty Modeling with Bayesian Hierarchical Models},
   author = {{Imperial College London}},
   year = {2024},
-  url = {https://github.com/imperial-college/trace}
+  url = {https://github.com/OJWatson/trace}
 }
 ```
 

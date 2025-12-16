@@ -55,7 +55,8 @@ def spatial_kernel_weights(
     weights = jnp.exp(-dists / ell)
 
     # Normalize weights for each event so they sum to 1 across hospitals
-    weight_sums = jnp.sum(weights, axis=1, keepdims=True) + 1e-8  # avoid division by zero
+    weight_sums = jnp.sum(weights, axis=1, keepdims=True) + \
+        1e-8  # avoid division by zero
     norm_weights = weights / weight_sums
 
     return norm_weights  # shape (E, H)
@@ -133,9 +134,8 @@ def casualty_model(
     >>> mcmc = MCMC(kernel, num_warmup=1000, num_samples=2000)
     >>> mcmc.run(rng_key, events_by_day, event_day_index, ...)
     """
-    T = len(events_by_day)
-    H = hospital_coords.shape[0]
-    E = len(event_day_index)
+    n_days = len(events_by_day)
+    n_hospitals = hospital_coords.shape[0]
 
     if delay_probs is None:
         # Default delay distribution: 50% die after 1 day, 30% after 2 days, etc.
@@ -171,7 +171,7 @@ def casualty_model(
 
     # Accumulate event contributions to each hospital per day
     # effective_events[d,h] = sum of normalized weights of all events on day d going to hospital h
-    effective_events = jnp.zeros((T, H))
+    effective_events = jnp.zeros((n_days, n_hospitals))
     effective_events = effective_events.at[event_day_index].add(norm_weights)
 
     # ========== Hospital injuries likelihood ==========
@@ -179,7 +179,7 @@ def casualty_model(
     # Expected injuries at each hospital per day
     # lambda_injuries[d,h] = mu_w * effective_events[d,h]
     lam_injuries = mu_w * effective_events  # shape (T, H)
-    
+
     # Ensure positive rates (add small epsilon for numerical stability)
     lam_injuries = jnp.maximum(lam_injuries, 1e-8)
 
@@ -192,18 +192,19 @@ def casualty_model(
 
     # Total injuries per day (summing across hospitals)
     # Use sampled injuries if obs was None, otherwise use provided injuries
-    injuries_to_use = obs_inj if injuries_obs is None else jnp.array(injuries_obs)
+    injuries_to_use = obs_inj if injuries_obs is None else jnp.array(
+        injuries_obs)
     injuries_total = jnp.nansum(injuries_to_use, axis=1)  # shape (T,)
 
     # Convolve injuries with delay distribution to get expected delayed deaths
-    L = delay_probs.shape[0]  # length of delay distribution support
-    pad = jnp.pad(injuries_total, (0, L))  # pad for convolution
+    delay_len = delay_probs.shape[0]  # length of delay distribution support
+    pad = jnp.pad(injuries_total, (0, delay_len))  # pad for convolution
 
     # Compute convolution: deaths on day t from injuries on previous days
-    conv_deaths = jnp.zeros(T)
-    for k in range(L):
+    conv_deaths = jnp.zeros(n_days)
+    for k in range(delay_len):
         # Deaths occurring k+1 days after injury
-        conv_deaths = conv_deaths + pad[k : T + k] * delay_probs[k]
+        conv_deaths = conv_deaths + pad[k: n_days + k] * delay_probs[k]
 
     # Expected late deaths = p_late * convolved injuries
     expected_late_deaths = p_late * conv_deaths
@@ -217,7 +218,7 @@ def casualty_model(
 
     # Total expected deaths = immediate + delayed
     expected_deaths = expected_immediate_deaths + expected_late_deaths
-    
+
     # Ensure positive rates (add small epsilon for numerical stability)
     expected_deaths = jnp.maximum(expected_deaths, 1e-8)
 
@@ -260,9 +261,8 @@ def casualty_model_with_covariates(
 
     This allows modeling intervention effects similar to epidemia's approach.
     """
-    T = len(events_by_day)
-    H = hospital_coords.shape[0]
-    E = len(event_day_index)
+    n_days = len(events_by_day)
+    n_hospitals = hospital_coords.shape[0]
 
     if delay_probs is None:
         delay_probs = jnp.array([0.5, 0.3, 0.15, 0.05])
@@ -276,9 +276,9 @@ def casualty_model_with_covariates(
 
     # Covariate effects
     if covariates is not None:
-        K = covariates.shape[1]
+        n_covariates = covariates.shape[1]
         # Sample regression coefficients for each covariate
-        beta = numpyro.sample("beta", dist.Normal(0, 1).expand([K]))
+        beta = numpyro.sample("beta", dist.Normal(0, 1).expand([n_covariates]))
 
         # Compute time-varying multipliers
         log_multiplier = jnp.dot(jnp.array(covariates), beta)  # shape (T,)
@@ -296,7 +296,7 @@ def casualty_model_with_covariates(
         jnp.array(event_coords), jnp.array(hospital_coords), ell
     )
 
-    effective_events = jnp.zeros((T, H))
+    effective_events = jnp.zeros((n_days, n_hospitals))
     effective_events = effective_events.at[event_day_index].add(norm_weights)
 
     # For time-varying mu_w, need to broadcast correctly
@@ -311,11 +311,11 @@ def casualty_model_with_covariates(
 
     injuries_total = jnp.nansum(jnp.array(injuries_obs), axis=1)
 
-    L = delay_probs.shape[0]
-    pad = jnp.pad(injuries_total, (0, L))
-    conv_deaths = jnp.zeros(T)
-    for k in range(L):
-        conv_deaths = conv_deaths + pad[k : T + k] * delay_probs[k]
+    delay_len = delay_probs.shape[0]
+    pad = jnp.pad(injuries_total, (0, delay_len))
+    conv_deaths = jnp.zeros(n_days)
+    for k in range(delay_len):
+        conv_deaths = conv_deaths + pad[k: n_days + k] * delay_probs[k]
 
     expected_late_deaths = p_late * conv_deaths
 
@@ -327,4 +327,5 @@ def casualty_model_with_covariates(
 
     expected_deaths = expected_immediate_deaths + expected_late_deaths
 
-    numpyro.sample("obs_deaths", dist.Poisson(expected_deaths), obs=jnp.array(deaths_obs))
+    numpyro.sample("obs_deaths", dist.Poisson(
+        expected_deaths), obs=jnp.array(deaths_obs))
