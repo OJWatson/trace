@@ -236,4 +236,4 @@ To begin using **TRACE**:
 
 ---
 
-*This vignette is part of the **TRACE** documentation. For questions or suggestions, please [open an issue](https://github.com/imperial-college/trace/issues).*
+*This vignette is part of the **TRACE** documentation. For questions or suggestions, please [open an issue](https://github.com/OJWatson/trace/issues).*

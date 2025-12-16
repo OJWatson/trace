@@ -23,7 +23,7 @@ pip install trace-conflict
 ### From Source
 
 ```bash
-git clone https://github.com/imperial-college/trace.git
+git clone https://github.com/OJWatson/trace.git
 cd trace
 pip install -e .
 ```

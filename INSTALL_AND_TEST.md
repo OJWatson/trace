@@ -13,7 +13,7 @@ This guide will help you install TRACE and verify that everything is working cor
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/imperial-college/trace.git
+git clone https://github.com/OJWatson/trace.git
 cd trace
 ```
 
@@ -176,9 +176,9 @@ If you encounter issues:
 
 1. **Check the documentation**: `docs/_build/html/index.html`
 2. **Review examples**: `examples/README.md`
-3. **Search issues**: https://github.com/imperial-college/trace/issues
+3. **Search issues**: https://github.com/OJWatson/trace/issues
 4. **Open new issue**: Include error messages and system info
-5. **Email support**: trace@imperial.ac.uk
+5. **Get help**: https://github.com/OJWatson/trace/issues
 
 ## System Information
 

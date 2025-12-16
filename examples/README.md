@@ -64,6 +64,5 @@ Examples generate plots saved to this directory:
 ## Support
 
 For questions or issues:
-- Open an issue: https://github.com/imperial-college/trace/issues
-- Email: trace@imperial.ac.uk
-- Documentation: https://imperial-college.github.io/trace
+- Open an issue: https://github.com/OJWatson/trace/issues
+- Documentation: https://ojwatson.github.io/trace

@@ -108,7 +108,8 @@ def fetch_acled_data(
     events = data.get("data", [])
 
     if not events:
-        print(f"Warning: No events found for {country} between {start_date} and {end_date}")
+        print(
+            f"Warning: No events found for {country} between {start_date} and {end_date}")
         return pd.DataFrame()
 
     # Convert to DataFrame
@@ -178,11 +179,13 @@ def prepare_acled_events(
 
     # Map each event's date to an index in 0..T-1
     event_days = (
-        events_df["event_date"].map(lambda d: date_to_index.get(d.normalize(), None)).tolist()
+        events_df["event_date"].map(
+            lambda d: date_to_index.get(d.normalize(), None)).tolist()
     )
 
     # Remove any events that fall outside the known date range (None indices)
-    valid_idx = [(i, day) for i, day in enumerate(event_days) if day is not None]
+    valid_idx = [(i, day)
+                 for i, day in enumerate(event_days) if day is not None]
 
     if not valid_idx:
         # If no valid events in range, return empty structures
@@ -193,7 +196,8 @@ def prepare_acled_events(
 
     # Extract coordinates for each valid event
     if "latitude" in events_df.columns and "longitude" in events_df.columns:
-        coords = events_df.loc[events_df.index[list(indices)], ["latitude", "longitude"]].values
+        coords = events_df.loc[events_df.index[list(indices)], [
+            "latitude", "longitude"]].values
     else:
         coords = np.array([]).reshape(0, 2)
 
@@ -231,7 +235,8 @@ def load_hospital_data(filepath: str) -> pd.DataFrame:
     df = pd.read_csv(filepath, parse_dates=["date"])
 
     # Pivot to get each hospital as a column, dates as index
-    df_pivot = df.pivot_table(index="date", columns="hospital_id", values="count", fill_value=0)
+    df_pivot = df.pivot_table(
+        index="date", columns="hospital_id", values="count", fill_value=0)
 
     # Ensure sorted by date
     df_pivot = df_pivot.sort_index()
@@ -411,8 +416,8 @@ def fetch_palestine_mortality_data(
     if "report_date" in df.columns:
         df["report_date"] = pd.to_datetime(df["report_date"])
     elif "date" in df.columns:
-        df["report_date"] = pd.to_datetime(df["date"])
         df = df.rename(columns={"date": "report_date"})
+        df["report_date"] = pd.to_datetime(df["report_date"])
 
     # Filter by date range if specified
     if start_date is not None:
@@ -468,7 +473,8 @@ def prepare_mortality_data(
     elif "killed" in mortality_df.columns:
         death_field = "killed"
     else:
-        raise ValueError("No suitable death count field found in mortality data")
+        raise ValueError(
+            "No suitable death count field found in mortality data")
 
     # Create series indexed by date
     mortality_df = mortality_df.set_index("report_date")

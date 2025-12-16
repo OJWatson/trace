@@ -1,10 +1,13 @@
 import pandas as pd
 import numpy as np
 import pytest
+import requests
 
 from trace.data import (
     create_hospital_coordinates,
     fetch_acled_data,
+    fetch_palestine_mortality_data,
+    load_example_acled_data,
     load_hospital_data,
     load_national_deaths,
     prepare_acled_events,
@@ -86,6 +89,17 @@ def test_fetch_acled_data_empty_returns_empty_df(monkeypatch, capsys):
     assert "Warning: No events found" in out
 
 
+def test_fetch_acled_data_request_exception_raises_runtimeerror(monkeypatch):
+    def _fake_get(url, params=None, timeout=None):
+        raise requests.exceptions.RequestException("boom")
+
+    monkeypatch.setattr("trace.data.requests.get", _fake_get)
+
+    with pytest.raises(RuntimeError, match="Failed to fetch ACLED data"):
+        fetch_acled_data(country="X", start_date="2023-01-01",
+                         end_date="2023-01-02")
+
+
 def test_prepare_acled_events_counts_and_coords():
     df = pd.DataFrame(
         {
@@ -115,6 +129,16 @@ def test_create_hospital_coordinates_from_mapping():
     assert coords.shape == (2, 2)
     assert coords[0, 0] == pytest.approx(31.5)
     assert coords[1, 1] == pytest.approx(34.6)
+
+
+def test_create_hospital_coordinates_no_locations_generates_random(monkeypatch, capsys):
+    monkeypatch.setattr("trace.data.np.random.uniform",
+                        lambda *a, **k: np.zeros((2, 2)))
+
+    coords = create_hospital_coordinates(["H1", "H2"], locations=None)
+    assert coords.shape == (2, 2)
+    out = capsys.readouterr().out
+    assert "generating random coordinates" in out
 
 
 def test_load_hospital_data_pivots(tmp_path):
@@ -164,3 +188,54 @@ def test_prepare_mortality_data_uses_extrapolated_and_fills_missing():
     assert series.iloc[0] == 1
     assert series.iloc[1] == 0
     assert series.iloc[2] == 3
+
+
+def test_prepare_mortality_data_raises_when_no_death_field():
+    mortality_df = pd.DataFrame(
+        {
+            "report_date": pd.to_datetime(["2023-01-01"]),
+            "something_else": [1],
+        }
+    )
+
+    with pytest.raises(ValueError, match="No suitable death count field"):
+        prepare_mortality_data(
+            mortality_df, start_date="2023-01-01", end_date="2023-01-01")
+
+
+def test_load_example_acled_data_missing_file_raises(monkeypatch):
+    # Ensure package data file is treated as missing
+    monkeypatch.setattr("pathlib.Path.exists", lambda self: False)
+
+    with pytest.raises(FileNotFoundError, match="Example ACLED data file not found"):
+        load_example_acled_data()
+
+
+def test_fetch_palestine_mortality_data_parses_and_filters(monkeypatch):
+    csv_text = "date,killed\n2023-01-01,1\n2023-01-02,2\n"
+
+    class _Resp:
+        def __init__(self, text):
+            self.text = text
+
+        def raise_for_status(self):
+            return None
+
+    monkeypatch.setattr("trace.data.requests.get",
+                        lambda url, timeout=None: _Resp(csv_text))
+
+    df = fetch_palestine_mortality_data(
+        start_date="2023-01-02", end_date="2023-01-02")
+    assert len(df) == 1
+    assert "report_date" in df.columns
+    assert int(df["killed"].iloc[0]) == 2
+
+
+def test_fetch_palestine_mortality_data_request_exception(monkeypatch):
+    def _fake_get(url, timeout=None):
+        raise requests.exceptions.RequestException("boom")
+
+    monkeypatch.setattr("trace.data.requests.get", _fake_get)
+
+    with pytest.raises(RuntimeError, match="Failed to fetch Palestine mortality data"):
+        fetch_palestine_mortality_data()

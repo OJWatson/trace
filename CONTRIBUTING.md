@@ -216,7 +216,7 @@ When requesting features, please include:
 If you have questions about contributing, feel free to:
 
 - Open an issue with the "question" label
-- Contact the maintainers at trace@imperial.ac.uk
+- Open an issue: https://github.com/OJWatson/trace/issues
 - Join our community discussions (if available)
 
 ## License

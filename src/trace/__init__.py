@@ -7,8 +7,8 @@ A Bayesian hierarchical modeling package for conflict casualty analysis.
 import importlib
 
 __version__ = "0.1.0"
-__author__ = "Imperial College London"
-__email__ = "trace@imperial.ac.uk"
+__author__ = "OJ Watson"
+__email__ = ""
 
 # Import submodules
 

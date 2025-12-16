@@ -1,6 +1,17 @@
+from trace.analysis import (
+    create_arviz_inference_data,
+    forecast,
+    plot_fit,
+    plot_forecast,
+    posterior_predictive,
+    run_inference,
+)
+import matplotlib.pyplot as plt
 import numpy as np
 
-from trace.analysis import forecast, posterior_predictive
+import matplotlib
+
+matplotlib.use("Agg")
 
 
 def test_posterior_predictive_shapes():
@@ -58,3 +69,78 @@ def test_forecast_output_shapes_and_keys():
         assert k in out
         assert len(out[k]) == len(future_events_by_day)
         assert np.all(out[k] >= 0)
+
+
+def test_plot_fit_and_plot_forecast_return_figures(tmp_path):
+    dates = np.array([np.datetime64("2023-01-01"),
+                     np.datetime64("2023-01-02")])
+    injuries_obs = np.array([[1, 0], [0, 1]])
+    deaths_obs = np.array([0, 1])
+
+    fig1 = plot_fit(dates, injuries_obs, deaths_obs, preds=None)
+    assert isinstance(fig1, plt.Figure)
+    plt.close(fig1)
+
+    forecast_results = {
+        "injuries_median": np.array([1.0, 2.0]),
+        "injuries_lower": np.array([0.0, 1.0]),
+        "injuries_upper": np.array([2.0, 3.0]),
+        "deaths_median": np.array([0.0, 1.0]),
+        "deaths_lower": np.array([0.0, 0.0]),
+        "deaths_upper": np.array([1.0, 2.0]),
+    }
+    fig2 = plot_forecast(
+        forecast_results, start_date=np.datetime64("2023-01-01"))
+    assert isinstance(fig2, plt.Figure)
+    plt.close(fig2)
+
+
+def test_create_arviz_inference_data_calls_arviz(monkeypatch):
+    sentinel = object()
+
+    def _fake_from_numpyro(mcmc, coords=None, dims=None):
+        assert coords == {"x": [0]}
+        assert dims == {"mu": ["x"]}
+        return sentinel
+
+    monkeypatch.setattr("trace.analysis.az.from_numpyro", _fake_from_numpyro)
+    out = create_arviz_inference_data(
+        mcmc=object(), coords={"x": [0]}, dims={"mu": ["x"]})
+    assert out is sentinel
+
+
+def test_run_inference_smoke_with_dummy_mcmc(monkeypatch):
+    class _DummyMCMC:
+        def __init__(self, kernel, num_warmup, num_samples, num_chains, progress_bar):
+            self.kernel = kernel
+            self.ran = False
+
+        def run(self, *args, **kwargs):
+            self.ran = True
+
+        def print_summary(self):
+            return None
+
+        def get_samples(self):
+            return {"mu_w": np.array([1.0]), "mu_i": np.array([0.5]), "p_late": np.array([0.1])}
+
+    monkeypatch.setattr("trace.analysis.NUTS", lambda model: "kernel")
+    monkeypatch.setattr("trace.analysis.MCMC", _DummyMCMC)
+
+    mcmc, samples = run_inference(
+        events_by_day=np.array([0, 1]),
+        event_day_index=np.array([1]),
+        event_coords=np.array([[0.0, 0.0]]),
+        hospital_coords=np.array([[0.0, 0.0]]),
+        injuries_obs=np.array([[0], [1]]),
+        deaths_obs=np.array([0, 0]),
+        delay_probs=np.array([1.0]),
+        num_warmup=1,
+        num_samples=1,
+        num_chains=1,
+        rng_seed=0,
+        progress_bar=False,
+    )
+
+    assert mcmc.ran is True
+    assert "mu_w" in samples

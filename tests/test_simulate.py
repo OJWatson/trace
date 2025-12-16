@@ -113,3 +113,25 @@ def test_simulate_zero_events():
     assert len(data["events"]) == 0
     assert np.all(data["hospital_incidence"] == 0)
     assert np.all(data["national_deaths"] == 0)
+
+
+def test_simulate_n_regions_zero_and_weights_underflow_path():
+    """Cover n_regions==0 branch and weights.sum()==0 allocation fallback."""
+    delay_probs = np.array([1.0])
+
+    data = simulate_conflict_data(
+        n_regions=0,
+        n_hospitals=3,
+        T=1,
+        mu_w_true=50.0,
+        mu_i_true=0.0,
+        p_late_true=0.0,
+        delay_probs=delay_probs,
+        ell_true=1e-12,
+        events_rate=100.0,
+        seed=0,
+    )
+
+    assert data["hospital_incidence"].shape == (1, 3)
+    assert data["national_deaths"].shape == (1,)
+    assert np.all(data["hospital_incidence"] >= 0)

@@ -346,7 +346,7 @@ To begin using **TRACE**:
 
 **TRACE** is under active development. Contributions are welcome:
 
-- **Bug reports**: [GitHub Issues](https://github.com/imperial-college/trace/issues)
+- **Bug reports**: [GitHub Issues](https://github.com/OJWatson/trace/issues)
 - **Feature requests**: Discuss via Issues
 - **Code contributions**: Submit Pull Requests
 - **Documentation**: Corrections and clarifications appreciated
