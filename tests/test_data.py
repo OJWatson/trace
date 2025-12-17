@@ -96,8 +96,7 @@ def test_fetch_acled_data_request_exception_raises_runtimeerror(monkeypatch):
     monkeypatch.setattr("trace.data.requests.get", _fake_get)
 
     with pytest.raises(RuntimeError, match="Failed to fetch ACLED data"):
-        fetch_acled_data(country="X", start_date="2023-01-01",
-                         end_date="2023-01-02")
+        fetch_acled_data(country="X", start_date="2023-01-01", end_date="2023-01-02")
 
 
 def test_prepare_acled_events_counts_and_coords():
@@ -132,8 +131,7 @@ def test_create_hospital_coordinates_from_mapping():
 
 
 def test_create_hospital_coordinates_no_locations_generates_random(monkeypatch, capsys):
-    monkeypatch.setattr("trace.data.np.random.uniform",
-                        lambda *a, **k: np.zeros((2, 2)))
+    monkeypatch.setattr("trace.data.np.random.uniform", lambda *a, **k: np.zeros((2, 2)))
 
     coords = create_hospital_coordinates(["H1", "H2"], locations=None)
     assert coords.shape == (2, 2)
@@ -159,9 +157,7 @@ def test_load_hospital_data_pivots(tmp_path):
 
 def test_load_national_deaths(tmp_path):
     path = tmp_path / "deaths.csv"
-    pd.DataFrame({"date": ["2023-01-02", "2023-01-01"], "deaths": [2, 1]}).to_csv(
-        path, index=False
-    )
+    pd.DataFrame({"date": ["2023-01-02", "2023-01-01"], "deaths": [2, 1]}).to_csv(path, index=False)
 
     series = load_national_deaths(str(path))
     assert len(series) == 2
@@ -199,8 +195,7 @@ def test_prepare_mortality_data_raises_when_no_death_field():
     )
 
     with pytest.raises(ValueError, match="No suitable death count field"):
-        prepare_mortality_data(
-            mortality_df, start_date="2023-01-01", end_date="2023-01-01")
+        prepare_mortality_data(mortality_df, start_date="2023-01-01", end_date="2023-01-01")
 
 
 def test_load_example_acled_data_missing_file_raises(monkeypatch):
@@ -221,11 +216,9 @@ def test_fetch_palestine_mortality_data_parses_and_filters(monkeypatch):
         def raise_for_status(self):
             return None
 
-    monkeypatch.setattr("trace.data.requests.get",
-                        lambda url, timeout=None: _Resp(csv_text))
+    monkeypatch.setattr("trace.data.requests.get", lambda url, timeout=None: _Resp(csv_text))
 
-    df = fetch_palestine_mortality_data(
-        start_date="2023-01-02", end_date="2023-01-02")
+    df = fetch_palestine_mortality_data(start_date="2023-01-02", end_date="2023-01-02")
     assert len(df) == 1
     assert "report_date" in df.columns
     assert int(df["killed"].iloc[0]) == 2

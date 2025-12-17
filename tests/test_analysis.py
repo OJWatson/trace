@@ -72,8 +72,7 @@ def test_forecast_output_shapes_and_keys():
 
 
 def test_plot_fit_and_plot_forecast_return_figures(tmp_path):
-    dates = np.array([np.datetime64("2023-01-01"),
-                     np.datetime64("2023-01-02")])
+    dates = np.array([np.datetime64("2023-01-01"), np.datetime64("2023-01-02")])
     injuries_obs = np.array([[1, 0], [0, 1]])
     deaths_obs = np.array([0, 1])
 
@@ -89,8 +88,7 @@ def test_plot_fit_and_plot_forecast_return_figures(tmp_path):
         "deaths_lower": np.array([0.0, 0.0]),
         "deaths_upper": np.array([1.0, 2.0]),
     }
-    fig2 = plot_forecast(
-        forecast_results, start_date=np.datetime64("2023-01-01"))
+    fig2 = plot_forecast(forecast_results, start_date=np.datetime64("2023-01-01"))
     assert isinstance(fig2, plt.Figure)
     plt.close(fig2)
 
@@ -104,8 +102,7 @@ def test_create_arviz_inference_data_calls_arviz(monkeypatch):
         return sentinel
 
     monkeypatch.setattr("trace.analysis.az.from_numpyro", _fake_from_numpyro)
-    out = create_arviz_inference_data(
-        mcmc=object(), coords={"x": [0]}, dims={"mu": ["x"]})
+    out = create_arviz_inference_data(mcmc=object(), coords={"x": [0]}, dims={"mu": ["x"]})
     assert out is sentinel
 
 

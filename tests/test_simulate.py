@@ -69,10 +69,8 @@ def test_simulate_reproducibility():
     )
 
     # Should produce identical results
-    np.testing.assert_array_equal(
-        data1["hospital_incidence"], data2["hospital_incidence"])
-    np.testing.assert_array_equal(
-        data1["national_deaths"], data2["national_deaths"])
+    np.testing.assert_array_equal(data1["hospital_incidence"], data2["hospital_incidence"])
+    np.testing.assert_array_equal(data1["national_deaths"], data2["national_deaths"])
 
 
 def test_generate_scenario_events():

@@ -13,8 +13,7 @@ def test_spatial_kernel_weights_shape_and_normalization():
 
     assert weights.shape == (1, 2)
     assert np.all(np.asarray(weights) >= 0)
-    np.testing.assert_allclose(np.asarray(weights).sum(
-        axis=1), 1.0, rtol=1e-6, atol=1e-6)
+    np.testing.assert_allclose(np.asarray(weights).sum(axis=1), 1.0, rtol=1e-6, atol=1e-6)
     assert float(weights[0, 0]) > float(weights[0, 1])
 
 

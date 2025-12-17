@@ -55,8 +55,7 @@ def spatial_kernel_weights(
     weights = jnp.exp(-dists / ell)
 
     # Normalize weights for each event so they sum to 1 across hospitals
-    weight_sums = jnp.sum(weights, axis=1, keepdims=True) + \
-        1e-8  # avoid division by zero
+    weight_sums = jnp.sum(weights, axis=1, keepdims=True) + 1e-8  # avoid division by zero
     norm_weights = weights / weight_sums
 
     return norm_weights  # shape (E, H)
@@ -164,8 +163,7 @@ def casualty_model(
     # ========== Spatial allocation of casualties to hospitals ==========
 
     # Compute spatial weights for each event-hospital pair
-    norm_weights = spatial_kernel_weights(
-        jnp.array(event_coords), jnp.array(hospital_coords), ell)
+    norm_weights = spatial_kernel_weights(jnp.array(event_coords), jnp.array(hospital_coords), ell)
 
     # Accumulate event contributions to each hospital per day
     # effective_events[d,h] = sum of normalized weights of all events on day d going to hospital h
@@ -184,8 +182,7 @@ def casualty_model(
     # Observe hospital injuries via an overdispersed Gamma-Poisson likelihood
     obs_inj = numpyro.sample(
         "obs_injuries",
-        dist.GammaPoisson(concentration=phi_hosp,
-                          rate=phi_hosp / lam_injuries).to_event(2),
+        dist.GammaPoisson(concentration=phi_hosp, rate=phi_hosp / lam_injuries).to_event(2),
         obs=injuries_obs,
     )
 
@@ -193,8 +190,7 @@ def casualty_model(
 
     # Total injuries per day (summing across hospitals)
     # Use sampled injuries if obs was None, otherwise use provided injuries
-    injuries_to_use = obs_inj if injuries_obs is None else jnp.array(
-        injuries_obs)
+    injuries_to_use = obs_inj if injuries_obs is None else jnp.array(injuries_obs)
     injuries_total = jnp.nansum(injuries_to_use, axis=1)  # shape (T,)
 
     # Convolve injuries with delay distribution to get expected delayed deaths
@@ -205,7 +201,7 @@ def casualty_model(
     conv_deaths = jnp.zeros(n_days)
     for k in range(delay_len):
         # Deaths occurring k+1 days after injury
-        conv_deaths = conv_deaths + pad[k: n_days + k] * delay_probs[k]
+        conv_deaths = conv_deaths + pad[k : n_days + k] * delay_probs[k]
 
     # Expected late deaths = p_late * convolved injuries
     expected_late_deaths = p_late * conv_deaths
@@ -226,8 +222,7 @@ def casualty_model(
     # Observe national deaths via an overdispersed Gamma-Poisson likelihood
     numpyro.sample(
         "obs_deaths",
-        dist.GammaPoisson(concentration=phi_death,
-                          rate=phi_death / expected_deaths),
+        dist.GammaPoisson(concentration=phi_death, rate=phi_death / expected_deaths),
         obs=deaths_obs,
     )
 
@@ -251,23 +246,19 @@ def casualty_model_random_walk(
     mu_w0 = numpyro.sample("mu_w0", dist.Exponential(0.3))
     sigma_mu_w = numpyro.sample("sigma_mu_w", dist.Exponential(10.0))
     eps_mu_w = numpyro.sample(
-        "eps_mu_w", dist.Normal(0.0, sigma_mu_w).expand(
-            [n_days - 1]).to_event(1)
+        "eps_mu_w", dist.Normal(0.0, sigma_mu_w).expand([n_days - 1]).to_event(1)
     )
     log_mu_w0 = jnp.log(mu_w0 + 1e-8)
-    log_mu_w = log_mu_w0 + \
-        jnp.concatenate([jnp.zeros((1,)), jnp.cumsum(eps_mu_w)])
+    log_mu_w = log_mu_w0 + jnp.concatenate([jnp.zeros((1,)), jnp.cumsum(eps_mu_w)])
     mu_w = numpyro.deterministic("mu_w", jnp.exp(log_mu_w))
 
     mu_i0 = numpyro.sample("mu_i0", dist.Exponential(0.3))
     sigma_mu_i = numpyro.sample("sigma_mu_i", dist.Exponential(10.0))
     eps_mu_i = numpyro.sample(
-        "eps_mu_i", dist.Normal(0.0, sigma_mu_i).expand(
-            [n_days - 1]).to_event(1)
+        "eps_mu_i", dist.Normal(0.0, sigma_mu_i).expand([n_days - 1]).to_event(1)
     )
     log_mu_i0 = jnp.log(mu_i0 + 1e-8)
-    log_mu_i = log_mu_i0 + \
-        jnp.concatenate([jnp.zeros((1,)), jnp.cumsum(eps_mu_i)])
+    log_mu_i = log_mu_i0 + jnp.concatenate([jnp.zeros((1,)), jnp.cumsum(eps_mu_i)])
     mu_i = numpyro.deterministic("mu_i", jnp.exp(log_mu_i))
 
     p_late = numpyro.sample("p_late", dist.Beta(2, 10))
@@ -275,8 +266,7 @@ def casualty_model_random_walk(
     phi_hosp = numpyro.sample("phi_hosp", dist.Exponential(1.0))
     phi_death = numpyro.sample("phi_death", dist.Exponential(1.0))
 
-    norm_weights = spatial_kernel_weights(
-        jnp.array(event_coords), jnp.array(hospital_coords), ell)
+    norm_weights = spatial_kernel_weights(jnp.array(event_coords), jnp.array(hospital_coords), ell)
     effective_events = jnp.zeros((n_days, n_hospitals))
     effective_events = effective_events.at[event_day_index].add(norm_weights)
 
@@ -284,20 +274,18 @@ def casualty_model_random_walk(
     lam_injuries = jnp.maximum(lam_injuries, 1e-8)
     obs_inj = numpyro.sample(
         "obs_injuries",
-        dist.GammaPoisson(concentration=phi_hosp,
-                          rate=phi_hosp / lam_injuries).to_event(2),
+        dist.GammaPoisson(concentration=phi_hosp, rate=phi_hosp / lam_injuries).to_event(2),
         obs=injuries_obs,
     )
 
-    injuries_to_use = obs_inj if injuries_obs is None else jnp.array(
-        injuries_obs)
+    injuries_to_use = obs_inj if injuries_obs is None else jnp.array(injuries_obs)
     injuries_total = jnp.nansum(injuries_to_use, axis=1)
 
     delay_len = delay_probs.shape[0]
     pad = jnp.pad(injuries_total, (0, delay_len))
     conv_deaths = jnp.zeros(n_days)
     for k in range(delay_len):
-        conv_deaths = conv_deaths + pad[k: n_days + k] * delay_probs[k]
+        conv_deaths = conv_deaths + pad[k : n_days + k] * delay_probs[k]
 
     expected_late_deaths = p_late * conv_deaths
     expected_immediate_deaths = mu_i * jnp.array(events_by_day)
@@ -306,8 +294,7 @@ def casualty_model_random_walk(
 
     numpyro.sample(
         "obs_deaths",
-        dist.GammaPoisson(concentration=phi_death,
-                          rate=phi_death / expected_deaths),
+        dist.GammaPoisson(concentration=phi_death, rate=phi_death / expected_deaths),
         obs=deaths_obs,
     )
 
@@ -381,8 +368,7 @@ def casualty_model_with_covariates(
         mu_i = mu_i_base
 
     # Rest of the model follows the same structure as casualty_model
-    norm_weights = spatial_kernel_weights(
-        jnp.array(event_coords), jnp.array(hospital_coords), ell)
+    norm_weights = spatial_kernel_weights(jnp.array(event_coords), jnp.array(hospital_coords), ell)
 
     effective_events = jnp.zeros((n_days, n_hospitals))
     effective_events = effective_events.at[event_day_index].add(norm_weights)
@@ -397,8 +383,7 @@ def casualty_model_with_covariates(
 
     numpyro.sample(
         "obs_injuries",
-        dist.GammaPoisson(concentration=phi_hosp,
-                          rate=phi_hosp / lam_injuries).to_event(2),
+        dist.GammaPoisson(concentration=phi_hosp, rate=phi_hosp / lam_injuries).to_event(2),
         obs=jnp.array(injuries_obs),
     )
 
@@ -408,7 +393,7 @@ def casualty_model_with_covariates(
     pad = jnp.pad(injuries_total, (0, delay_len))
     conv_deaths = jnp.zeros(n_days)
     for k in range(delay_len):
-        conv_deaths = conv_deaths + pad[k: n_days + k] * delay_probs[k]
+        conv_deaths = conv_deaths + pad[k : n_days + k] * delay_probs[k]
 
     expected_late_deaths = p_late * conv_deaths
 
@@ -424,7 +409,6 @@ def casualty_model_with_covariates(
 
     numpyro.sample(
         "obs_deaths",
-        dist.GammaPoisson(concentration=phi_death,
-                          rate=phi_death / expected_deaths),
+        dist.GammaPoisson(concentration=phi_death, rate=phi_death / expected_deaths),
         obs=jnp.array(deaths_obs),
     )
