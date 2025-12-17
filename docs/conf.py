@@ -83,9 +83,9 @@ nbsphinx_execute = "never"  # Don't execute notebooks during build
 warnings.filterwarnings("ignore", category=Warning, module="nbformat")
 
 # BibTeX settings
-bibtex_bibfiles = ['references.bib']
-bibtex_default_style = 'plain'
-bibtex_reference_style = 'author_year'
+bibtex_bibfiles = ["references.bib"]
+bibtex_default_style = "plain"
+bibtex_reference_style = "author_year"
 
 # Reduce build noise from sphinxcontrib-bibtex warnings that are not relevant to the
 # student handoff (e.g. duplicate numeric labels across filtered bibliographies).

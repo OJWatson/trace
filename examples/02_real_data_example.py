@@ -13,12 +13,12 @@ This uses actual conflict and mortality data from Gaza.
 
 import sys
 
-sys.path.insert(0, 'src')
+sys.path.insert(0, "src")
 
 import matplotlib
 import numpy as np
 
-matplotlib.use('Agg')  # Non-interactive backend
+matplotlib.use("Agg")  # Non-interactive backend
 import matplotlib.pyplot as plt
 
 from trace.analysis import forecast, plot_fit, plot_forecast, posterior_predictive, run_inference
@@ -66,9 +66,7 @@ print(f"  - Days with events: {sum(1 for x in events_by_day if x > 0)}")
 
 print("\n[Step 2] Fetching real mortality data from Tech for Palestine...")
 
-mortality_df = fetch_palestine_mortality_data(
-    start_date=analysis_start, end_date=analysis_end
-)
+mortality_df = fetch_palestine_mortality_data(start_date=analysis_start, end_date=analysis_end)
 print(f"  - Loaded {len(mortality_df)} days of mortality data")
 
 # Prepare mortality data for modeling
@@ -93,13 +91,15 @@ n_hospitals = 5
 T = len(dates)
 
 # Create hospital coordinates (approximate Gaza locations)
-hospital_coords = np.array([
-    [31.5, 34.45],  # Gaza City area
-    [31.52, 34.46],  # Gaza City area
-    [31.35, 34.30],  # Khan Younis area
-    [31.28, 34.25],  # Rafah area
-    [31.54, 34.52],  # Northern Gaza
-])
+hospital_coords = np.array(
+    [
+        [31.5, 34.45],  # Gaza City area
+        [31.52, 34.46],  # Gaza City area
+        [31.35, 34.30],  # Khan Younis area
+        [31.28, 34.25],  # Rafah area
+        [31.54, 34.52],  # Northern Gaza
+    ]
+)
 
 # Simulate hospital injuries based on events (NOT deaths to avoid circular dependency)
 # Use a realistic casualty rate per event
@@ -150,9 +150,15 @@ try:
     )
 
     print("\n[Results] Posterior estimates:")
-    print(f"  mu_w (wounded per event):   {samples['mu_w'].mean():.2f} ± {samples['mu_w'].std():.2f}")
-    print(f"  mu_i (immediate deaths):    {samples['mu_i'].mean():.2f} ± {samples['mu_i'].std():.2f}")
-    print(f"  p_late (hospital fatality): {samples['p_late'].mean():.3f} ± {samples['p_late'].std():.3f}")
+    print(
+        f"  mu_w (wounded per event):   {samples['mu_w'].mean():.2f} ± {samples['mu_w'].std():.2f}"
+    )
+    print(
+        f"  mu_i (immediate deaths):    {samples['mu_i'].mean():.2f} ± {samples['mu_i'].std():.2f}"
+    )
+    print(
+        f"  p_late (hospital fatality): {samples['p_late'].mean():.3f} ± {samples['p_late'].std():.3f}"
+    )
     print(f"  ell (spatial scale):        {samples['ell'].mean():.2f} ± {samples['ell'].std():.2f}")
 
     # ============================================================================
@@ -212,7 +218,7 @@ try:
     # Plot forecast
     fig_forecast = plot_forecast(
         forecast_results=forecast_results,
-        start_date=np.datetime64(analysis_end) + np.timedelta64(1, 'D'),
+        start_date=np.datetime64(analysis_end) + np.timedelta64(1, "D"),
         save_path="examples/real_data_forecast.png",
     )
     plt.close(fig_forecast)
@@ -254,4 +260,5 @@ except Exception as e:
     print("This may be due to data quality issues or numerical instabilities.")
     print("Try adjusting the date range or MCMC parameters.")
     import traceback
+
     traceback.print_exc()

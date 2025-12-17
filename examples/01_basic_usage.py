@@ -12,12 +12,12 @@ This can be converted to a Jupyter notebook for interactive exploration.
 
 import sys
 
-sys.path.insert(0, 'src')
+sys.path.insert(0, "src")
 
 import matplotlib
 import numpy as np
 
-matplotlib.use('Agg')  # Non-interactive backend
+matplotlib.use("Agg")  # Non-interactive backend
 
 from trace.analysis import forecast, plot_fit, plot_forecast, posterior_predictive, run_inference
 from trace.simulate import simulate_conflict_data

@@ -5,7 +5,9 @@
 
 ---
 
-## Student Handoff: Objectives (Short-Term Forecasting + Decision Support)
+N.B. Claude Opus Generated Next Steps based on dictated goals. 
+
+## Objectives (Short-Term Forecasting + Decision Support)
 
 The near-term goal for a student is to extend TRACE from a working proof-of-concept into a forecasting and decision-support tool that:
 
@@ -24,7 +26,7 @@ This document focuses on research questions, engineering milestones, and evaluat
 
 ---
 
-## Student Handoff: Priority Milestones (8–12 weeks)
+## Priority Milestones (8–12 weeks)
 
 ### Milestone A — Forecasting evaluation and baselines
 
@@ -80,13 +82,14 @@ This document focuses on research questions, engineering milestones, and evaluat
 
 ---
 
-## Student Handoff: Research Questions
+## Research Questions
 
 - Does ACLED improve forecasts compared to autoregressive-only baselines? At what horizons?
 - Which ACLED signals matter: incidence, typology, geography, or reported severity?
 - Are time-varying casualty rates best modeled by random walks, splines, or latent intensity processes?
 - How sensitive are results to reporting artifacts (mortality series discontinuities)?
 - Can we infer and forecast typology of hospital admissions, and is it decision-relevant?
+- Is there spatial patterns in ACLED data? Can we predict future ACLED events in space-time based on past events?
 
 ---
 
@@ -105,7 +108,7 @@ This document focuses on research questions, engineering milestones, and evaluat
 
 ---
 
-## Critical Gaps Identified
+## Gaps to add
 
 ### 1. ⚠️ Spatial Kernel Visualization MISSING
 
@@ -246,7 +249,6 @@ def hierarchical_casualty_model(
 - ✅ Type-safe (IDE autocomplete, mypy)
 - ✅ Pythonic (chainable methods)
 - ✅ Flexible (functional escape hatch for custom models)
-- ❌ NOT using patsy/formula strings (non-Pythonic, poor JAX integration)
 
 **Desired User Experience**:
 
