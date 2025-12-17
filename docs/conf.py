@@ -2,6 +2,7 @@
 
 import os
 import sys
+import warnings
 
 # Add source directory to path
 sys.path.insert(0, os.path.abspath("../src"))
@@ -26,7 +27,7 @@ extensions = [
 ]
 
 templates_path = ["_templates"]
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "background_research"]
 
 # Options for HTML output
 html_theme = "sphinx_rtd_theme"
@@ -78,7 +79,18 @@ myst_enable_extensions = [
 # nbsphinx settings
 nbsphinx_execute = "never"  # Don't execute notebooks during build
 
+# Suppress nbformat warnings about missing cell IDs in notebooks.
+warnings.filterwarnings("ignore", category=Warning, module="nbformat")
+
 # BibTeX settings
 bibtex_bibfiles = ['references.bib']
 bibtex_default_style = 'plain'
 bibtex_reference_style = 'author_year'
+
+# Reduce build noise from sphinxcontrib-bibtex warnings that are not relevant to the
+# student handoff (e.g. duplicate numeric labels across filtered bibliographies).
+suppress_warnings = [
+    "bibtex.duplicate_label",
+    "bibtex.duplicate_citation",
+    "bibtex.missing_field",
+]

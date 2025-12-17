@@ -2,7 +2,7 @@
 
 The open-source Python package **TRACE** (Temporal and Regional Analysis of Conflict Events) provides a framework for Bayesian, regression-oriented modeling of conflict casualty dynamics. These models are fit to multiple data streams including conflict event data (e.g., from [ACLED](https://acleddata.com)), hospital admission records, and national mortality time series. Casualty dynamics are described through a semi-mechanistic process linking observable data to latent conflict intensity, spatial allocation of casualties to hospitals, and temporal delays from injury to death.
 
-The modeling framework has been motivated by semi-mechanistic epidemic models developed for COVID-19 {cite}`Flaxman2020, Bhatt2020, Mezi_2020`. While traditional conflict modeling has relied on either purely statistical approaches or deterministic agent-based models, **TRACE** occupies a middle ground—explicitly modeling the generative process of casualties while remaining statistically grounded and computationally tractable for Bayesian inference.
+The modeling framework has been motivated by semi-mechanistic epidemic models developed for COVID-19 {cite}`Flaxman2020, Bhatt2020`. While traditional conflict modeling has relied on either purely statistical approaches or deterministic agent-based models, **TRACE** occupies a middle ground—explicitly modeling the generative process of casualties while remaining statistically grounded and computationally tractable for Bayesian inference.
 
 ## Background and Motivation
 
@@ -152,12 +152,12 @@ The model has three key components:
 
 ### Observation Model
 
-Hospital injuries and deaths are modeled as Poisson random variables:
+Hospital injuries and deaths are modeled using overdispersed count likelihoods. The default implementation uses a Negative Binomial model implemented via a Gamma-Poisson mixture (NumPyro's `GammaPoisson`), which reduces to a Poisson model as overdispersion goes to zero:
 
 $$
 \begin{align}
-H_{t,h} &\sim \text{Poisson}(\lambda_{t,h}) \\
-D_t &\sim \text{Poisson}(\delta_t)
+H_{t,h} &\sim \text{NegBin}(\lambda_{t,h}, \phi_H) \\
+D_t &\sim \text{NegBin}(\delta_t, \phi_D)
 \end{align}
 $$
 
@@ -205,18 +205,16 @@ The basic model can be extended in several ways:
 1. **Time-Varying Parameters**: Allow casualty rates to change over time (e.g., due to weapon changes, medical improvements)
 2. **Covariates**: Include intervention indicators, conflict type, or other predictors
 3. **Hierarchical Structure**: Partial pooling across multiple regions or conflict zones
-4. **Overdispersion**: Negative Binomial distributions to handle extra-Poisson variation
+4. **Overdispersion**: Negative Binomial distributions to handle extra-Poisson variation (implemented)
 5. **Missing Data**: Impute missing observations using the model structure
-
-See the [Model Extensions](05_extensions.md) vignette for details.
 
 ## Getting Started
 
 To begin using **TRACE**:
 
 1. [Installation Instructions](../installation.md)
-2. [Basic Example Tutorial](../tutorials/01_basic_example.md) — Simulated data walkthrough
-3. [Gaza Analysis Tutorial](../tutorials/02_gaza_analysis.md) — Real data application
+2. [Basic Example Tutorial](../tutorials/01_basic_example.ipynb) — Simulated data walkthrough
+3. [Gaza Analysis Tutorial](../tutorials/02_gaza_analysis.ipynb) — Real data application
 4. [Model Description](02_description.md) — Detailed mathematical specification
 
 ## References

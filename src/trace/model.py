@@ -123,7 +123,7 @@ def casualty_model(
     - Casualties from events are allocated to hospitals via spatial kernel
     - Immediate deaths occur on the event day
     - Injured individuals may die later according to delay distribution
-    - All observations follow Poisson distributions (can be extended to Negative Binomial)
+    - Observations use overdispersed count likelihoods (Negative Binomial via Gamma-Poisson)
 
     Examples
     --------
@@ -181,7 +181,7 @@ def casualty_model(
     # Ensure positive rates (add small epsilon for numerical stability)
     lam_injuries = jnp.maximum(lam_injuries, 1e-8)
 
-    # Observe hospital injuries via Poisson likelihood
+    # Observe hospital injuries via an overdispersed Gamma-Poisson likelihood
     obs_inj = numpyro.sample(
         "obs_injuries",
         dist.GammaPoisson(concentration=phi_hosp,
@@ -223,7 +223,7 @@ def casualty_model(
     # Ensure positive rates (add small epsilon for numerical stability)
     expected_deaths = jnp.maximum(expected_deaths, 1e-8)
 
-    # Observe national deaths via Poisson likelihood
+    # Observe national deaths via an overdispersed Gamma-Poisson likelihood
     numpyro.sample(
         "obs_deaths",
         dist.GammaPoisson(concentration=phi_death,
@@ -360,6 +360,9 @@ def casualty_model_with_covariates(
     p_late = numpyro.sample("p_late", dist.Beta(2, 10))
     ell = numpyro.sample("ell", dist.Exponential(1.0))
 
+    phi_hosp = numpyro.sample("phi_hosp", dist.Exponential(1.0))
+    phi_death = numpyro.sample("phi_death", dist.Exponential(1.0))
+
     # Covariate effects
     if covariates is not None:
         n_covariates = covariates.shape[1]
@@ -390,8 +393,13 @@ def casualty_model_with_covariates(
     else:
         lam_injuries = mu_w * effective_events
 
+    lam_injuries = jnp.maximum(lam_injuries, 1e-8)
+
     numpyro.sample(
-        "obs_injuries", dist.Poisson(lam_injuries).to_event(2), obs=jnp.array(injuries_obs)
+        "obs_injuries",
+        dist.GammaPoisson(concentration=phi_hosp,
+                          rate=phi_hosp / lam_injuries).to_event(2),
+        obs=jnp.array(injuries_obs),
     )
 
     injuries_total = jnp.nansum(jnp.array(injuries_obs), axis=1)
@@ -412,5 +420,11 @@ def casualty_model_with_covariates(
 
     expected_deaths = expected_immediate_deaths + expected_late_deaths
 
-    numpyro.sample("obs_deaths", dist.Poisson(
-        expected_deaths), obs=jnp.array(deaths_obs))
+    expected_deaths = jnp.maximum(expected_deaths, 1e-8)
+
+    numpyro.sample(
+        "obs_deaths",
+        dist.GammaPoisson(concentration=phi_death,
+                          rate=phi_death / expected_deaths),
+        obs=jnp.array(deaths_obs),
+    )

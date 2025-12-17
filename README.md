@@ -40,7 +40,7 @@ pip install -e ".[dev,docs]"
 import trace
 from trace.data import fetch_acled_data, prepare_acled_events
 from trace.model import casualty_model
-from trace.analysis import run_inference, plot_fit
+from trace.analysis import run_inference, posterior_predictive, plot_fit
 
 # Fetch conflict event data
 events_df = fetch_acled_data(
@@ -65,8 +65,19 @@ mcmc, samples = run_inference(
     deaths_obs=mortality_data
 )
 
+# Posterior predictive checks
+preds = posterior_predictive(
+    samples=samples,
+    events_by_day=events_by_day,
+    event_day_index=event_days,
+    event_coords=event_coords,
+    hospital_coords=hospital_locations,
+    injuries_obs_shape=hospital_data.shape,
+    deaths_obs_shape=len(mortality_data),
+)
+
 # Visualize results
-plot_fit(dates, injuries_obs, deaths_obs, posterior_predictive)
+plot_fit(dates=dates, injuries_obs=hospital_data, deaths_obs=mortality_data, preds=preds)
 ```
 
 ## Model Overview
@@ -85,6 +96,24 @@ TRACE implements a hierarchical Bayesian model that:
 - `p_late`: Probability an injured person eventually dies (hospital fatality rate)
 - `ell`: Spatial length scale for hospital allocation
 - `delay_probs`: Distribution of delays from injury to death
+
+### Time-Varying Parameters (Optional)
+
+The default model assumes constant `mu_w` and `mu_i` over time. For short-term forecasting and scenario analysis it is often useful to let these evolve. TRACE includes an opt-in random-walk model:
+
+```python
+from trace.model import casualty_model_random_walk
+
+mcmc, samples = run_inference(
+    events_by_day=events_by_day,
+    event_day_index=event_days,
+    event_coords=event_coords,
+    hospital_coords=hospital_locations,
+    injuries_obs=hospital_data,
+    deaths_obs=mortality_data,
+    model=casualty_model_random_walk,
+)
+```
 
 ## Documentation
 

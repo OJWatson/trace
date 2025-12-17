@@ -12,7 +12,7 @@ We formulate the model for a single homogeneous population over $T$ days. The mo
 
 ### 1.1 Observation Models
 
-Both injuries and deaths are modeled as Poisson random variables:
+In the simplest formulation, injuries and deaths can be modeled as Poisson random variables:
 
 $$
 \begin{align}
@@ -33,6 +33,8 @@ D_t &\sim \text{NegativeBinomial}(\delta_t, \phi_D)
 $$
 
 where $\phi_H$ and $\phi_D$ are overdispersion parameters. This extension is described in Section 1.5.
+
+**Implementation Note**: The current TRACE implementation uses overdispersed likelihoods by default via a Gamma-Poisson mixture (NumPyro's `GammaPoisson`), which corresponds to a Negative Binomial model and reduces to a Poisson model as overdispersion goes to zero.
 
 ### 1.2 Hospital Injury Model
 
@@ -177,6 +179,8 @@ $$
 
 This allows casualty rates to evolve over time without requiring explicit covariates.
 
+**Implementation Note**: TRACE provides an opt-in random-walk model for $\mu_{w,t}$ and $\mu_{i,t}$ via `trace.model.casualty_model_random_walk`.
+
 ## 3. Parameter Priors
 
 Default weakly informative priors are chosen to be:
@@ -239,15 +243,15 @@ Default: $\lambda_\ell = 1.0$, giving prior mean of 1 degree (approximately 100 
 The joint posterior distribution is:
 
 $$
-p(\mu_w, \mu_i, p_{\text{late}}, \ell | H, D, E) \propto p(\mu_w) p(\mu_i) p(p_{\text{late}}) p(\ell) \times \mathcal{L}(H | \mu_w, \ell, E) \times \mathcal{L}(D | \mu_i, p_{\text{late}}, H, E)
+p(\mu_w, \mu_i, p_{\text{late}}, \ell, \phi_H, \phi_D | H, D, E) \propto p(\mu_w) p(\mu_i) p(p_{\text{late}}) p(\ell) p(\phi_H) p(\phi_D) \times \mathcal{L}(H | \mu_w, \ell, \phi_H, E) \times \mathcal{L}(D | \mu_i, p_{\text{late}}, \phi_D, H, E)
 $$
 
 where:
 
 $$
 \begin{align}
-\mathcal{L}(H | \mu_w, \ell, E) &= \prod_{t=1}^T \prod_{j=1}^J \text{Poisson}(H_{t,j} | \lambda_{t,j}) \\
-\mathcal{L}(D | \mu_i, p_{\text{late}}, H, E) &= \prod_{t=1}^T \text{Poisson}(D_t | \delta_t)
+\mathcal{L}(H | \mu_w, \ell, \phi_H, E) &= \prod_{t=1}^T \prod_{j=1}^J \text{NegBin}(H_{t,j} | \lambda_{t,j}, \phi_H) \\
+\mathcal{L}(D | \mu_i, p_{\text{late}}, \phi_D, H, E) &= \prod_{t=1}^T \text{NegBin}(D_t | \delta_t, \phi_D)
 \end{align}
 $$
 
@@ -262,7 +266,7 @@ After sampling, convergence should be assessed using:
 3. **Effective Sample Size** (ESS): Should be $> 100$ per chain
 4. **Divergences**: Should be zero or very few
 
-See the [Diagnostics Guide](03_diagnostics.md) for details.
+See the {ref}`convergence-diagnostics` for details.
 
 ## 5. Posterior Predictive Distribution
 
@@ -270,8 +274,8 @@ For model checking, we sample from the posterior predictive distribution:
 
 $$
 \begin{align}
-\tilde{H}_{t,j} &\sim \text{Poisson}(\lambda_{t,j}^{(s)}) \\
-\tilde{D}_t &\sim \text{Poisson}(\delta_t^{(s)})
+\tilde{H}_{t,j} &\sim \text{NegBin}(\lambda_{t,j}^{(s)}, \phi_H^{(s)}) \\
+\tilde{D}_t &\sim \text{NegBin}(\delta_t^{(s)}, \phi_D^{(s)})
 \end{align}
 $$
 
@@ -294,8 +298,8 @@ To forecast $h$ days into the future, we need:
 
 For each posterior sample $s$:
 
-1. Simulate injuries: $\tilde{H}_{t,j}^{(s)} \sim \text{Poisson}(\mu_w^{(s)} \sum_{e \in \tilde{E}_t} w_{e,j}^{(s)})$
-2. Simulate deaths: $\tilde{D}_t^{(s)} \sim \text{Poisson}(\mu_i^{(s)} |\tilde{E}_t| + p_{\text{late}}^{(s)} \sum_k \tilde{I}_{t-k}^{(s)} f_k)$
+1. Simulate injuries: $\tilde{H}_{t,j}^{(s)} \sim \text{NegBin}(\mu_w^{(s)} \sum_{e \in \tilde{E}_t} w_{e,j}^{(s)}, \phi_H^{(s)})$
+2. Simulate deaths: $\tilde{D}_t^{(s)} \sim \text{NegBin}(\mu_i^{(s)} |\tilde{E}_t| + p_{\text{late}}^{(s)} \sum_k \tilde{I}_{t-k}^{(s)} f_k, \phi_D^{(s)})$
 
 Aggregate across samples to obtain forecast distributions.
 

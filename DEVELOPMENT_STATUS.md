@@ -1,8 +1,59 @@
-# TRACE Development - Session 2 Summary
+# TRACE Development Status
 
-**Date**: December 4, 2024, 6:00 AM - 7:00 AM UTC
+**Last Updated**: December 16, 2025
 
 ---
+
+## Session Summaries
+
+### Session 3 Summary (December 2025)
+
+**Goal**: Prepare a student-ready handoff by converting the Gaza tutorial into an executable notebook, improving simulated hospital data realism, broadening uncertainty, and adding an opt-in time-varying model.
+
+#### ✅ Gaza tutorial converted to a runnable notebook
+
+- `docs/tutorials/02_gaza_analysis.ipynb` created and maintained as the canonical tutorial (replacing the previous markdown-only workflow).
+- Notebook executes end-to-end.
+
+#### ✅ Simulated hospital data made less deterministic
+
+- Hospital injury simulation now uses:
+  - baseline admissions
+  - Gamma–Poisson (NB-like) overdispersion
+  - occasional shocks/spikes
+  - day-varying hospital allocation noise
+- This reduces risk that simulated injuries “drive” inference too strongly.
+
+#### ✅ Model-fit visualization now overlays ACLED events
+
+- The Gaza notebook includes a 3-panel plot:
+  1. ACLED events (input driver)
+  2. deaths fit
+  3. injuries fit
+
+#### ✅ Overdispersion implemented in the core model
+
+- `src/trace/model.py` now uses overdispersed likelihoods via NumPyro `GammaPoisson` for:
+  - `obs_injuries`
+  - `obs_deaths`
+- Dispersion parameters: `phi_hosp`, `phi_death`.
+
+#### ✅ Opt-in random-walk model for time-varying casualty rates
+
+- New model function: `trace.model.casualty_model_random_walk`.
+- Implements log random walks for `mu_w[t]` and `mu_i[t]`.
+- The *default* `casualty_model` remains scalar for backward compatibility.
+
+#### ✅ Analysis API updated to support multiple model functions
+
+- `run_inference(..., model=...)` and `posterior_predictive(..., model=...)` added.
+- `forecast()` updated to work with either scalar parameters or RW parameters.
+
+---
+
+### Session 2 Summary (December 2024)
+
+**Date**: December 4, 2024, 6:00 AM - 7:00 AM UTC
 
 ## Issues Resolved
 

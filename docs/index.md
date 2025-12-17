@@ -21,7 +21,7 @@ TRACE integrates multiple data streams—conflict events from ACLED, hospital ad
 ```python
 import trace
 from trace.data import fetch_acled_data, prepare_acled_events
-from trace.analysis import run_inference, plot_fit
+from trace.analysis import run_inference, posterior_predictive, plot_fit
 
 # Fetch conflict event data
 events_df = fetch_acled_data(
@@ -46,8 +46,19 @@ mcmc, samples = run_inference(
     deaths_obs=mortality_data
 )
 
+# Posterior predictive checks
+preds = posterior_predictive(
+    samples=samples,
+    events_by_day=events_by_day,
+    event_day_index=event_days,
+    event_coords=event_coords,
+    hospital_coords=hospital_locations,
+    injuries_obs_shape=hospital_data.shape,
+    deaths_obs_shape=len(mortality_data),
+)
+
 # Visualize results
-plot_fit(dates, injuries_obs, deaths_obs, posterior_predictive)
+plot_fit(dates=dates, injuries_obs=hospital_data, deaths_obs=mortality_data, preds=preds)
 ```
 
 ## Installation
@@ -89,7 +100,7 @@ model/03_implementation
 :caption: Tutorials
 
 tutorials/01_basic_example.ipynb
-tutorials/02_gaza_analysis
+tutorials/02_gaza_analysis.ipynb
 ```
 
 ```{toctree}
@@ -106,6 +117,7 @@ api/analysis
 :maxdepth: 1
 :caption: Additional Information
 
+installation
 contributing
 ```
 

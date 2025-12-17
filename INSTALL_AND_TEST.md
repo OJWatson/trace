@@ -76,6 +76,11 @@ This will:
 
 ## Running Tests
 
+Note: this repository includes a repo-local `pytest.ini` to ensure tests run reliably in a wide range of Python environments:
+
+- It disables the external `pytest_httpserver` plugin (which can be incompatible with some `werkzeug` versions).
+- It ensures `src/` is on the import path so `import trace` resolves to this package (and not Python's stdlib module named `trace`).
+
 ### Run All Tests
 
 ```bash
@@ -204,9 +209,10 @@ print(f"JAX devices: {jax.devices()}")
 Once installation is verified:
 
 1. **Explore examples**: `examples/01_basic_usage.py`
-2. **Read methodology**: `docs/methodology.md`
-3. **Try with your data**: Follow the data preparation guide
-4. **Contribute**: See `CONTRIBUTING.md`
+2. **Read model background**: `docs/model/00_overview.md` and `docs/model/01_background.md`
+3. **Run tutorials**: `docs/tutorials/01_basic_example.ipynb` and `docs/tutorials/02_gaza_analysis.ipynb`
+4. **Try with your data**: Follow the data preparation guide
+5. **Contribute**: See `CONTRIBUTING.md`
 
 ## Performance Tips
 

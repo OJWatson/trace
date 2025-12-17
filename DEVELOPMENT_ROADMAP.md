@@ -1,7 +1,92 @@
 # TRACE Development Roadmap
 
-**Date**: December 4, 2024  
-**Current Version**: 0.1.0 (Basic functionality complete)
+**Last Updated**: December 16, 2025  
+**Current Version**: 0.1.0
+
+---
+
+## Student Handoff: Objectives (Short-Term Forecasting + Decision Support)
+
+The near-term goal for a student is to extend TRACE from a working proof-of-concept into a forecasting and decision-support tool that:
+
+1. Produces short-term probabilistic forecasts of deaths and hospital incidence
+2. Demonstrates whether ACLED provides **additional forecast lead time** (e.g., “a few days”) compared to purely autoregressive baselines
+3. Supports scenario analysis (ceasefire / escalation / intervention)
+4. Moves beyond total hospital incidence to **hospital incidence typology** (case mix)
+
+This document focuses on research questions, engineering milestones, and evaluation criteria to guide iterative development.
+
+### Recommended development workflow
+
+- Implement one model change at a time
+- Add a minimal evaluation / backtest to justify the change
+- Keep tutorials updated (especially `docs/tutorials/02_gaza_analysis.ipynb`) so the repo remains runnable and teachable
+
+---
+
+## Student Handoff: Priority Milestones (8–12 weeks)
+
+### Milestone A — Forecasting evaluation and baselines
+
+- Define forecast targets:
+  - deaths (national)
+  - total injured (across hospitals)
+  - later: hospital-level, and typology
+- Create a rolling-origin evaluation:
+  - train on days `1..t`, forecast `t+1..t+h`
+  - horizons: 1, 3, 7, 14 days
+- Baseline comparators:
+  - persistence / moving-average
+  - Negative Binomial GLM with lagged deaths only
+  - Negative Binomial GLM with lagged deaths + lagged events
+
+### Milestone B — Event typology and severity features
+
+- Extend event input beyond raw count:
+  - counts by event type (ACLED `event_type`)
+  - severity proxies (e.g. ACLED reported fatalities, if usable)
+  - spatial proximity to hospitals / population centers
+- Evaluate which features improve short-term forecast skill.
+
+### Milestone C — Hierarchical structure
+
+- Implement partial pooling across:
+  - regions/governorates (if data available)
+  - hospitals
+  - event types (effects shared with shrinkage)
+- Goal: stabilize inference when data are sparse and improve generalization.
+
+### Milestone D — Hospital incidence typology (case mix)
+
+- Define typology labels (dependent on data availability):
+  - injury severity bands
+  - mechanism/type proxies (burns vs blast vs gunshot)
+  - or simpler operational categories (minor/major/critical)
+- Extend the observation model to multi-category counts:
+  - multinomial / Dirichlet-multinomial
+  - or independent NB by category with shared latent intensity
+
+### Milestone E — Scenario API + reporting
+
+- Standardize scenario definitions:
+  - baseline
+  - ceasefire
+  - escalation
+  - custom event trajectory
+- Add reporting outputs:
+  - forecast plots
+  - calibration plots
+  - “lead time gained” summary
+
+---
+
+## Student Handoff: Research Questions
+
+- Does ACLED improve forecasts compared to autoregressive-only baselines? At what horizons?
+- Which ACLED signals matter: incidence, typology, geography, or reported severity?
+- Are time-varying casualty rates best modeled by random walks, splines, or latent intensity processes?
+- How sensitive are results to reporting artifacts (mortality series discontinuities)?
+- Can we infer and forecast typology of hospital admissions, and is it decision-relevant?
 
 ---
 
@@ -12,7 +97,11 @@
 3. **Inference**: MCMC with NUTS, convergence diagnostics
 4. **Visualization**: Model fit plots, forecasts
 5. **Documentation**: Academic background, tutorials, API reference
-6. **Examples**: Basic simulation, Gaza real-data analysis
+6. **Examples/Tutorials**:
+   - `docs/tutorials/01_basic_example.ipynb`
+   - `docs/tutorials/02_gaza_analysis.ipynb`
+7. **Overdispersion**: Implemented via `GammaPoisson` (Negative Binomial)
+8. **Time-varying rates (opt-in)**: `casualty_model_random_walk` with log random walks for `mu_w[t]`, `mu_i[t]`
 
 ---
 

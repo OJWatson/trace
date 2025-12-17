@@ -163,10 +163,16 @@ effective_events = effective_events.at[event_day_index].add(norm_weights)
 lam_injuries = mu_w * effective_events  # (T, H)
 lam_injuries = jnp.maximum(lam_injuries, 1e-8)  # Numerical stability
 
+# Overdispersion (Gamma-Poisson / Negative Binomial)
+phi_hosp = numpyro.sample("phi_hosp", dist.Exponential(1.0))
+
 # Likelihood
 numpyro.sample(
     "obs_injuries",
-    dist.Poisson(lam_injuries).to_event(2),
+    dist.GammaPoisson(
+        concentration=phi_hosp,
+        rate=phi_hosp / lam_injuries,
+    ).to_event(2),
     obs=jnp.array(injuries_obs)
 )
 ```
@@ -201,13 +207,29 @@ expected_late = p_late * conv_deaths
 expected_deaths = expected_immediate + expected_late
 expected_deaths = jnp.maximum(expected_deaths, 1e-8)
 
+# Overdispersion (Gamma-Poisson / Negative Binomial)
+phi_death = numpyro.sample("phi_death", dist.Exponential(1.0))
+
 # Likelihood
 numpyro.sample(
     "obs_deaths",
-    dist.Poisson(expected_deaths),
+    dist.GammaPoisson(
+        concentration=phi_death,
+        rate=phi_death / expected_deaths,
+    ),
     obs=jnp.array(deaths_obs)
 )
 ```
+
+**Implementation Note**: TRACE uses overdispersed likelihoods by default (NumPyro `GammaPoisson`), which corresponds to a Negative Binomial observation model and reduces to a Poisson model as overdispersion goes to zero.
+
+### 2.6 Time-Varying Casualty Rates (Opt-in)
+
+TRACE also provides an opt-in model with time-varying casualty rates:
+
+- `trace.model.casualty_model_random_walk`
+
+This model replaces scalar `mu_w` and `mu_i` with time series `mu_w[t]` and `mu_i[t]` evolving as log random walks. The analysis API supports this via `run_inference(..., model=...)` and `posterior_predictive(..., model=...)`.
 
 **Convolution Details**:
 
@@ -329,6 +351,7 @@ For large datasets:
 - **Batch Processing**: Process multiple regions separately, then combine
 - **Thinning**: Keep every $k$-th MCMC sample to reduce memory
 
+(convergence-diagnostics)=
 ### 4.3 Convergence Diagnostics
 
 Check convergence after every run:
@@ -421,6 +444,7 @@ Modify the model to include covariates:
 
 ```python
 from trace.model import casualty_model_with_covariates
+from trace.analysis import run_inference
 
 # Define intervention indicator
 ceasefire = np.zeros(T)
@@ -428,9 +452,10 @@ ceasefire[60:90] = 1  # Ceasefire days 60-90
 
 covariates = ceasefire.reshape(-1, 1)
 
-mcmc, samples = run_inference_with_covariates(
+mcmc, samples = run_inference(
     ...,
-    covariates=covariates
+    covariates=covariates,
+    model=casualty_model_with_covariates,
 )
 
 # Coefficient interpretation
@@ -440,21 +465,16 @@ print(f"Ceasefire effect: {np.exp(beta.mean()):.2f}x multiplier")
 
 ### 7.2 Multiple Regions
 
-For hierarchical models across regions, see [Partial Pooling](05_partial_pooling.md).
+For hierarchical models across regions, see `DEVELOPMENT_ROADMAP.md` for the current implementation plan.
 
 ### 7.3 Negative Binomial
 
-To handle overdispersion, replace Poisson with Negative Binomial in the model code:
+TRACE already implements overdispersed observation models by default via NumPyro `GammaPoisson` (a Gamma–Poisson mixture), which corresponds to a Negative Binomial likelihood and reduces to Poisson as overdispersion goes to zero.
 
 ```python
-# Instead of:
-# numpyro.sample("obs_deaths", dist.Poisson(expected_deaths), obs=deaths_obs)
-
-# Use:
-phi = numpyro.sample("phi_deaths", dist.Gamma(0.5, 0.5))
 numpyro.sample(
     "obs_deaths",
-    dist.NegativeBinomial2(mean=expected_deaths, concentration=phi),
+    dist.GammaPoisson(concentration=phi_death, rate=phi_death / expected_deaths),
     obs=deaths_obs
 )
 ```
@@ -525,8 +545,8 @@ See the [API Documentation](../api/model.md) for complete function signatures.
 - **NumPyro Documentation**: https://num.pyro.ai
 - **JAX Documentation**: https://jax.readthedocs.io
 - **NUTS Algorithm** {cite}`Hoffman2014`
-- **Bayesian Workflow** {cite}`Gelman2020`
+- **Bayesian Workflow**: https://arxiv.org/abs/2011.01808
 
 ---
 
-*Next: [Model Schematic](04_schematic.md) provides visual diagrams of the model structure.*
+*Next: See `DEVELOPMENT_ROADMAP.md` for the current student handoff plan and prioritised implementation milestones.*
