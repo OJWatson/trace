@@ -80,7 +80,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#4.-Model-Diagnostics">4. Model Diagnostics</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#4.1-Convergence-Assessment">4.1 Convergence Assessment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#4.2-Trace-Plots">4.2 Trace Plots</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#4.3-Posterior-Distributions">4.3 Posterior Distributions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#5.-Posterior-Predictive-Checks">5. Posterior Predictive Checks</a><ul>
@@ -111,7 +110,6 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#Summary">Summary</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#References">References</a></li>
 </ul>
 </li>
 </ul>
@@ -260,7 +258,7 @@ Violence against civilians     2134
 </div>
 <p><strong>Explore Event Distribution</strong>:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, ax = plt.subplots(figsize=(10, 8))
@@ -270,7 +268,6 @@ ax.set_ylabel(&#39;Latitude&#39;)
 ax.set_title(&#39;ACLED Events: Palestine (Sept 2023 - Dec 2024)&#39;)
 ax.grid(True, alpha=0.3)
 plt.tight_layout()
-plt.savefig(&#39;acled_map.png&#39;, dpi=300)
 plt.show()
 <br/></pre></div>
 </div>
@@ -325,7 +322,7 @@ Columns: [&#39;report_date&#39;, &#39;report_source&#39;, &#39;killed&#39;, &#39
 </ul>
 <p><strong>Visualize Mortality Trends</strong>:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, axes = plt.subplots(2, 1, figsize=(12, 8), sharex=True)
@@ -342,7 +339,6 @@ axes[1].set_title(&#39;Cumulative Casualties&#39;, fontsize=13, fontweight=&#39;
 axes[1].grid(True, alpha=0.3)
 
 plt.tight_layout()
-plt.savefig(&#39;mortality_trends.png&#39;, dpi=300)
 plt.show()
 <br/></pre></div>
 </div>
@@ -451,7 +447,7 @@ Correlation(events, total simulated injuries): 0.301
 <h3>2.1 Event-Casualty Relationship<a class="headerlink" href="#2.1-Event-Casualty-Relationship" title="Link to this heading"></a></h3>
 <p>Examine the relationship between event counts and deaths:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>deaths_obs = prepare_mortality_data(mortality_df, analysis_start, analysis_end, use_extrapolated=True)
@@ -473,7 +469,6 @@ corr = np.corrcoef(week_events, week_deaths)[0, 1]
 ax.text(0.05, 0.95, f&#39;Correlation: {corr:.3f}&#39;, transform=ax.transAxes, fontsize=11, verticalalignment=&#39;top&#39;, bbox=dict(boxstyle=&#39;round&#39;, facecolor=&#39;wheat&#39;, alpha=0.5))
 
 plt.tight_layout()
-plt.savefig(&#39;events_vs_deaths.png&#39;, dpi=300)
 plt.show()
 <br/></pre></div>
 </div>
@@ -496,7 +491,7 @@ plt.show()
 <section id="2.2-Temporal-Patterns">
 <h3>2.2 Temporal Patterns<a class="headerlink" href="#2.2-Temporal-Patterns" title="Link to this heading"></a></h3>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>fig, axes = plt.subplots(3, 1, figsize=(14, 10), sharex=True)
@@ -523,7 +518,6 @@ for ax in axes:
 
 axes[0].legend(loc=&#39;upper right&#39;)
 plt.tight_layout()
-plt.savefig(&#39;temporal_patterns.png&#39;, dpi=300)
 plt.show()
 <br/></pre></div>
 </div>
@@ -1090,12 +1084,11 @@ Warning: Low effective sample size
 <section id="4.2-Trace-Plots">
 <h3>4.2 Trace Plots<a class="headerlink" href="#4.2-Trace-Plots" title="Link to this heading"></a></h3>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>az.plot_trace(idata, compact=True, figsize=(14, 10))
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>az.plot_trace(idata, compact=True, figsize=(14, 18))
 plt.tight_layout()
-plt.savefig(&#39;gaza_trace_plots.png&#39;, dpi=300)
 plt.show()
 <br/></pre></div>
 </div>
@@ -1113,38 +1106,6 @@ plt.show()
 <li><p>Good mixing (fuzzy caterpillars)</p></li>
 <li><p>Between-chain agreement</p></li>
 </ul>
-</section>
-<section id="4.3-Posterior-Distributions">
-<h3>4.3 Posterior Distributions<a class="headerlink" href="#4.3-Posterior-Distributions" title="Link to this heading"></a></h3>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>az.plot_posterior(idata, hdi_prob=0.95, figsize=(12, 8))
-plt.tight_layout()
-plt.savefig(&#39;gaza_posteriors.png&#39;, dpi=300)
-plt.show()
-<br/></pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/home/oj/GoogleDrive/AcademicWork/Imperial/git/trace/.venv/lib/python3.10/site-packages/arviz/plots/plot_utils.py:270: UserWarning: rcParams[&#39;plot.max_subplots&#39;] (40) is smaller than the number of variables to plot (350) in plot_posterior, generating only 40 plots
-  warnings.warn(
-/tmp/ipykernel_120801/34238845.py:2: UserWarning: Tight layout not applied. tight_layout cannot make Axes height small enough to accommodate all Axes decorations.
-  plt.tight_layout()
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/tutorials_02_gaza_analysis_32_1.png" src="../_images/tutorials_02_gaza_analysis_32_1.png" />
-</div>
-</div>
 </section>
 </section>
 <section id="5.-Posterior-Predictive-Checks">
@@ -1184,7 +1145,7 @@ Generated 4000 posterior predictive draws
 <section id="5.2-Visual-Assessment">
 <h3>5.2 Visual Assessment<a class="headerlink" href="#5.2-Visual-Assessment" title="Link to this heading"></a></h3>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Model fit figure including ACLED events
@@ -1236,7 +1197,6 @@ axes[2].grid(True, alpha=0.3)
 axes[2].legend(loc=&#39;best&#39;)
 
 plt.tight_layout()
-plt.savefig(&#39;gaza_model_fit.png&#39;, dpi=300, bbox_inches=&#39;tight&#39;)
 plt.show()
 <br/></pre></div>
 </div>
@@ -1245,7 +1205,7 @@ plt.show()
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorials_02_gaza_analysis_36_0.png" src="../_images/tutorials_02_gaza_analysis_36_0.png" />
+<img alt="../_images/tutorials_02_gaza_analysis_35_0.png" src="../_images/tutorials_02_gaza_analysis_35_0.png" />
 </div>
 </div>
 <p><strong>What to Check</strong>:</p>
@@ -1361,7 +1321,7 @@ print(f&#39;  Lives saved: {lives_saved:.0f} ({lives_saved / deaths_baseline * 1
 <section id="6.3-Scenario-Comparison-Visualization">
 <h3>6.3 Scenario Comparison Visualization<a class="headerlink" href="#6.3-Scenario-Comparison-Visualization" title="Link to this heading"></a></h3>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>scenarios = {
@@ -1400,7 +1360,6 @@ ax.set_title(&#39;Gaza Conflict: Forecast Scenarios (30 Days)&#39;, fontsize=14,
 ax.grid(True, alpha=0.3, axis=&#39;y&#39;)
 
 plt.tight_layout()
-plt.savefig(&#39;scenario_comparison.png&#39;, dpi=300)
 plt.show()
 
 print(&#39;\n=== Scenario Comparison ===&#39;)
@@ -1413,7 +1372,7 @@ for _, row in df_scenarios.iterrows():
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/tutorials_02_gaza_analysis_44_0.png" src="../_images/tutorials_02_gaza_analysis_44_0.png" />
+<img alt="../_images/tutorials_02_gaza_analysis_43_0.png" src="../_images/tutorials_02_gaza_analysis_43_0.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1504,7 +1463,7 @@ Short delay -    p_late: 0.140
 <p><strong>Data Limitations</strong>:</p>
 <ul class="simple">
 <li><p>Hospital data is simulated (real data unavailable)</p></li>
-<li><p>Mortality data may under-report true toll {cite}<code class="docutils literal notranslate"><span class="pre">Jamaluddine2024</span></code></p></li>
+<li><p>Mortality data may under-report true toll and delay distribution may change depending on type of ACLED event</p></li>
 <li><p>Event locations have measurement error</p></li>
 <li><p>Reporting delays and blackouts create gaps</p></li>
 </ul>
@@ -1542,7 +1501,7 @@ Short delay -    p_late: 0.140
 <section id="9.2-Model-Extensions">
 <h3>9.2 Model Extensions<a class="headerlink" href="#9.2-Model-Extensions" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p><strong>Time-Varying Parameters</strong>: Allow casualty rates to evolve (implemented as an opt-in random-walk model)</p></li>
+<li><p><strong>Time-Varying Parameters</strong>: Allow casualty rates to evolve with respect to covariates (implemented as an opt-in random-walk model)</p></li>
 <li><p><strong>Covariates</strong>: Include ceasefire indicators, humanitarian corridor access, and event type breakdowns</p></li>
 <li><p><strong>Hierarchical Structure</strong>: Partial pooling across regions or event types</p></li>
 <li><p><strong>Alternative event-to-casualty mapping</strong>: Use reported fatalities in ACLED, event severity proxies, or latent intensity models</p></li>
@@ -1584,10 +1543,6 @@ Short delay -    p_late: 0.140
 <li><p><a class="reference external" href="https://ojwatson.github.io/trace">TRACE Documentation</a>: Full package docs</p></li>
 <li><p><a class="reference external" href="https://github.com/OJWatson/trace">GitHub Repository</a>: Source code</p></li>
 </ul>
-</section>
-<section id="References">
-<h2>References<a class="headerlink" href="#References" title="Link to this heading"></a></h2>
-<p><em>This tutorial uses real data from an ongoing humanitarian crisis. All results should be interpreted with appropriate care and respect for those affected. The methods demonstrated here can be applied to other conflict settings with similar data availability.</em></p>
 </section>
 </section>
 
