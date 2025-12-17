@@ -70,6 +70,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Additional Information</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 </ul>
 
@@ -176,7 +177,7 @@ It samples from priors and conditions on observed data.</p></li>
 - Casualties from events are allocated to hospitals via spatial kernel
 - Immediate deaths occur on the event day
 - Injured individuals may die later according to delay distribution
-- All observations follow Poisson distributions (can be extended to Negative Binomial)</p>
+- Observations use overdispersed count likelihoods (Negative Binomial via Gamma-Poisson)</p>
 <p class="rubric">Examples</p>
 <p>This function is used with NumPyro’s MCMC inference:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">numpyro.infer</span><span class="w"> </span><span class="kn">import</span> <span class="n">MCMC</span><span class="p">,</span> <span class="n">NUTS</span>

@@ -110,6 +110,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Additional Information</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 </ul>
 
@@ -210,7 +211,7 @@ D_t = \underbrace{\mu_i |E_t|}_{\text{immediate deaths}} + \underbrace{p_{\text{
 <p>Daily injuries at hospital <span class="math notranslate nohighlight">\(h\)</span> are modeled as:</p>
 <div class="math notranslate nohighlight">
 \[
-H_{t,h} \sim \text{Poisson}(\lambda_{t,h})
+H_{t,h} \sim \text{NegBin}(\lambda_{t,h}, \phi_H)
 \]</div>
 <p>where the rate <span class="math notranslate nohighlight">\(\lambda_{t,h}\)</span> depends on events and spatial allocation:</p>
 <div class="math notranslate nohighlight">
@@ -224,7 +225,7 @@ H_{t,h} \sim \text{Poisson}(\lambda_{t,h})
 <p>National daily deaths are modeled as:</p>
 <div class="math notranslate nohighlight">
 \[
-D_t \sim \text{Poisson}(\delta_t)
+D_t \sim \text{NegBin}(\delta_t, \phi_D)
 \]</div>
 <p>with rate <span class="math notranslate nohighlight">\(\delta_t\)</span> given by the sum of immediate and delayed components as described above.</p>
 </section>
@@ -232,8 +233,9 @@ D_t \sim \text{Poisson}(\delta_t)
 <h3>Extensions<a class="headerlink" href="#extensions" title="Link to this heading"></a></h3>
 <p>The basic Poisson framework can be extended to handle:</p>
 <ul class="simple">
-<li><p><strong>Overdispersion</strong>: Negative Binomial distributions <span class="math notranslate nohighlight">\(\text{NB}(\mu, \phi)\)</span> to capture extra-Poisson variation</p></li>
+<li><p><strong>Overdispersion</strong>: Negative Binomial distributions <span class="math notranslate nohighlight">\(\text{NB}(\mu, \phi)\)</span> to capture extra-Poisson variation (implemented)</p></li>
 <li><p><strong>Time-varying rates</strong>: <span class="math notranslate nohighlight">\(\mu_{w,t} = \mu_w \exp(X_t \beta)\)</span> where <span class="math notranslate nohighlight">\(X_t\)</span> are covariates (ceasefire indicators, conflict intensity metrics)</p></li>
+<li><p><strong>Autoregressive / random-walk rates</strong>: <span class="math notranslate nohighlight">\(\log \mu_{w,t} = \log \mu_{w,t-1} + \epsilon_t\)</span> (implemented as an opt-in model)</p></li>
 <li><p><strong>Event-type specific effects</strong>: Different <span class="math notranslate nohighlight">\(\mu_w\)</span> and <span class="math notranslate nohighlight">\(\mu_i\)</span> for airstrikes vs. ground combat</p></li>
 <li><p><strong>Hierarchical structure</strong>: Partial pooling of parameters across multiple conflict zones</p></li>
 </ul>
@@ -407,7 +409,7 @@ D_t \sim \text{Poisson}(\delta_t)
 </ul>
 </li>
 </ul>
-<p>These findings inform humanitarian planning and international advocacy. See the <a class="reference internal" href="#../tutorials/02_gaza_analysis.md"><span class="xref myst">Gaza Analysis Tutorial</span></a> for full details.</p>
+<p>These findings inform humanitarian planning and international advocacy. See the <a class="reference internal" href="../tutorials/02_gaza_analysis.html"><span class="std std-doc">Gaza Analysis Tutorial</span></a> for full details.</p>
 </section>
 <section id="limitations-and-caveats">
 <h2>Limitations and Caveats<a class="headerlink" href="#limitations-and-caveats" title="Link to this heading"></a></h2>
@@ -494,9 +496,9 @@ D_t \sim \text{Poisson}(\delta_t)
 <h2>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading"></a></h2>
 <p>To begin using <strong>TRACE</strong>:</p>
 <ol class="arabic simple">
-<li><p><strong>Installation</strong>: See <a class="reference internal" href="#../installation.md"><span class="xref myst">Installation Guide</span></a></p></li>
-<li><p><strong>Basic Tutorial</strong>: Work through <a class="reference internal" href="#../tutorials/01_basic_example.md"><span class="xref myst">simulated data example</span></a></p></li>
-<li><p><strong>Real Data</strong>: Study <a class="reference internal" href="#../tutorials/02_gaza_analysis.md"><span class="xref myst">Gaza analysis</span></a></p></li>
+<li><p><strong>Installation</strong>: See <a class="reference internal" href="../installation.html"><span class="std std-doc">Installation Guide</span></a></p></li>
+<li><p><strong>Basic Tutorial</strong>: Work through <a class="reference internal" href="../tutorials/01_basic_example.html"><span class="std std-doc">simulated data example</span></a></p></li>
+<li><p><strong>Real Data</strong>: Study <a class="reference internal" href="../tutorials/02_gaza_analysis.html"><span class="std std-doc">Gaza analysis</span></a></p></li>
 <li><p><strong>Model Details</strong>: Read <a class="reference internal" href="02_description.html"><span class="std std-doc">mathematical description</span></a></p></li>
 <li><p><strong>Implementation</strong>: Explore <a class="reference internal" href="03_implementation.html"><span class="std std-doc">NumPyro code</span></a></p></li>
 </ol>
@@ -732,7 +734,7 @@ D_t \sim \text{Poisson}(\delta_t)
 </div>
 </div>
 <hr class="docutils" />
-<p><em>This background vignette provides context for the <strong>TRACE</strong> package. For mathematical details, see <a class="reference internal" href="02_description.html"><span class="std std-doc">Model Description</span></a>. For usage instructions, see <a class="reference internal" href="#../tutorials/01_basic_example.md"><span class="xref myst">Tutorials</span></a>.</em></p>
+<p><em>This background vignette provides context for the <strong>TRACE</strong> package. For mathematical details, see <a class="reference internal" href="02_description.html"><span class="std std-doc">Model Description</span></a>. For usage instructions, see <a class="reference internal" href="../tutorials/01_basic_example.html"><span class="std std-doc">Tutorials</span></a>.</em></p>
 </section>
 </section>
 

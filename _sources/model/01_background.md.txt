@@ -82,7 +82,7 @@ The model is formulated as a hierarchical Bayesian model with three likelihood c
 Daily injuries at hospital $h$ are modeled as:
 
 $$
-H_{t,h} \sim \text{Poisson}(\lambda_{t,h})
+H_{t,h} \sim \text{NegBin}(\lambda_{t,h}, \phi_H)
 $$
 
 where the rate $\lambda_{t,h}$ depends on events and spatial allocation:
@@ -98,7 +98,7 @@ Here $\mu_w$ is the average number of wounded per event. This parameter varies s
 National daily deaths are modeled as:
 
 $$
-D_t \sim \text{Poisson}(\delta_t)
+D_t \sim \text{NegBin}(\delta_t, \phi_D)
 $$
 
 with rate $\delta_t$ given by the sum of immediate and delayed components as described above.
@@ -107,8 +107,9 @@ with rate $\delta_t$ given by the sum of immediate and delayed components as des
 
 The basic Poisson framework can be extended to handle:
 
-- **Overdispersion**: Negative Binomial distributions $\text{NB}(\mu, \phi)$ to capture extra-Poisson variation
+- **Overdispersion**: Negative Binomial distributions $\text{NB}(\mu, \phi)$ to capture extra-Poisson variation (implemented)
 - **Time-varying rates**: $\mu_{w,t} = \mu_w \exp(X_t \beta)$ where $X_t$ are covariates (ceasefire indicators, conflict intensity metrics)
+- **Autoregressive / random-walk rates**: $\log \mu_{w,t} = \log \mu_{w,t-1} + \epsilon_t$ (implemented as an opt-in model)
 - **Event-type specific effects**: Different $\mu_w$ and $\mu_i$ for airstrikes vs. ground combat
 - **Hierarchical structure**: Partial pooling of parameters across multiple conflict zones
 
@@ -252,7 +253,7 @@ Mortality data is typically more complete than injury data but still suffers fro
   - Under ceasefire: ~400 deaths (mostly delayed from existing injuries)
   - **Potential lives saved: 3,500 over 30 days**
 
-These findings inform humanitarian planning and international advocacy. See the [Gaza Analysis Tutorial](../tutorials/02_gaza_analysis.md) for full details.
+These findings inform humanitarian planning and international advocacy. See the [Gaza Analysis Tutorial](../tutorials/02_gaza_analysis.ipynb) for full details.
 
 ## Limitations and Caveats
 
@@ -337,8 +338,8 @@ Conflict-specific tools:
 To begin using **TRACE**:
 
 1. **Installation**: See [Installation Guide](../installation.md)
-2. **Basic Tutorial**: Work through [simulated data example](../tutorials/01_basic_example.md)
-3. **Real Data**: Study [Gaza analysis](../tutorials/02_gaza_analysis.md)
+2. **Basic Tutorial**: Work through [simulated data example](../tutorials/01_basic_example.ipynb)
+3. **Real Data**: Study [Gaza analysis](../tutorials/02_gaza_analysis.ipynb)
 4. **Model Details**: Read [mathematical description](02_description.md)
 5. **Implementation**: Explore [NumPyro code](03_implementation.md)
 
@@ -365,4 +366,4 @@ See [Contributing Guide](../contributing.md) for details.
 
 ---
 
-*This background vignette provides context for the **TRACE** package. For mathematical details, see [Model Description](02_description.md). For usage instructions, see [Tutorials](../tutorials/01_basic_example.md).*
+*This background vignette provides context for the **TRACE** package. For mathematical details, see [Model Description](02_description.md). For usage instructions, see [Tutorials](../tutorials/01_basic_example.ipynb).*

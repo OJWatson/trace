@@ -62,6 +62,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#spatial-kernel">2.3 Spatial Kernel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#hospital-injury-likelihood">2.4 Hospital Injury Likelihood</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#death-likelihood">2.5 Death Likelihood</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#time-varying-casualty-rates-opt-in">2.6 Time-Varying Casualty Rates (Opt-in)</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#running-inference">3. Running Inference</a><ul>
@@ -110,6 +111,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Additional Information</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 </ul>
 
@@ -296,10 +298,16 @@
 <span class="n">lam_injuries</span> <span class="o">=</span> <span class="n">mu_w</span> <span class="o">*</span> <span class="n">effective_events</span>  <span class="c1"># (T, H)</span>
 <span class="n">lam_injuries</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">lam_injuries</span><span class="p">,</span> <span class="mf">1e-8</span><span class="p">)</span>  <span class="c1"># Numerical stability</span>
 
+<span class="c1"># Overdispersion (Gamma-Poisson / Negative Binomial)</span>
+<span class="n">phi_hosp</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;phi_hosp&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Exponential</span><span class="p">(</span><span class="mf">1.0</span><span class="p">))</span>
+
 <span class="c1"># Likelihood</span>
 <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>
     <span class="s2">&quot;obs_injuries&quot;</span><span class="p">,</span>
-    <span class="n">dist</span><span class="o">.</span><span class="n">Poisson</span><span class="p">(</span><span class="n">lam_injuries</span><span class="p">)</span><span class="o">.</span><span class="n">to_event</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span>
+    <span class="n">dist</span><span class="o">.</span><span class="n">GammaPoisson</span><span class="p">(</span>
+        <span class="n">concentration</span><span class="o">=</span><span class="n">phi_hosp</span><span class="p">,</span>
+        <span class="n">rate</span><span class="o">=</span><span class="n">phi_hosp</span> <span class="o">/</span> <span class="n">lam_injuries</span><span class="p">,</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">to_event</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span>
     <span class="n">obs</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">injuries_obs</span><span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
@@ -333,14 +341,29 @@
 <span class="n">expected_deaths</span> <span class="o">=</span> <span class="n">expected_immediate</span> <span class="o">+</span> <span class="n">expected_late</span>
 <span class="n">expected_deaths</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">expected_deaths</span><span class="p">,</span> <span class="mf">1e-8</span><span class="p">)</span>
 
+<span class="c1"># Overdispersion (Gamma-Poisson / Negative Binomial)</span>
+<span class="n">phi_death</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;phi_death&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Exponential</span><span class="p">(</span><span class="mf">1.0</span><span class="p">))</span>
+
 <span class="c1"># Likelihood</span>
 <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>
     <span class="s2">&quot;obs_deaths&quot;</span><span class="p">,</span>
-    <span class="n">dist</span><span class="o">.</span><span class="n">Poisson</span><span class="p">(</span><span class="n">expected_deaths</span><span class="p">),</span>
+    <span class="n">dist</span><span class="o">.</span><span class="n">GammaPoisson</span><span class="p">(</span>
+        <span class="n">concentration</span><span class="o">=</span><span class="n">phi_death</span><span class="p">,</span>
+        <span class="n">rate</span><span class="o">=</span><span class="n">phi_death</span> <span class="o">/</span> <span class="n">expected_deaths</span><span class="p">,</span>
+    <span class="p">),</span>
     <span class="n">obs</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">deaths_obs</span><span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
 </div>
+<p><strong>Implementation Note</strong>: TRACE uses overdispersed likelihoods by default (NumPyro <code class="docutils literal notranslate"><span class="pre">GammaPoisson</span></code>), which corresponds to a Negative Binomial observation model and reduces to a Poisson model as overdispersion goes to zero.</p>
+</section>
+<section id="time-varying-casualty-rates-opt-in">
+<h3>2.6 Time-Varying Casualty Rates (Opt-in)<a class="headerlink" href="#time-varying-casualty-rates-opt-in" title="Link to this heading"></a></h3>
+<p>TRACE also provides an opt-in model with time-varying casualty rates:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">trace.model.casualty_model_random_walk</span></code></p></li>
+</ul>
+<p>This model replaces scalar <code class="docutils literal notranslate"><span class="pre">mu_w</span></code> and <code class="docutils literal notranslate"><span class="pre">mu_i</span></code> with time series <code class="docutils literal notranslate"><span class="pre">mu_w[t]</span></code> and <code class="docutils literal notranslate"><span class="pre">mu_i[t]</span></code> evolving as log random walks. The analysis API supports this via <code class="docutils literal notranslate"><span class="pre">run_inference(...,</span> <span class="pre">model=...)</span></code> and <code class="docutils literal notranslate"><span class="pre">posterior_predictive(...,</span> <span class="pre">model=...)</span></code>.</p>
 <p><strong>Convolution Details</strong>:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">pad(injuries_total,</span> <span class="pre">(0,</span> <span class="pre">L))</span></code>: Pads array on the right to avoid index errors</p></li>
@@ -459,7 +482,7 @@
 </ul>
 </section>
 <section id="convergence-diagnostics">
-<h3>4.3 Convergence Diagnostics<a class="headerlink" href="#convergence-diagnostics" title="Link to this heading"></a></h3>
+<span id="id1"></span><h3>4.3 Convergence Diagnostics<a class="headerlink" href="#convergence-diagnostics" title="Link to this heading"></a></h3>
 <p>Check convergence after every run:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">arviz</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">az</span>
 
@@ -544,6 +567,7 @@
 <h3>7.1 Time-Varying Parameters<a class="headerlink" href="#time-varying-parameters" title="Link to this heading"></a></h3>
 <p>Modify the model to include covariates:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">trace.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">casualty_model_with_covariates</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">trace.analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_inference</span>
 
 <span class="c1"># Define intervention indicator</span>
 <span class="n">ceasefire</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
@@ -551,9 +575,10 @@
 
 <span class="n">covariates</span> <span class="o">=</span> <span class="n">ceasefire</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
-<span class="n">mcmc</span><span class="p">,</span> <span class="n">samples</span> <span class="o">=</span> <span class="n">run_inference_with_covariates</span><span class="p">(</span>
+<span class="n">mcmc</span><span class="p">,</span> <span class="n">samples</span> <span class="o">=</span> <span class="n">run_inference</span><span class="p">(</span>
     <span class="o">...</span><span class="p">,</span>
-    <span class="n">covariates</span><span class="o">=</span><span class="n">covariates</span>
+    <span class="n">covariates</span><span class="o">=</span><span class="n">covariates</span><span class="p">,</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">casualty_model_with_covariates</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="c1"># Coefficient interpretation</span>
@@ -564,19 +589,14 @@
 </section>
 <section id="multiple-regions">
 <h3>7.2 Multiple Regions<a class="headerlink" href="#multiple-regions" title="Link to this heading"></a></h3>
-<p>For hierarchical models across regions, see <a class="reference internal" href="#05_partial_pooling.md"><span class="xref myst">Partial Pooling</span></a>.</p>
+<p>For hierarchical models across regions, see <code class="docutils literal notranslate"><span class="pre">DEVELOPMENT_ROADMAP.md</span></code> for the current implementation plan.</p>
 </section>
 <section id="negative-binomial">
 <h3>7.3 Negative Binomial<a class="headerlink" href="#negative-binomial" title="Link to this heading"></a></h3>
-<p>To handle overdispersion, replace Poisson with Negative Binomial in the model code:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Instead of:</span>
-<span class="c1"># numpyro.sample(&quot;obs_deaths&quot;, dist.Poisson(expected_deaths), obs=deaths_obs)</span>
-
-<span class="c1"># Use:</span>
-<span class="n">phi</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;phi_deaths&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Gamma</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
-<span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>
+<p>TRACE already implements overdispersed observation models by default via NumPyro <code class="docutils literal notranslate"><span class="pre">GammaPoisson</span></code> (a Gamma–Poisson mixture), which corresponds to a Negative Binomial likelihood and reduces to Poisson as overdispersion goes to zero.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>
     <span class="s2">&quot;obs_deaths&quot;</span><span class="p">,</span>
-    <span class="n">dist</span><span class="o">.</span><span class="n">NegativeBinomial2</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="n">expected_deaths</span><span class="p">,</span> <span class="n">concentration</span><span class="o">=</span><span class="n">phi</span><span class="p">),</span>
+    <span class="n">dist</span><span class="o">.</span><span class="n">GammaPoisson</span><span class="p">(</span><span class="n">concentration</span><span class="o">=</span><span class="n">phi_death</span><span class="p">,</span> <span class="n">rate</span><span class="o">=</span><span class="n">phi_death</span> <span class="o">/</span> <span class="n">expected_deaths</span><span class="p">),</span>
     <span class="n">obs</span><span class="o">=</span><span class="n">deaths_obs</span>
 <span class="p">)</span>
 </pre></div>
@@ -648,11 +668,11 @@
 <ul class="simple">
 <li><p><strong>NumPyro Documentation</strong>: https://num.pyro.ai</p></li>
 <li><p><strong>JAX Documentation</strong>: https://jax.readthedocs.io</p></li>
-<li><p><strong>NUTS Algorithm</strong> <span id="id1">[<a class="reference internal" href="02_description.html#id7" title="Matthew D Hoffman and Andrew Gelman. The no-u-turn sampler: adaptively setting path lengths in hamiltonian monte carlo. Journal of Machine Learning Research, 15(1):1593–1623, 2014.">Hoffman and Gelman, 2014</a>]</span></p></li>
-<li><p><strong>Bayesian Workflow</strong> <span id="id2">[]</span></p></li>
+<li><p><strong>NUTS Algorithm</strong> <span id="id2">[<a class="reference internal" href="02_description.html#id7" title="Matthew D Hoffman and Andrew Gelman. The no-u-turn sampler: adaptively setting path lengths in hamiltonian monte carlo. Journal of Machine Learning Research, 15(1):1593–1623, 2014.">Hoffman and Gelman, 2014</a>]</span></p></li>
+<li><p><strong>Bayesian Workflow</strong>: https://arxiv.org/abs/2011.01808</p></li>
 </ul>
 <hr class="docutils" />
-<p><em>Next: <a class="reference internal" href="#04_schematic.md"><span class="xref myst">Model Schematic</span></a> provides visual diagrams of the model structure.</em></p>
+<p><em>Next: See <code class="docutils literal notranslate"><span class="pre">DEVELOPMENT_ROADMAP.md</span></code> for the current student handoff plan and prioritised implementation milestones.</em></p>
 </section>
 </section>
 

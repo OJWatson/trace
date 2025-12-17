@@ -68,6 +68,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Additional Information</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 </ul>
 
@@ -127,46 +128,31 @@ dynamics, including hospital admissions and mortality with appropriate delays.</
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><p>Dictionary containing:
-events : list[dict]</p>
-<blockquote>
-<div><p>Event dictionaries with keys: date, region, latitude, longitude, casualties,
-immediate_deaths, injured.</p>
-</div></blockquote>
-<dl class="simple">
-<dt>hospital_incidence<span class="classifier">np.ndarray</span></dt><dd><p>Array of shape (T, n_hospitals) with daily injured counts.</p>
-</dd>
-<dt>national_deaths<span class="classifier">np.ndarray</span></dt><dd><p>Array of length T with daily death counts.</p>
-</dd>
-<dt>region_pop<span class="classifier">np.ndarray</span></dt><dd><p>Array of shape (T+1, n_regions) with populations over time.</p>
-</dd>
-<dt>hospital_coords<span class="classifier">np.ndarray</span></dt><dd><p>Array of shape (n_hospitals, 2) with hospital locations.</p>
-</dd>
-<dt>region_centers<span class="classifier">list[tuple[float, float]]</span></dt><dd><p>List of (x, y) tuples for region centers.</p>
-</dd>
-</dl>
-</p>
+<dd class="field-even"><p>Dictionary with keys: events, hospital_incidence, national_deaths, region_pop,
+hospital_coords, region_centers.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">delay_probs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">simulate_conflict_data</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">n_regions</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">n_hospitals</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">T</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">mu_w_true</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">mu_i_true</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">p_late_true</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">delay_probs</span><span class="o">=</span><span class="n">delay_probs</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">events_rate</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
-<span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Simulated </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;events&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2"> events&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total deaths: </span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;national_deaths&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="n">delay_probs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">])</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">simulate_conflict_data</span><span class="p">(</span>
+    <span class="n">n_regions</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">n_hospitals</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">T</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">mu_w_true</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span>
+    <span class="n">mu_i_true</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+    <span class="n">p_late_true</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+    <span class="n">delay_probs</span><span class="o">=</span><span class="n">delay_probs</span><span class="p">,</span>
+    <span class="n">events_rate</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+    <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Simulated </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;events&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2"> events&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total deaths: </span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;national_deaths&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="rubric">Notes</p>

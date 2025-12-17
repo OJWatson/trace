@@ -61,6 +61,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Additional Information</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
 </ul>
 
@@ -219,7 +220,7 @@
 <span class="sd">    - Casualties from events are allocated to hospitals via spatial kernel</span>
 <span class="sd">    - Immediate deaths occur on the event day</span>
 <span class="sd">    - Injured individuals may die later according to delay distribution</span>
-<span class="sd">    - All observations follow Poisson distributions (can be extended to Negative Binomial)</span>
+<span class="sd">    - Observations use overdispersed count likelihoods (Negative Binomial via Gamma-Poisson)</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -277,7 +278,7 @@
     <span class="c1"># Ensure positive rates (add small epsilon for numerical stability)</span>
     <span class="n">lam_injuries</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">lam_injuries</span><span class="p">,</span> <span class="mf">1e-8</span><span class="p">)</span>
 
-    <span class="c1"># Observe hospital injuries via Poisson likelihood</span>
+    <span class="c1"># Observe hospital injuries via an overdispersed Gamma-Poisson likelihood</span>
     <span class="n">obs_inj</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>
         <span class="s2">&quot;obs_injuries&quot;</span><span class="p">,</span>
         <span class="n">dist</span><span class="o">.</span><span class="n">GammaPoisson</span><span class="p">(</span><span class="n">concentration</span><span class="o">=</span><span class="n">phi_hosp</span><span class="p">,</span>
@@ -319,7 +320,7 @@
     <span class="c1"># Ensure positive rates (add small epsilon for numerical stability)</span>
     <span class="n">expected_deaths</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">expected_deaths</span><span class="p">,</span> <span class="mf">1e-8</span><span class="p">)</span>
 
-    <span class="c1"># Observe national deaths via Poisson likelihood</span>
+    <span class="c1"># Observe national deaths via an overdispersed Gamma-Poisson likelihood</span>
     <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>
         <span class="s2">&quot;obs_deaths&quot;</span><span class="p">,</span>
         <span class="n">dist</span><span class="o">.</span><span class="n">GammaPoisson</span><span class="p">(</span><span class="n">concentration</span><span class="o">=</span><span class="n">phi_death</span><span class="p">,</span>
@@ -462,6 +463,9 @@
     <span class="n">p_late</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;p_late&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Beta</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
     <span class="n">ell</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;ell&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Exponential</span><span class="p">(</span><span class="mf">1.0</span><span class="p">))</span>
 
+    <span class="n">phi_hosp</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;phi_hosp&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Exponential</span><span class="p">(</span><span class="mf">1.0</span><span class="p">))</span>
+    <span class="n">phi_death</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;phi_death&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Exponential</span><span class="p">(</span><span class="mf">1.0</span><span class="p">))</span>
+
     <span class="c1"># Covariate effects</span>
     <span class="k">if</span> <span class="n">covariates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">n_covariates</span> <span class="o">=</span> <span class="n">covariates</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
@@ -492,8 +496,13 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">lam_injuries</span> <span class="o">=</span> <span class="n">mu_w</span> <span class="o">*</span> <span class="n">effective_events</span>
 
+    <span class="n">lam_injuries</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">lam_injuries</span><span class="p">,</span> <span class="mf">1e-8</span><span class="p">)</span>
+
     <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>
-        <span class="s2">&quot;obs_injuries&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Poisson</span><span class="p">(</span><span class="n">lam_injuries</span><span class="p">)</span><span class="o">.</span><span class="n">to_event</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">obs</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">injuries_obs</span><span class="p">)</span>
+        <span class="s2">&quot;obs_injuries&quot;</span><span class="p">,</span>
+        <span class="n">dist</span><span class="o">.</span><span class="n">GammaPoisson</span><span class="p">(</span><span class="n">concentration</span><span class="o">=</span><span class="n">phi_hosp</span><span class="p">,</span>
+                          <span class="n">rate</span><span class="o">=</span><span class="n">phi_hosp</span> <span class="o">/</span> <span class="n">lam_injuries</span><span class="p">)</span><span class="o">.</span><span class="n">to_event</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span>
+        <span class="n">obs</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">injuries_obs</span><span class="p">),</span>
     <span class="p">)</span>
 
     <span class="n">injuries_total</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">injuries_obs</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -514,8 +523,14 @@
 
     <span class="n">expected_deaths</span> <span class="o">=</span> <span class="n">expected_immediate_deaths</span> <span class="o">+</span> <span class="n">expected_late_deaths</span>
 
-    <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;obs_deaths&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Poisson</span><span class="p">(</span>
-        <span class="n">expected_deaths</span><span class="p">),</span> <span class="n">obs</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">deaths_obs</span><span class="p">))</span></div>
+    <span class="n">expected_deaths</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">expected_deaths</span><span class="p">,</span> <span class="mf">1e-8</span><span class="p">)</span>
+
+    <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>
+        <span class="s2">&quot;obs_deaths&quot;</span><span class="p">,</span>
+        <span class="n">dist</span><span class="o">.</span><span class="n">GammaPoisson</span><span class="p">(</span><span class="n">concentration</span><span class="o">=</span><span class="n">phi_death</span><span class="p">,</span>
+                          <span class="n">rate</span><span class="o">=</span><span class="n">phi_death</span> <span class="o">/</span> <span class="n">expected_deaths</span><span class="p">),</span>
+        <span class="n">obs</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">deaths_obs</span><span class="p">),</span>
+    <span class="p">)</span></div>
 
 </pre></div>
 

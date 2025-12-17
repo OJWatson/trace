@@ -99,6 +99,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Additional Information</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 </ul>
 
@@ -139,7 +140,7 @@
 </ol>
 <section id="observation-models">
 <h3>1.1 Observation Models<a class="headerlink" href="#observation-models" title="Link to this heading"></a></h3>
-<p>Both injuries and deaths are modeled as Poisson random variables:</p>
+<p>In the simplest formulation, injuries and deaths can be modeled as Poisson random variables:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \begin{align}
@@ -157,6 +158,7 @@ D_t &amp;\sim \text{NegativeBinomial}(\delta_t, \phi_D)
 \end{align}
 \end{split}\]</div>
 <p>where <span class="math notranslate nohighlight">\(\phi_H\)</span> and <span class="math notranslate nohighlight">\(\phi_D\)</span> are overdispersion parameters. This extension is described in Section 1.5.</p>
+<p><strong>Implementation Note</strong>: The current TRACE implementation uses overdispersed likelihoods by default via a Gamma-Poisson mixture (NumPyro’s <code class="docutils literal notranslate"><span class="pre">GammaPoisson</span></code>), which corresponds to a Negative Binomial model and reduces to a Poisson model as overdispersion goes to zero.</p>
 </section>
 <section id="hospital-injury-model">
 <h3>1.2 Hospital Injury Model<a class="headerlink" href="#hospital-injury-model" title="Link to this heading"></a></h3>
@@ -293,6 +295,7 @@ f \sim \text{Dirichlet}(\alpha_1, \ldots, \alpha_L)
 \log \mu_{w,t} = \log \mu_{w,t-1} + \epsilon_t, \quad \epsilon_t \sim \mathcal{N}(0, \sigma^2)
 \]</div>
 <p>This allows casualty rates to evolve over time without requiring explicit covariates.</p>
+<p><strong>Implementation Note</strong>: TRACE provides an opt-in random-walk model for <span class="math notranslate nohighlight">\(\mu_{w,t}\)</span> and <span class="math notranslate nohighlight">\(\mu_{i,t}\)</span> via <code class="docutils literal notranslate"><span class="pre">trace.model.casualty_model_random_walk</span></code>.</p>
 </section>
 </section>
 <section id="parameter-priors">
@@ -356,14 +359,14 @@ p_{\text{late}} \sim \text{Beta}(\alpha, \beta)
 <p>The joint posterior distribution is:</p>
 <div class="math notranslate nohighlight">
 \[
-p(\mu_w, \mu_i, p_{\text{late}}, \ell | H, D, E) \propto p(\mu_w) p(\mu_i) p(p_{\text{late}}) p(\ell) \times \mathcal{L}(H | \mu_w, \ell, E) \times \mathcal{L}(D | \mu_i, p_{\text{late}}, H, E)
+p(\mu_w, \mu_i, p_{\text{late}}, \ell, \phi_H, \phi_D | H, D, E) \propto p(\mu_w) p(\mu_i) p(p_{\text{late}}) p(\ell) p(\phi_H) p(\phi_D) \times \mathcal{L}(H | \mu_w, \ell, \phi_H, E) \times \mathcal{L}(D | \mu_i, p_{\text{late}}, \phi_D, H, E)
 \]</div>
 <p>where:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \begin{align}
-\mathcal{L}(H | \mu_w, \ell, E) &amp;= \prod_{t=1}^T \prod_{j=1}^J \text{Poisson}(H_{t,j} | \lambda_{t,j}) \\
-\mathcal{L}(D | \mu_i, p_{\text{late}}, H, E) &amp;= \prod_{t=1}^T \text{Poisson}(D_t | \delta_t)
+\mathcal{L}(H | \mu_w, \ell, \phi_H, E) &amp;= \prod_{t=1}^T \prod_{j=1}^J \text{NegBin}(H_{t,j} | \lambda_{t,j}, \phi_H) \\
+\mathcal{L}(D | \mu_i, p_{\text{late}}, \phi_D, H, E) &amp;= \prod_{t=1}^T \text{NegBin}(D_t | \delta_t, \phi_D)
 \end{align}
 \end{split}\]</div>
 <p>This posterior is represented in a NumPyro model and sampled using the No-U-Turn Sampler (NUTS) <span id="id2">[<a class="reference internal" href="#id7" title="Matthew D Hoffman and Andrew Gelman. The no-u-turn sampler: adaptively setting path lengths in hamiltonian monte carlo. Journal of Machine Learning Research, 15(1):1593–1623, 2014.">Hoffman and Gelman, 2014</a>]</span>, an adaptive Hamiltonian Monte Carlo algorithm.</p>
@@ -376,7 +379,7 @@ p(\mu_w, \mu_i, p_{\text{late}}, \ell | H, D, E) \propto p(\mu_w) p(\mu_i) p(p_{
 <li><p><strong>Effective Sample Size</strong> (ESS): Should be <span class="math notranslate nohighlight">\(&gt; 100\)</span> per chain</p></li>
 <li><p><strong>Divergences</strong>: Should be zero or very few</p></li>
 </ol>
-<p>See the <a class="reference internal" href="#03_diagnostics.md"><span class="xref myst">Diagnostics Guide</span></a> for details.</p>
+<p>See the <a class="reference internal" href="03_implementation.html#convergence-diagnostics"><span class="std std-ref">4.3 Convergence Diagnostics</span></a> for details.</p>
 </section>
 </section>
 <section id="posterior-predictive-distribution">
@@ -385,8 +388,8 @@ p(\mu_w, \mu_i, p_{\text{late}}, \ell | H, D, E) \propto p(\mu_w) p(\mu_i) p(p_{
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \begin{align}
-\tilde{H}_{t,j} &amp;\sim \text{Poisson}(\lambda_{t,j}^{(s)}) \\
-\tilde{D}_t &amp;\sim \text{Poisson}(\delta_t^{(s)})
+\tilde{H}_{t,j} &amp;\sim \text{NegBin}(\lambda_{t,j}^{(s)}, \phi_H^{(s)}) \\
+\tilde{D}_t &amp;\sim \text{NegBin}(\delta_t^{(s)}, \phi_D^{(s)})
 \end{align}
 \end{split}\]</div>
 <p>for each posterior sample <span class="math notranslate nohighlight">\(s = 1, \ldots, S\)</span>.</p>
@@ -407,8 +410,8 @@ p(\mu_w, \mu_i, p_{\text{late}}, \ell | H, D, E) \propto p(\mu_w) p(\mu_i) p(p_{
 </ol>
 <p>For each posterior sample <span class="math notranslate nohighlight">\(s\)</span>:</p>
 <ol class="arabic simple">
-<li><p>Simulate injuries: <span class="math notranslate nohighlight">\(\tilde{H}_{t,j}^{(s)} \sim \text{Poisson}(\mu_w^{(s)} \sum_{e \in \tilde{E}_t} w_{e,j}^{(s)})\)</span></p></li>
-<li><p>Simulate deaths: <span class="math notranslate nohighlight">\(\tilde{D}_t^{(s)} \sim \text{Poisson}(\mu_i^{(s)} |\tilde{E}_t| + p_{\text{late}}^{(s)} \sum_k \tilde{I}_{t-k}^{(s)} f_k)\)</span></p></li>
+<li><p>Simulate injuries: <span class="math notranslate nohighlight">\(\tilde{H}_{t,j}^{(s)} \sim \text{NegBin}(\mu_w^{(s)} \sum_{e \in \tilde{E}_t} w_{e,j}^{(s)}, \phi_H^{(s)})\)</span></p></li>
+<li><p>Simulate deaths: <span class="math notranslate nohighlight">\(\tilde{D}_t^{(s)} \sim \text{NegBin}(\mu_i^{(s)} |\tilde{E}_t| + p_{\text{late}}^{(s)} \sum_k \tilde{I}_{t-k}^{(s)} f_k, \phi_D^{(s)})\)</span></p></li>
 </ol>
 <p>Aggregate across samples to obtain forecast distributions.</p>
 <p><strong>Scenarios</strong>:</p>

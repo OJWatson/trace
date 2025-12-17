@@ -97,6 +97,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Additional Information</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
 </ul>
 
@@ -280,12 +281,12 @@
 <p>The model has three key components:</p>
 <section id="observation-model">
 <h3>Observation Model<a class="headerlink" href="#observation-model" title="Link to this heading"></a></h3>
-<p>Hospital injuries and deaths are modeled as Poisson random variables:</p>
+<p>Hospital injuries and deaths are modeled using overdispersed count likelihoods. The default implementation uses a Negative Binomial model implemented via a Gamma-Poisson mixture (NumPyro’s <code class="docutils literal notranslate"><span class="pre">GammaPoisson</span></code>), which reduces to a Poisson model as overdispersion goes to zero:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \begin{align}
-H_{t,h} &amp;\sim \text{Poisson}(\lambda_{t,h}) \\
-D_t &amp;\sim \text{Poisson}(\delta_t)
+H_{t,h} &amp;\sim \text{NegBin}(\lambda_{t,h}, \phi_H) \\
+D_t &amp;\sim \text{NegBin}(\delta_t, \phi_D)
 \end{align}
 \end{split}\]</div>
 <p>where <span class="math notranslate nohighlight">\(H_{t,h}\)</span> are injuries at hospital <span class="math notranslate nohighlight">\(h\)</span> on day <span class="math notranslate nohighlight">\(t\)</span>, and <span class="math notranslate nohighlight">\(D_t\)</span> are national deaths.</p>
@@ -331,18 +332,17 @@ w_{e,h} = \frac{\exp(-d_{e,h}/\ell)}{\sum_{h'} \exp(-d_{e,h'}/\ell)}
 <li><p><strong>Time-Varying Parameters</strong>: Allow casualty rates to change over time (e.g., due to weapon changes, medical improvements)</p></li>
 <li><p><strong>Covariates</strong>: Include intervention indicators, conflict type, or other predictors</p></li>
 <li><p><strong>Hierarchical Structure</strong>: Partial pooling across multiple regions or conflict zones</p></li>
-<li><p><strong>Overdispersion</strong>: Negative Binomial distributions to handle extra-Poisson variation</p></li>
+<li><p><strong>Overdispersion</strong>: Negative Binomial distributions to handle extra-Poisson variation (implemented)</p></li>
 <li><p><strong>Missing Data</strong>: Impute missing observations using the model structure</p></li>
 </ol>
-<p>See the <a class="reference internal" href="#05_extensions.md"><span class="xref myst">Model Extensions</span></a> vignette for details.</p>
 </section>
 <section id="getting-started">
 <h2>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading"></a></h2>
 <p>To begin using <strong>TRACE</strong>:</p>
 <ol class="arabic simple">
-<li><p><a class="reference internal" href="#../installation.md"><span class="xref myst">Installation Instructions</span></a></p></li>
-<li><p><a class="reference internal" href="#../tutorials/01_basic_example.md"><span class="xref myst">Basic Example Tutorial</span></a> — Simulated data walkthrough</p></li>
-<li><p><a class="reference internal" href="#../tutorials/02_gaza_analysis.md"><span class="xref myst">Gaza Analysis Tutorial</span></a> — Real data application</p></li>
+<li><p><a class="reference internal" href="../installation.html"><span class="std std-doc">Installation Instructions</span></a></p></li>
+<li><p><a class="reference internal" href="../tutorials/01_basic_example.html"><span class="std std-doc">Basic Example Tutorial</span></a> — Simulated data walkthrough</p></li>
+<li><p><a class="reference internal" href="../tutorials/02_gaza_analysis.html"><span class="std std-doc">Gaza Analysis Tutorial</span></a> — Real data application</p></li>
 <li><p><a class="reference internal" href="02_description.html"><span class="std std-doc">Model Description</span></a> — Detailed mathematical specification</p></li>
 </ol>
 </section>

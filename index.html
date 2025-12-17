@@ -65,6 +65,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Additional Information</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 </ul>
 
@@ -115,7 +116,7 @@
 <h2>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading"></a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">trace</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">trace.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">fetch_acled_data</span><span class="p">,</span> <span class="n">prepare_acled_events</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">trace.analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_inference</span><span class="p">,</span> <span class="n">plot_fit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">trace.analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_inference</span><span class="p">,</span> <span class="n">posterior_predictive</span><span class="p">,</span> <span class="n">plot_fit</span>
 
 <span class="c1"># Fetch conflict event data</span>
 <span class="n">events_df</span> <span class="o">=</span> <span class="n">fetch_acled_data</span><span class="p">(</span>
@@ -140,8 +141,19 @@
     <span class="n">deaths_obs</span><span class="o">=</span><span class="n">mortality_data</span>
 <span class="p">)</span>
 
+<span class="c1"># Posterior predictive checks</span>
+<span class="n">preds</span> <span class="o">=</span> <span class="n">posterior_predictive</span><span class="p">(</span>
+    <span class="n">samples</span><span class="o">=</span><span class="n">samples</span><span class="p">,</span>
+    <span class="n">events_by_day</span><span class="o">=</span><span class="n">events_by_day</span><span class="p">,</span>
+    <span class="n">event_day_index</span><span class="o">=</span><span class="n">event_days</span><span class="p">,</span>
+    <span class="n">event_coords</span><span class="o">=</span><span class="n">event_coords</span><span class="p">,</span>
+    <span class="n">hospital_coords</span><span class="o">=</span><span class="n">hospital_locations</span><span class="p">,</span>
+    <span class="n">injuries_obs_shape</span><span class="o">=</span><span class="n">hospital_data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+    <span class="n">deaths_obs_shape</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">mortality_data</span><span class="p">),</span>
+<span class="p">)</span>
+
 <span class="c1"># Visualize results</span>
-<span class="n">plot_fit</span><span class="p">(</span><span class="n">dates</span><span class="p">,</span> <span class="n">injuries_obs</span><span class="p">,</span> <span class="n">deaths_obs</span><span class="p">,</span> <span class="n">posterior_predictive</span><span class="p">)</span>
+<span class="n">plot_fit</span><span class="p">(</span><span class="n">dates</span><span class="o">=</span><span class="n">dates</span><span class="p">,</span> <span class="n">injuries_obs</span><span class="o">=</span><span class="n">hospital_data</span><span class="p">,</span> <span class="n">deaths_obs</span><span class="o">=</span><span class="n">mortality_data</span><span class="p">,</span> <span class="n">preds</span><span class="o">=</span><span class="n">preds</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -304,6 +316,7 @@ pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </s
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Additional Information</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 </ul>
 </div>
