@@ -4,7 +4,7 @@ This guide will help you install TRACE and verify that everything is working cor
 
 ## Prerequisites
 
-- Python 3.9 or higher
+- Python 3.10 or higher
 - pip (Python package installer)
 - Git (for cloning the repository)
 
