@@ -186,25 +186,24 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import sys
 from pathlib import Path
 
+import arviz as az
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import arviz as az
 
 root = Path().resolve()
 while not (root / &#39;pyproject.toml&#39;).exists() and root != root.parent:
     root = root.parent
 sys.path.insert(0, str(root / &#39;src&#39;))
 
+from trace.analysis import forecast, posterior_predictive, run_inference
 from trace.data import (
+    fetch_palestine_mortality_data,
     load_example_acled_data,
     prepare_acled_events,
-    fetch_palestine_mortality_data,
     prepare_mortality_data,
 )
 from trace.model import casualty_model_random_walk
-from trace.analysis import run_inference, posterior_predictive, forecast
-from trace.analysis import plot_fit, plot_forecast
 <br/></pre></div>
 </div>
 </div>

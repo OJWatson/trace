@@ -44,16 +44,18 @@
    "outputs": [],
    "source": [
     "import sys\n",
+    "\n",
     "sys.path.insert(0, '../../src')  # For local development\n",
     "\n",
-    "import numpy as np\n",
-    "import matplotlib.pyplot as plt\n",
     "import warnings\n",
+    "\n",
+    "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
+    "\n",
     "warnings.filterwarnings('ignore')\n",
     "\n",
+    "from trace.analysis import forecast, plot_fit, plot_forecast, posterior_predictive, run_inference\n",
     "from trace.simulate import simulate_conflict_data\n",
-    "from trace.analysis import run_inference, posterior_predictive, forecast\n",
-    "from trace.analysis import plot_fit, plot_forecast\n",
     "\n",
     "# Set random seed\n",
     "np.random.seed(42)"
@@ -490,7 +492,7 @@
     "deaths_upper = np.percentile(preds['obs_deaths'], 97.5, axis=0)\n",
     "coverage = np.mean((deaths_obs >= deaths_lower) & (deaths_obs <= deaths_upper))\n",
     "\n",
-    "print(f\"\\nPosterior Predictive Check:\")\n",
+    "print(\"\\nPosterior Predictive Check:\")\n",
     "print(f\"Death observations within 95% CI: {coverage*100:.1f}%\")\n",
     "\n",
     "# Mean absolute error\n",
@@ -649,33 +651,6 @@
     "\n",
     "**Next Steps**: See [Gaza Analysis Tutorial](02_gaza_analysis.ipynb) to apply these methods to real conflict data."
    ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [
-    {
-     "data": {
-      "text/plain": [
-       "(4000, 90, 5)"
-      ]
-     },
-     "execution_count": 32,
-     "metadata": {},
-     "output_type": "execute_result"
-    }
-   ],
-   "source": [
-    "preds['obs_injuries']."
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": []
   }
  ],
  "metadata": {
