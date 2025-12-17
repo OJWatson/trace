@@ -6,7 +6,6 @@ multiple regions, hospitals, and realistic casualty dynamics. Useful for
 model validation and testing.
 """
 
-
 import numpy as np
 
 

@@ -5,7 +5,6 @@ This module implements the core probabilistic model that integrates conflict eve
 hospital admissions, and mortality data with spatial and temporal dynamics.
 """
 
-
 import jax.numpy as jnp
 import numpy as np
 import numpyro
