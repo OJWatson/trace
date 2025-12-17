@@ -12,21 +12,22 @@ This uses actual conflict and mortality data from Gaza.
 """
 
 import sys
+
 sys.path.insert(0, 'src')
 
-import numpy as np
 import matplotlib
+import numpy as np
+
 matplotlib.use('Agg')  # Non-interactive backend
 import matplotlib.pyplot as plt
 
+from trace.analysis import forecast, plot_fit, plot_forecast, posterior_predictive, run_inference
 from trace.data import (
+    fetch_palestine_mortality_data,
     load_example_acled_data,
     prepare_acled_events,
-    fetch_palestine_mortality_data,
     prepare_mortality_data,
 )
-from trace.simulate import simulate_conflict_data
-from trace.analysis import run_inference, posterior_predictive, forecast, plot_fit, plot_forecast
 
 # Set random seed for reproducibility
 np.random.seed(42)
@@ -112,7 +113,7 @@ for i in range(T):
         # Expected injuries for this day based on number of events
         expected_injuries = injuries_per_event * events_by_day[i]
         day_injuries = np.random.poisson(expected_injuries)
-        
+
         if day_injuries > 0:
             # Distribute among hospitals with some randomness
             # Hospitals closer to events get more casualties

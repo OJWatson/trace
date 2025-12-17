@@ -3,7 +3,6 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-
 # Ensure the project package in src/ is importable during tests.
 # This avoids importing Python's stdlib module named "trace".
 ROOT = Path(__file__).resolve().parents[1]

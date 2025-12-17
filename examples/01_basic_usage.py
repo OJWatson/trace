@@ -11,16 +11,16 @@ This can be converted to a Jupyter notebook for interactive exploration.
 """
 
 import sys
+
 sys.path.insert(0, 'src')
 
-import numpy as np
 import matplotlib
-matplotlib.use('Agg')  # Non-interactive backend
-import matplotlib.pyplot as plt
+import numpy as np
 
+matplotlib.use('Agg')  # Non-interactive backend
+
+from trace.analysis import forecast, plot_fit, plot_forecast, posterior_predictive, run_inference
 from trace.simulate import simulate_conflict_data
-from trace.data import prepare_acled_events
-from trace.analysis import run_inference, posterior_predictive, forecast, plot_fit, plot_forecast
 
 # Set random seed for reproducibility
 np.random.seed(42)

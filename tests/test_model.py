@@ -1,5 +1,5 @@
-import numpy as np
 import jax.numpy as jnp
+import numpy as np
 import numpyro.handlers as handlers
 
 from trace.model import casualty_model, casualty_model_with_covariates, spatial_kernel_weights

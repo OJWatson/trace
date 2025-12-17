@@ -15,7 +15,6 @@ from numpyro.infer import MCMC, NUTS, Predictive
 
 from trace.model import casualty_model
 
-
 ModelFn = Callable[..., None]
 
 

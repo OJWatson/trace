@@ -1,3 +1,7 @@
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+
 from trace.analysis import (
     create_arviz_inference_data,
     forecast,
@@ -6,10 +10,6 @@ from trace.analysis import (
     posterior_predictive,
     run_inference,
 )
-import matplotlib.pyplot as plt
-import numpy as np
-
-import matplotlib
 
 matplotlib.use("Agg")
 

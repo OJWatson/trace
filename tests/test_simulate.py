@@ -1,7 +1,6 @@
 """Tests for simulation module."""
 
 import numpy as np
-import pytest
 
 from trace.simulate import generate_scenario_events, simulate_conflict_data
 

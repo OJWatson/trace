@@ -80,6 +80,9 @@ src = ["src"]
 select = ["E", "F", "I", "N", "W", "UP"]
 ignore = ["E501", "N803"]
 
+[tool.ruff.lint.per-file-ignores]
+"**/*.ipynb" = ["E402", "E999", "W291"]
+
 [tool.ruff.lint.isort]
 known-first-party = ["trace"]
 
