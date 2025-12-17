@@ -5,7 +5,6 @@ This module implements the core probabilistic model that integrates conflict eve
 hospital admissions, and mortality data with spatial and temporal dynamics.
 """
 
-from typing import Optional
 
 import jax.numpy as jnp
 import numpy as np
@@ -68,7 +67,7 @@ def casualty_model(
     hospital_coords: np.ndarray,
     injuries_obs: np.ndarray,
     deaths_obs: np.ndarray,
-    delay_probs: Optional[np.ndarray] = None,
+    delay_probs: np.ndarray | None = None,
 ) -> None:
     """
     Bayesian hierarchical model for conflict casualties.
@@ -234,7 +233,7 @@ def casualty_model_random_walk(
     hospital_coords: np.ndarray,
     injuries_obs: np.ndarray,
     deaths_obs: np.ndarray,
-    delay_probs: Optional[np.ndarray] = None,
+    delay_probs: np.ndarray | None = None,
 ) -> None:
     n_days = len(events_by_day)
     n_hospitals = hospital_coords.shape[0]
@@ -306,8 +305,8 @@ def casualty_model_with_covariates(
     hospital_coords: np.ndarray,
     injuries_obs: np.ndarray,
     deaths_obs: np.ndarray,
-    covariates: Optional[np.ndarray] = None,
-    delay_probs: Optional[np.ndarray] = None,
+    covariates: np.ndarray | None = None,
+    delay_probs: np.ndarray | None = None,
 ) -> None:
     """
     Extended casualty model with time-varying covariates.

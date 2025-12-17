@@ -5,7 +5,7 @@ This module provides functions for Bayesian inference using MCMC,
 posterior predictive checks, forecasting, and visualization.
 """
 
-from typing import Callable, Optional
+from collections.abc import Callable
 
 import arviz as az
 import jax
@@ -25,7 +25,7 @@ def run_inference(
     hospital_coords: np.ndarray,
     injuries_obs: np.ndarray,
     deaths_obs: np.ndarray,
-    delay_probs: Optional[np.ndarray] = None,
+    delay_probs: np.ndarray | None = None,
     model: ModelFn = casualty_model,
     num_warmup: int = 1000,
     num_samples: int = 2000,
@@ -123,7 +123,7 @@ def posterior_predictive(
     hospital_coords: np.ndarray,
     injuries_obs_shape: tuple[int, int],
     deaths_obs_shape: int,
-    delay_probs: Optional[np.ndarray] = None,
+    delay_probs: np.ndarray | None = None,
     model: ModelFn = casualty_model,
     rng_seed: int = 1,
 ) -> dict[str, np.ndarray]:
@@ -179,7 +179,7 @@ def posterior_predictive(
 def forecast(
     samples: dict[str, np.ndarray],
     future_events_by_day: np.ndarray,
-    delay_probs: Optional[np.ndarray] = None,
+    delay_probs: np.ndarray | None = None,
 ) -> dict[str, np.ndarray]:
     """
     Forecast future casualties and deaths given posterior samples.
@@ -303,9 +303,9 @@ def plot_fit(
     dates: np.ndarray,
     injuries_obs: np.ndarray,
     deaths_obs: np.ndarray,
-    preds: Optional[dict[str, np.ndarray]] = None,
+    preds: dict[str, np.ndarray] | None = None,
     figsize: tuple[int, int] = (12, 8),
-    save_path: Optional[str] = None,
+    save_path: str | None = None,
 ) -> plt.Figure:
     """
     Plot model fit against observed data.
@@ -385,7 +385,7 @@ def plot_forecast(
     forecast_results: dict[str, np.ndarray],
     start_date: np.datetime64,
     figsize: tuple[int, int] = (12, 6),
-    save_path: Optional[str] = None,
+    save_path: str | None = None,
 ) -> plt.Figure:
     """
     Plot forecasted casualties and deaths.
@@ -455,7 +455,7 @@ def plot_forecast(
 
 
 def create_arviz_inference_data(
-    mcmc: MCMC, coords: Optional[dict] = None, dims: Optional[dict] = None
+    mcmc: MCMC, coords: dict | None = None, dims: dict | None = None
 ) -> az.InferenceData:
     """
     Convert NumPyro MCMC results to ArviZ InferenceData for diagnostics.

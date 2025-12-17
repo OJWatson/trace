@@ -6,7 +6,6 @@ multiple regions, hospitals, and realistic casualty dynamics. Useful for
 model validation and testing.
 """
 
-from typing import Optional
 
 import numpy as np
 
@@ -20,12 +19,12 @@ def simulate_conflict_data(
     p_late_true: float,
     delay_probs: np.ndarray,
     ell_true: float = 20.0,
-    p_immediate_true: Optional[float] = None,
-    region_populations: Optional[list[float]] = None,
+    p_immediate_true: float | None = None,
+    region_populations: list[float] | None = None,
     birth_rate: float = 0.0,
     migration_rate: float = 0.0,
     events_rate: float = 1.0,
-    seed: Optional[int] = None,
+    seed: int | None = None,
 ) -> dict[str, np.ndarray]:
     """
     Simulate synthetic conflict casualty data for a hypothetical country.
@@ -251,7 +250,7 @@ def simulate_conflict_data(
 def generate_scenario_events(
     T: int,
     baseline_rate: float,
-    interventions: Optional[list[tuple[int, int, float]]] = None,
+    interventions: list[tuple[int, int, float]] | None = None,
 ) -> np.ndarray:
     """
     Generate event counts for scenario-based forecasting.

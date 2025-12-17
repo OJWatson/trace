@@ -6,7 +6,6 @@ as well as utilities for loading hospital and mortality data.
 """
 
 from pathlib import Path
-from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -17,9 +16,9 @@ def fetch_acled_data(
     country: str,
     start_date: str,
     end_date: str,
-    api_token: Optional[str] = None,
-    fields: Optional[list[str]] = None,
-    api_email: Optional[str] = None,
+    api_token: str | None = None,
+    fields: list[str] | None = None,
+    api_email: str | None = None,
 ) -> pd.DataFrame:
     """
     Fetch ACLED conflict event data for a given country and date range.
@@ -267,7 +266,7 @@ def load_national_deaths(filepath: str) -> pd.Series:
 
 
 def create_hospital_coordinates(
-    hospital_ids: list[str], locations: Optional[dict[str, tuple[float, float]]] = None
+    hospital_ids: list[str], locations: dict[str, tuple[float, float]] | None = None
 ) -> np.ndarray:
     """
     Create hospital coordinate array for spatial modeling.
@@ -346,7 +345,7 @@ def load_example_acled_data() -> pd.DataFrame:
 
 
 def fetch_palestine_mortality_data(
-    start_date: Optional[str] = None, end_date: Optional[str] = None
+    start_date: str | None = None, end_date: str | None = None
 ) -> pd.DataFrame:
     """
     Fetch daily mortality data for Gaza from Tech for Palestine.
